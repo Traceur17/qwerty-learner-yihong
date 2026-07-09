@@ -19,6 +19,6 @@ React 18 + TypeScript + Vite + Tailwind + Jotai + Dexie 的英语打字练习 We
 
 ## 开发约定
 
-- 包管理器：npm（`npm run dev` / `npm run build`）
+- 包管理器：yarn（`yarn dev` / `yarn build`）
 - 添加词库：在 `public/dicts/` 放 JSON，并在 `dictionary.ts` 注册
 - OpenSpec 工作流：使用 `/opsx-propose`、`/opsx-apply` 等 Cursor 指令

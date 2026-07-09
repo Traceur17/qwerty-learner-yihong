@@ -23,9 +23,9 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run build
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
         env:
           REACT_APP_DEPLOY_ENV: pages
       - uses: actions/upload-pages-artifact@v5
