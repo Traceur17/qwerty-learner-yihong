@@ -26,7 +26,7 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
   const inputRef = useRef<HTMLInputElement>(null)
   const saveWordRecord = useSaveWordRecord()
   const [, playBeepSound, playHintSound] = useKeySounds()
-  const { play, stop, isPlaying } = usePronunciationSound(word.name)
+  const { play, stop, isPlaying } = usePronunciationSound(word)
 
   const isIgnoreCase = useAtomValue(isIgnoreCaseAtom)
   const fontSizeConfig = useAtomValue(fontSizeConfigAtom)

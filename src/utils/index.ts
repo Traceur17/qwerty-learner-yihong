@@ -95,6 +95,26 @@ export function calcChapterCount(length: number) {
   return Math.ceil(length / CHAPTER_LENGTH)
 }
 
+export function resolveChapterCount(resource: { length: number; chapterLengths?: number[] }) {
+  return resource.chapterLengths?.length ?? calcChapterCount(resource.length)
+}
+
+export function getChapterRange(dict: { length: number; chapterLengths?: number[] }, chapterIndex: number) {
+  if (dict.chapterLengths?.length) {
+    let start = 0
+    for (let i = 0; i < chapterIndex; i++) {
+      start += dict.chapterLengths[i] ?? 0
+    }
+    const end = start + (dict.chapterLengths[chapterIndex] ?? 0)
+    return { start, end: Math.min(end, dict.length) }
+  }
+
+  return {
+    start: chapterIndex * CHAPTER_LENGTH,
+    end: Math.min((chapterIndex + 1) * CHAPTER_LENGTH, dict.length),
+  }
+}
+
 export function findCommonValues<T>(xs: T[], ys: T[]): T[] {
   const set = new Set(ys)
   return xs.filter((x) => set.has(x))

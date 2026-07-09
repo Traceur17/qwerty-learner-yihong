@@ -1,4 +1,8 @@
 build
 node_modules
 public/dicts
+public/audio
 stats.html
+output
+tools/**/output
+manifests/source

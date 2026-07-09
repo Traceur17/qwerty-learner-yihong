@@ -1,0 +1,34 @@
+dict:
+  id: sample-audio
+  name: Sample Audio Dict
+  description: Pipeline fixture dictionary
+  language: en
+  accent: uk
+
+units:
+  excel: ./vocab.xlsx
+  sheetPattern: '*'
+  requireSheetIdMatch: false
+
+audio:
+  pattern: ./audio/unit{unit:02d}.mp3
+  manualDir: ./manual
+
+segmentation:
+  strategy: manual
+  fallback: [fixed]
+  fixed:
+    skipIntroSec: 0
+    intervalSec: 1.2
+    phraseDurationSec: 1
+
+validation:
+  minSimilarity: 0.5
+  failOnMismatch: true
+  verifyTranscript: false
+
+output:
+  audioDir: ../../../tools/dict-audio-pipeline/output/fixture-audio
+  dictDir: ../../../tools/dict-audio-pipeline/output/fixture-dicts
+  reportDir: ../../../tools/dict-audio-pipeline/output/reports
+  registerDictionary: false

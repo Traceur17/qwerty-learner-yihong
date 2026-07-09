@@ -34,3 +34,16 @@ stats.html
 /blob-report/
 /playwright/.cache/
 playwright-report
+
+# user-generated dictionary audio (keep pipeline fixtures)
+/public/audio/*
+!/public/audio/.gitkeep
+!/tools/dict-audio-pipeline/fixtures/**
+
+# pipeline source materials (local MP3/Excel, not for git)
+/manifests/source/
+
+# pipeline build artifacts
+/output/
+/tools/**/output/
+/tools/tools/

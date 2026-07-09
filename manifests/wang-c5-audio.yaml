@@ -1,0 +1,85 @@
+dict:
+  id: wang-c5-biscuit
+  name: 雅思wang C5（饼干专属）
+  description: 吞音连读混合训练语料库（王陆 C5 教材音频，11 个 Test 单元）
+  category: 国际考试
+  tags: [IELTS, 音频]
+  language: en
+  languageCategory: en
+  accent: uk
+  defaultPronIndex: 1
+
+units:
+  excel: ./source/wang-c5.xlsx
+  # 本 manifest 仅处理第5章（C5 教材音频 Test 1–12）
+  chapterFilter: '5'
+  # 只处理形如 5.3-1 的单元 sheet（排除「使用说明」「错词排行」「5.2」等）
+  sheetPattern: '*'
+  sheetIdRegex: '^(?<chapter>\d+)\.[\d.]+-(?<unit>\d+)$'
+  requireSheetIdMatch: true
+  # 从第2行起读：列1序号、列2单词、列3音标、列4释义（1-based，无需改 Excel）
+  fixedColumns:
+    startRow: 2
+    seq: 1
+    name: 2
+    phone: 3
+    trans: 4
+
+audio:
+  dir: ./source/audio
+  filePattern: '^(?<order>\d+)\s+Test\s+(?<unit>\d+)-.+\.mp3$'
+  # 当前仅有 Test 1–11 音频，缺 Test 12 时跳过该单元继续构建
+  skipMissingAudio: true
+  manualDir: ./source/manual
+
+segmentation:
+  # 推荐：跳过中文介绍 + 词组锚点裁切（王陆教材）
+  strategy: anchor-boundary
+  fallback: [calibrated-fixed, fixed]
+  anchor:
+    endPadSec: 0.2
+    tailEndPadSec: 0.35
+  clusterGapSec: 2.5
+  whisper:
+    model: Xenova/whisper-tiny.en
+  silence:
+    noiseDb: -38
+    minSilenceSec: 0.45
+    # 第2单元起介绍约 12s；第1单元见 unitOverrides
+    minIntroSec: 12
+    rhythmWindowSize: 5
+    rhythmIntervalMin: 3.5
+    rhythmIntervalMax: 6.5
+    minPhraseSec: 0.25
+    maxPhraseSec: 10
+    introMaxSec: 12
+  # 按单元覆盖裁切参数（unitId 如 5-01）
+  unitOverrides:
+    '5-01':
+      silence:
+        minIntroSec: 40
+  fixed:
+    skipIntroSec: 10
+    intervalSec: 5
+    phraseDurationSec: 4.5
+    skipOutlierIntervals: 2
+    calibrationSamples: 25
+  paddingMs: 100
+  trimSilence: false
+
+validation:
+  minSimilarity: 0.85
+  failOnMismatch: true
+  minDurationSec: 0.2
+  maxDurationSec: 15
+  # 回读校验依赖 STT，未安装 @xenova/transformers 时请保持 false
+  verifyTranscript: false
+
+output:
+  audioDir: ../public/audio/wang-c5-audio
+  dictDir: ../public/dicts
+  reportDir: ../output/reports
+  registerDictionary: true
+  combinedDict: true
+  combinedDictId: wang-c5-biscuit
+  perUnitDict: false

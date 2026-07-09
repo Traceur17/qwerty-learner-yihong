@@ -1,5 +1,5 @@
 import type { Dictionary, DictionaryResource } from '@/typings/index'
-import { calcChapterCount } from '@/utils'
+import { resolveChapterCount } from '@/utils'
 
 // 中国考试
 const chinaExam: DictionaryResource[] = [
@@ -583,6 +583,22 @@ const chinaExam: DictionaryResource[] = [
 
 // 国际考试
 const internationalExam: DictionaryResource[] = [
+  // dict-audio-pipeline:wang-c5-biscuit
+  {
+    id: 'wang-c5-biscuit',
+    name: '雅思wang C5（饼干专属）',
+    description: '吞音连读混合训练语料库（王陆 C5 教材音频，11 个 Test 单元）',
+    category: '国际考试',
+    tags: ['IELTS', '音频'],
+    url: '/dicts/wang-c5-biscuit.json',
+    length: 1335,
+    chapterLengths: [114, 111, 114, 105, 100, 108, 130, 144, 140, 142, 127],
+    language: 'en',
+    languageCategory: 'en',
+    defaultPronIndex: 1,
+  },
+  // dict-audio-pipeline:wang-c5-biscuit-end
+
   {
     id: 'pet-2024',
     name: 'PET-2024',
@@ -4191,7 +4207,7 @@ export const dictionaryResources: DictionaryResource[] = [
 
 export const dictionaries: Dictionary[] = dictionaryResources.map((resource) => ({
   ...resource,
-  chapterCount: calcChapterCount(resource.length),
+  chapterCount: resolveChapterCount(resource),
 }))
 
 /**

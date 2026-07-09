@@ -7,11 +7,13 @@ export default function Chapter({
   index,
   checked,
   dictID,
+  wordCount,
   onChange,
 }: {
   index: number
   checked: boolean
   dictID: string
+  wordCount?: number
   onChange: (index: number) => void
 }) {
   const ref = useRef<HTMLTableRowElement>(null)
@@ -39,6 +41,7 @@ export default function Chapter({
     >
       <h1>第 {index + 1} 章</h1>
       <p className="pt-[2px] text-xs text-slate-600">
+        {wordCount ? `${wordCount} 词 · ` : ''}
         {chapterStatus ? (chapterStatus.exerciseCount > 0 ? `练习 ${chapterStatus.exerciseCount} 次` : '未练习') : '加载中...'}
       </p>
       {checked && (

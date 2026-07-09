@@ -32,6 +32,14 @@ function Root() {
     darkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark')
   }, [darkMode])
 
+  useEffect(() => {
+    const href = '/favicon-biscuit.png?v=5'
+    document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']").forEach((link) => {
+      link.href = href
+      link.type = 'image/png'
+    })
+  }, [])
+
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600)
 
   useEffect(() => {

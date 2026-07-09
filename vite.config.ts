@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import react from '@vitejs/plugin-react'
 import { promises as fs } from 'fs'
 import { getLastCommit } from 'git-last-commit'
@@ -49,6 +50,10 @@ export default defineConfig(async ({ mode }) => {
       modules: {
         localsConvention: 'camelCaseOnly',
       },
+    },
+    test: {
+      environment: 'node',
+      include: ['src/**/*.test.ts', 'tools/**/*.test.mjs'],
     },
   }
 })

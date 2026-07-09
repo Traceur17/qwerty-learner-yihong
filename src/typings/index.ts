@@ -25,6 +25,8 @@ export type Word = {
   usphone: string
   ukphone: string
   notation?: string
+  usAudio?: string
+  ukAudio?: string
 }
 
 export type WordWithIndex = Word & {

@@ -1,4 +1,3 @@
-import logo from '@/assets/logo.svg'
 import directoryImg from '@/assets/mobile/carousel/directory.png'
 import hotImg from '@/assets/mobile/carousel/hot.png'
 import indexImg from '@/assets/mobile/carousel/index.png'
@@ -6,6 +5,7 @@ import codeImg from '@/assets/mobile/detail/code.png'
 import dictationImg from '@/assets/mobile/detail/dictation.png'
 import phoneticImg from '@/assets/mobile/detail/phonetic.png'
 import speedImg from '@/assets/mobile/detail/speed.png'
+import BiscuitIcon from '@/components/BiscuitIcon'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -68,9 +68,9 @@ const MobilePage: React.FC = () => {
     <div className="flex w-screen flex-col bg-white lg:mx-auto lg:max-w-7xl">
       <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between border-b border-gray-100/50 bg-white/80 px-6 py-6 backdrop-blur-xl lg:px-12">
         <div className="flex items-center">
-          <img src={logo} className="mr-4 h-10 w-10 lg:h-12 lg:w-12" alt="Qwerty Learner Logo" />
+          <BiscuitIcon className="mr-4 h-10 w-10 shrink-0 lg:h-12 lg:w-12" />
           <div className="flex flex-col">
-            <h1 className="text-lg font-semibold tracking-tight text-indigo-500 lg:text-xl">Qwerty Learner</h1>
+            <h1 className="text-lg font-semibold tracking-tight text-indigo-500 lg:text-xl">Empress Biscuit</h1>
             <span className="text-xs font-normal text-gray-500">官方网站</span>
           </div>
         </div>

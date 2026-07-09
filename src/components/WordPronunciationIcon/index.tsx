@@ -21,7 +21,8 @@ export const WordPronunciationIcon = React.forwardRef<
       return word.name
     }
   }
-  const { play, stop, isPlaying } = usePronunciationSound(currentWord())
+  const pronunciationInput = word.usAudio || word.ukAudio ? word : currentWord()
+  const { play, stop, isPlaying } = usePronunciationSound(pronunciationInput)
 
   const playSound = useCallback(() => {
     stop()
