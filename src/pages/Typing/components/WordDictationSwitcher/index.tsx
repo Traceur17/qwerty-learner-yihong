@@ -1,4 +1,4 @@
-import { wordDictationConfigAtom } from '@/store'
+import { listenDictationConfigAtom, wordDictationConfigAtom } from '@/store'
 import type { WordDictationType } from '@/typings'
 import { Listbox, Popover, Switch, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
@@ -32,13 +32,16 @@ export default function WordDictationSwitcher() {
   const [wordDictationConfig, setWordDictationConfig] = useAtom(wordDictationConfigAtom)
   const [currentType, setCurrentType] = useState(wordDictationTypeList[0])
 
+  const [, setListenDictationConfig] = useAtom(listenDictationConfigAtom)
+
   const onToggleWordDictation = () => {
     setWordDictationConfig((old) => {
-      if (!old.isOpen) {
-        return { ...old, isOpen: !old.isOpen, openBy: 'user' }
-      } else {
-        return { ...old, isOpen: !old.isOpen }
+      const nextOpen = !old.isOpen
+      if (nextOpen) {
+        setListenDictationConfig((prev) => ({ ...prev, isOpen: false }))
+        return { ...old, isOpen: true, openBy: 'user' }
       }
+      return { ...old, isOpen: false }
     })
   }
 

@@ -48,3 +48,10 @@ export type WordDictationType = 'hideAll' | 'hideVowel' | 'hideConsonant' | 'ran
  * 如果是通过点击 resultScreen 中的默写本章按钮打开的，则关闭默写模式
  */
 export type WordDictationOpenBy = 'user' | 'auto'
+
+export type ListenDictationConfig = {
+  isOpen: boolean
+  showPrevWord: boolean
+  showPhonetic: boolean
+  showTranslation: boolean
+}

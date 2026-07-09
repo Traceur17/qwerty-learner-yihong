@@ -2,6 +2,7 @@ import { TypingContext, TypingStateActionType } from '../../store'
 import AnalysisButton from '../AnalysisButton'
 import ErrorBookButton from '../ErrorBookButton'
 import HandPositionIllustration from '../HandPositionIllustration'
+import ListenDictationSwitcher from '../ListenDictationSwitcher'
 import LoopWordSwitcher from '../LoopWordSwitcher'
 import Setting from '../Setting'
 import SoundSwitcher from '../SoundSwitcher'
@@ -48,6 +49,10 @@ export default function Switcher() {
 
       <Tooltip className="h-7 w-7" content="设置单个单词循环">
         <LoopWordSwitcher />
+      </Tooltip>
+
+      <Tooltip className="h-7 w-7" content={`开关听写模式（${CTRL} + Shift + D）`}>
+        <ListenDictationSwitcher />
       </Tooltip>
 
       <Tooltip className="h-7 w-7" content={`开关默写模式（${CTRL} + V）`}>

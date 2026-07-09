@@ -6,6 +6,7 @@ import { correctSoundResources, keySoundResources, wrongSoundResources } from '@
 import type {
   Dictionary,
   InfoPanelState,
+  ListenDictationConfig,
   LoopWordTimesOption,
   PhoneticType,
   PronunciationType,
@@ -106,6 +107,13 @@ export const wordDictationConfigAtom = atomForConfig('wordDictationConfig', {
   isOpen: false,
   type: 'hideAll' as WordDictationType,
   openBy: 'auto' as WordDictationOpenBy,
+})
+
+export const listenDictationConfigAtom = atomForConfig<ListenDictationConfig>('listenDictationConfig', {
+  isOpen: false,
+  showPrevWord: false,
+  showPhonetic: false,
+  showTranslation: false,
 })
 
 export const dismissStartCardDateAtom = atomWithStorage<Date | null>(DISMISS_START_CARD_DATE_KEY, null)

@@ -7,7 +7,7 @@ import { useCallback, useContext, useMemo } from 'react'
 import IconPrev from '~icons/tabler/arrow-narrow-left'
 import IconNext from '~icons/tabler/arrow-narrow-right'
 
-export default function PrevAndNextWord({ type }: LastAndNextWordProps) {
+export default function PrevAndNextWord({ type, showTrans }: LastAndNextWordProps) {
   // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
   const { state, dispatch } = useContext(TypingContext)!
 
@@ -54,7 +54,7 @@ export default function PrevAndNextWord({ type }: LastAndNextWordProps) {
               >
                 {headWord}
               </p>
-              {state.isTransVisible && (
+              {(showTrans ?? state.isTransVisible) && (
                 <p className="line-clamp-1 max-w-full text-sm font-normal text-gray-600 dark:text-gray-500">{word.trans.join('；')}</p>
               )}
             </div>
@@ -71,4 +71,6 @@ export default function PrevAndNextWord({ type }: LastAndNextWordProps) {
 export type LastAndNextWordProps = {
   /** 上一个单词还是下一个单词 */
   type: 'prev' | 'next'
+  /** 覆盖释义显示，未传则使用全局 isTransVisible */
+  showTrans?: boolean
 }

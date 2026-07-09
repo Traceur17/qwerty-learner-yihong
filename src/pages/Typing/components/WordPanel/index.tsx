@@ -2,20 +2,29 @@ import { TypingContext, TypingStateActionType } from '../../store'
 import type { TypingState } from '../../store/type'
 import PrevAndNextWord from '../PrevAndNextWord'
 import Progress from '../Progress'
+import DictationWord from './components/DictationWord'
 import Phonetic from './components/Phonetic'
 import Translation from './components/Translation'
 import WordComponent from './components/Word'
 import { usePrefetchPronunciationSound } from '@/hooks/usePronunciation'
-import { isReviewModeAtom, isShowPrevAndNextWordAtom, loopWordConfigAtom, phoneticConfigAtom, reviewModeInfoAtom } from '@/store'
+import {
+  isReviewModeAtom,
+  isShowPrevAndNextWordAtom,
+  listenDictationConfigAtom,
+  loopWordConfigAtom,
+  phoneticConfigAtom,
+  reviewModeInfoAtom,
+} from '@/store'
 import type { Word } from '@/typings'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { useCallback, useContext, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 export default function WordPanel() {
   // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
   const { state, dispatch } = useContext(TypingContext)!
   const phoneticConfig = useAtomValue(phoneticConfigAtom)
+  const listenDictationConfig = useAtomValue(listenDictationConfigAtom)
   const isShowPrevAndNextWord = useAtomValue(isShowPrevAndNextWordAtom)
   const [wordComponentKey, setWordComponentKey] = useState(0)
   const [currentWordExerciseCount, setCurrentWordExerciseCount] = useState(0)
@@ -40,6 +49,10 @@ export default function WordPanel() {
   const reloadCurrentWordComponent = useCallback(() => {
     setWordComponentKey((old) => old + 1)
   }, [])
+
+  useEffect(() => {
+    reloadCurrentWordComponent()
+  }, [listenDictationConfig.isOpen, reloadCurrentWordComponent])
 
   const updateReviewRecord = useCallback(
     (state: TypingState) => {
@@ -151,7 +164,10 @@ export default function WordPanel() {
   return (
     <div className="container flex h-full w-full flex-col items-center justify-center">
       <div className="container flex h-24 w-full shrink-0 grow-0 justify-between px-12 pt-10">
-        {isShowPrevAndNextWord && state.isTyping && (
+        {state.isTyping && listenDictationConfig.isOpen && listenDictationConfig.showPrevWord && (
+          <PrevAndNextWord type="prev" showTrans={listenDictationConfig.showTranslation} />
+        )}
+        {!listenDictationConfig.isOpen && isShowPrevAndNextWord && state.isTyping && (
           <>
             <PrevAndNextWord type="prev" />
             <PrevAndNextWord type="next" />
@@ -171,14 +187,24 @@ export default function WordPanel() {
               </div>
             )}
             <div className="relative">
-              <WordComponent word={currentWord} onFinish={onFinish} key={wordComponentKey} />
-              {phoneticConfig.isOpen && <Phonetic word={currentWord} />}
-              <Translation
-                trans={currentWord.trans.join('；')}
-                showTrans={shouldShowTranslation}
-                onMouseEnter={() => handleShowTranslation(true)}
-                onMouseLeave={() => handleShowTranslation(false)}
-              />
+              {listenDictationConfig.isOpen ? (
+                <>
+                  <DictationWord word={currentWord} onFinish={onFinish} key={wordComponentKey} />
+                  {listenDictationConfig.showPhonetic && <Phonetic word={currentWord} />}
+                  {listenDictationConfig.showTranslation && <Translation trans={currentWord.trans.join('；')} showTrans={true} />}
+                </>
+              ) : (
+                <>
+                  <WordComponent word={currentWord} onFinish={onFinish} key={wordComponentKey} />
+                  {phoneticConfig.isOpen && <Phonetic word={currentWord} />}
+                  <Translation
+                    trans={currentWord.trans.join('；')}
+                    showTrans={shouldShowTranslation}
+                    onMouseEnter={() => handleShowTranslation(true)}
+                    onMouseLeave={() => handleShowTranslation(false)}
+                  />
+                </>
+              )}
             </div>
           </div>
         )}
