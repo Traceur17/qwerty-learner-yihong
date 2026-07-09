@@ -1,0 +1,24 @@
+---
+description: Qwerty Learner 项目上下文与开发约定
+alwaysApply: true
+---
+
+# Qwerty Learner
+
+React 18 + TypeScript + Vite + Tailwind + Jotai + Dexie 的英语打字练习 Web 应用。
+
+## 关键路径
+
+- 路由入口：`src/index.tsx`
+- 打字练习：`src/pages/Typing/`
+- 词库选择：`src/pages/Gallery-N/`
+- 词库注册：`src/resources/dictionary.ts`
+- 词库数据：`public/dicts/*.json`
+- 全局状态：`src/store/`
+- 练习记录：`src/utils/db/`（IndexedDB）
+
+## 开发约定
+
+- 包管理器：npm（`npm run dev` / `npm run build`）
+- 添加词库：在 `public/dicts/` 放 JSON，并在 `dictionary.ts` 注册
+- OpenSpec 工作流：使用 `/opsx-propose`、`/opsx-apply` 等 Cursor 指令
