@@ -1,5 +1,6 @@
 import type { PronunciationType, Word } from '@/typings'
 import { romajiToHiragana } from '@/utils/kana'
+import { publicUrl } from '@/utils/publicUrl'
 
 const pronunciationApi = 'https://dict.youdao.com/dictvoice?audio='
 
@@ -36,10 +37,10 @@ function generateYoudaoSoundSrc(wordName: string, pronunciation: Exclude<Pronunc
 export function generateWordSoundSrc(word: PronunciationWordInput, pronunciation: Exclude<PronunciationType, false>): string {
   if (typeof word !== 'string') {
     if (pronunciation === 'us' && word.usAudio) {
-      return word.usAudio
+      return publicUrl(word.usAudio)
     }
     if (pronunciation === 'uk' && word.ukAudio) {
-      return word.ukAudio
+      return publicUrl(word.ukAudio)
     }
   }
 

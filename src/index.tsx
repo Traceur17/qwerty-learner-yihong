@@ -5,6 +5,7 @@ import { FriendLinks } from './pages/FriendLinks'
 import MobilePage from './pages/Mobile'
 import TypingPage from './pages/Typing'
 import { isOpenDarkModeAtom } from '@/store'
+import { publicUrl } from '@/utils/publicUrl'
 import { Analytics } from '@vercel/analytics/react'
 import 'animate.css'
 import { useAtomValue } from 'jotai'
@@ -33,7 +34,7 @@ function Root() {
   }, [darkMode])
 
   useEffect(() => {
-    const href = '/favicon-biscuit.png?v=5'
+    const href = publicUrl('/favicon-biscuit.png?v=6')
     document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']").forEach((link) => {
       link.href = href
       link.type = 'image/png'
