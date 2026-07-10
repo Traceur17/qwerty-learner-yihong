@@ -74,15 +74,16 @@ The system SHALL submit the user's input when Enter is pressed. After submission
 
 ### Requirement: Correct/incorrect feedback with auto-advance
 
-After submission, the system SHALL display feedback and automatically advance to the next word after a fixed delay.
+After submission, the system SHALL display feedback. Advance behavior MUST differ by outcome:
 
-- Correct answer: display success indicator, wait 1000ms, then advance
-- Incorrect answer: display failure indicator, user's input, and correct answer, wait 1500ms, then advance
+- **Correct answer**: display success indicator and Chinese translation (`word.trans`); automatically advance after **1000ms**
+- **Incorrect answer**: display failure indicator, user's input, correct answer, Chinese translation, and prominent diff; advance **only when user presses Enter** (no auto-advance timer)
 
 #### Scenario: Correct answer feedback
 
 - **WHEN** user submits a correct answer
 - **THEN** a success indicator is displayed
+- **AND** Chinese translation is displayed
 - **AND** after 1000ms the system advances to the next word
 
 #### Scenario: Incorrect answer feedback
@@ -91,7 +92,14 @@ After submission, the system SHALL display feedback and automatically advance to
 - **THEN** a failure indicator is displayed
 - **AND** the user's input is shown
 - **AND** the correct answer is shown
-- **AND** after 1500ms the system advances to the next word
+- **AND** Chinese translation is shown
+- **AND** a prominent diff is displayed
+- **AND** the system does NOT auto-advance until user presses Enter
+
+#### Scenario: Enter continues after incorrect feedback
+
+- **WHEN** incorrect feedback is visible and user presses Enter
+- **THEN** the system advances to the next word
 
 ### Requirement: Case-insensitive comparison respects setting
 

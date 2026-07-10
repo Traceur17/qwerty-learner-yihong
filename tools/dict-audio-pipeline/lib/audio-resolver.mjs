@@ -62,8 +62,10 @@ export function resolveAudioByPattern(unit, audioConfig, manifestPath) {
     const files = listMp3Files(dir)
     const matched = files.filter((fileName) => {
       const match = fileName.match(fileRegex)
-      if (!match?.groups?.unit) return false
-      return Number.parseInt(match.groups.unit, 10) === unitNumber
+      if (!match?.groups) return false
+      const fileUnit = resolveFileUnitNumber(match)
+      if (!Number.isFinite(fileUnit)) return false
+      return fileUnit === unitNumber
     })
 
     if (matched.length === 1) {
@@ -75,6 +77,16 @@ export function resolveAudioByPattern(unit, audioConfig, manifestPath) {
   }
 
   return null
+}
+
+function resolveFileUnitNumber(match) {
+  if (match.groups?.unit) {
+    return Number.parseInt(match.groups.unit, 10)
+  }
+  if (match.groups?.order) {
+    return Number.parseInt(match.groups.order, 10)
+  }
+  return Number.NaN
 }
 
 function formatMissingAudioError(unit, tried) {

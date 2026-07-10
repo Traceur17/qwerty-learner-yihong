@@ -6,56 +6,78 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { idDictionaryMap } from '@/resources/dictionary'
 import { recordErrorBookAction } from '@/utils'
 import { useSetAtom } from 'jotai'
-import type { FC } from 'react'
-import { useCallback } from 'react'
+import { forwardRef, useCallback, type Ref } from 'react'
 import DeleteIcon from '~icons/weui/delete-filled'
 
 type IErrorRowProps = {
   record: groupedWordRecords
   onDelete: () => void
+  selectable?: boolean
+  selected?: boolean
+  onToggleSelect?: () => void
+  hideDictColumn?: boolean
+  checkboxRef?: Ref<HTMLSpanElement>
 }
 
-const ErrorRow: FC<IErrorRowProps> = ({ record, onDelete }) => {
-  const setCurrentRowDetail = useSetAtom(currentRowDetailAtom)
-  const dictInfo = idDictionaryMap[record.dict]
-  const { word, isLoading, hasError } = useGetWord(record.word, dictInfo)
+const ErrorRow = forwardRef<HTMLLIElement, IErrorRowProps>(
+  ({ record, onDelete, selectable = false, selected = false, onToggleSelect, hideDictColumn = false, checkboxRef }, ref) => {
+    const setCurrentRowDetail = useSetAtom(currentRowDetailAtom)
+    const dictInfo = idDictionaryMap[record.dict]
+    const { word, isLoading, hasError } = useGetWord(record.word, dictInfo)
 
-  const onClick = useCallback(() => {
-    setCurrentRowDetail(record)
-    recordErrorBookAction('detail')
-  }, [record, setCurrentRowDetail])
+    const onClick = useCallback(() => {
+      setCurrentRowDetail(record)
+      recordErrorBookAction('detail')
+    }, [record, setCurrentRowDetail])
 
-  return (
-    <li
-      className="opacity-85 flex w-full cursor-pointer items-center justify-between rounded-lg bg-white px-6 py-3 text-black shadow-md dark:bg-gray-800 dark:text-white"
-      onClick={onClick}
-    >
-      <span className="basis-2/12 break-normal">{record.word}</span>
-      <span className="basis-6/12 break-normal">
-        {word ? word.trans.join('；') : <LoadingWordUI isLoading={isLoading} hasError={hasError} />}
-      </span>
-      <span className="basis-1/12 break-normal pl-8">{record.wrongCount}</span>
-      <span className="basis-1/12 break-normal">{dictInfo?.name}</span>
-      <span
-        className="basis-1/12 break-normal"
-        onClick={(e) => {
-          e.stopPropagation()
-          onDelete()
-        }}
+    return (
+      <li
+        ref={ref}
+        className="opacity-85 flex w-full cursor-pointer items-center justify-between rounded-lg bg-white px-6 py-3 text-black shadow-md dark:bg-gray-800 dark:text-white"
+        onClick={onClick}
       >
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DeleteIcon />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Delete Records</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </span>
-    </li>
-  )
-}
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          {selectable && (
+            <span ref={checkboxRef} className="w-8 shrink-0" onClick={(e) => e.stopPropagation()}>
+              <input
+                type="checkbox"
+                className="h-4 w-4 cursor-pointer accent-indigo-500"
+                checked={selected}
+                onChange={onToggleSelect}
+                aria-label={`选择 ${record.word}`}
+              />
+            </span>
+          )}
+          <span className="shrink-0 basis-2/12 break-normal">{record.word}</span>
+          <span className="line-clamp-2 min-w-0 basis-4/12 break-normal">
+            {word ? word.trans.join('；') : <LoadingWordUI isLoading={isLoading} hasError={hasError} />}
+          </span>
+          <span className="shrink-0 basis-2/12 break-normal text-center tabular-nums">{record.wrongCount}</span>
+          {!hideDictColumn && <span className="shrink-0 basis-1/12 break-normal">{dictInfo?.name}</span>}
+        </div>
+        <span
+          className="ml-4 shrink-0 basis-8 break-normal"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+        >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DeleteIcon />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete Records</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </span>
+      </li>
+    )
+  },
+)
+
+ErrorRow.displayName = 'ErrorRow'
 
 export default ErrorRow

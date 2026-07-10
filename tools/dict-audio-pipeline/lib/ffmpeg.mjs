@@ -155,11 +155,13 @@ function median(values) {
 }
 
 /**
- * 词组锚点裁切：起点 = 语音段开始，终点 = 语音段结束（避免拖到下一词组前的长空白）
+ * 词组锚点裁切：起点可前移 startPadSec，终点后延 endPadSec / tailEndPadSec
  */
 export function buildAnchorBoundarySegments(rows, speechSegments, options = {}) {
+  const startPadSec = options.startPadSec ?? 0
   const endPadSec = options.endPadSec ?? 0.2
   const tailEndPadSec = options.tailEndPadSec ?? 0.35
+  const minGapSec = options.minGapSec ?? 0.02
   const count = rows.length
 
   if (speechSegments.length < count) {
@@ -167,17 +169,24 @@ export function buildAnchorBoundarySegments(rows, speechSegments, options = {}) 
   }
 
   const anchors = speechSegments.slice(0, count)
-  return anchors.map((anchor, idx) => {
-    const start = anchor.start
+  const segments = []
+
+  for (let idx = 0; idx < anchors.length; idx++) {
+    const anchor = anchors[idx]
+    const prevEnd = idx > 0 ? segments[idx - 1].end : 0
+    const minStart = idx > 0 ? prevEnd + minGapSec : 0
+    const start = Math.max(minStart, anchor.start - startPadSec)
     const end = anchor.end + (idx < anchors.length - 1 ? endPadSec : tailEndPadSec)
-    return {
+    segments.push({
       index: idx + 1,
       start,
       end,
       text: rows[idx].name,
       strategy: 'anchor-boundary',
-    }
-  })
+    })
+  }
+
+  return segments
 }
 
 /**

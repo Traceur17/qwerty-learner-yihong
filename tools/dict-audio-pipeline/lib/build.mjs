@@ -1,6 +1,7 @@
 import { mapUnitsToAudio, partitionUnitsByAudio } from './audio-resolver.mjs'
 import { writeCombinedDict } from './combined-dict.mjs'
 import { cutSegmentsToFiles } from './cutter.mjs'
+import { clipsToSegmentRefs, mergeUnitAudio } from './merge-unit-audio.mjs'
 import { readExcelUnits } from './excel.mjs'
 import { loadManifest, resolveSegmentationForUnit } from './manifest.mjs'
 import { registerDictionaryEntries } from './register-dict.mjs'
@@ -83,6 +84,18 @@ export async function runBuild(manifestPath, options = {}) {
         trans: (unit.rows[idx]?.trans ?? []).join(' / '),
       }))
 
+      let segmentRefs = null
+      if (manifest.output.mergedAudio && !options.dryRun) {
+        const mergeResult = await mergeUnitAudio({
+          unitId: unit.unitId,
+          outputAudioDir: manifest.output.audioDir,
+          audioPublicId,
+          clips: clipsWithMeta,
+          cleanupClips: manifest.output.cleanupClipFiles !== false,
+        })
+        segmentRefs = clipsToSegmentRefs(clipsWithMeta, mergeResult.segments, mergeResult.unitFolderName, audioPublicId)
+      }
+
       const validation = await validateUnit({
         rows: unit.rows,
         segments: clipsWithMeta,
@@ -107,7 +120,7 @@ export async function runBuild(manifestPath, options = {}) {
         }
       }
 
-      const entries = buildDictEntries({ manifest, unit, clips: clipsWithMeta })
+      const entries = buildDictEntries({ manifest, unit, clips: clipsWithMeta, segmentRefs })
       const dictMeta =
         manifest.output.combinedDict && !manifest.output.perUnitDict
           ? { dictId: null, fileName: null, outputPath: null, length: entries.length, unitId: unit.unitId, label: unit.label, entries }

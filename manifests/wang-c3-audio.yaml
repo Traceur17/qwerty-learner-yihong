@@ -1,0 +1,81 @@
+dict:
+  id: wang-c3-biscuit
+  name: 雅思wang C3（饼干专属）
+  description: 吞音连读混合训练语料库（王陆 C3 教材音频，9 个 Test 单元）
+  category: 国际考试
+  tags: [IELTS, 音频]
+  language: en
+  languageCategory: en
+  accent: uk
+  defaultPronIndex: 1
+
+units:
+  excel: ./source/IETS-wang.xlsx
+  chapterFilter: '3'
+  sheetPattern: '*'
+  sheetIdRegex: '^(?<chapter>\d+)\.[\d.]+-(?<unit>\d+)$'
+  requireSheetIdMatch: true
+  fixedColumns:
+    startRow: 2
+    seq: 1
+    name: 2
+    phone: 3
+    trans: 4
+
+audio:
+  chapterDirPattern: ./source/audio/C3
+  filePattern: '^(?<order>\d+)\s+Test\s+(?<unit>\d+)-.+\.mp3$'
+  skipMissingAudio: true
+  manualDir: ./source/manual/C3
+
+segmentation:
+  strategy: anchor-boundary
+  fallback: [calibrated-fixed, fixed]
+  anchor:
+    startPadSec: 0.2
+    endPadSec: 0.3
+    tailEndPadSec: 0.45
+    minGapSec: 0.02
+  clusterGapSec: 2.5
+  whisper:
+    model: Xenova/whisper-tiny.en
+  silence:
+    noiseDb: -38
+    minSilenceSec: 0.45
+    minIntroSec: 22
+    rhythmWindowSize: 5
+    rhythmIntervalMin: 3.5
+    rhythmIntervalMax: 6.5
+    minPhraseSec: 0.25
+    maxPhraseSec: 10
+    introMaxSec: 22
+  unitOverrides:
+    '3-01':
+      silence:
+        minIntroSec: 47
+  fixed:
+    skipIntroSec: 10
+    intervalSec: 5
+    phraseDurationSec: 4.5
+    skipOutlierIntervals: 2
+    calibrationSamples: 25
+  paddingMs: 150
+  trimSilence: false
+
+validation:
+  minSimilarity: 0.85
+  failOnMismatch: true
+  minDurationSec: 0.2
+  maxDurationSec: 15
+  verifyTranscript: false
+
+output:
+  audioDir: ../public/audio/wang-c3-audio
+  dictDir: ../public/dicts
+  reportDir: ../output/reports
+  registerDictionary: true
+  combinedDict: true
+  combinedDictId: wang-c3-biscuit
+  perUnitDict: false
+  mergedAudio: false
+  cleanupClipFiles: false

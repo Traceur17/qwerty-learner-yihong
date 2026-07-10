@@ -1,6 +1,7 @@
 import type { PronunciationType, Word } from '@/typings'
 import { romajiToHiragana } from '@/utils/kana'
 import { publicUrl } from '@/utils/publicUrl'
+import { isWordAudioSegment, type WordAudioRef } from '@/utils/wordAudio'
 
 const pronunciationApi = 'https://dict.youdao.com/dictvoice?audio='
 
@@ -8,6 +9,11 @@ export type PronunciationWordInput = string | Pick<Word, 'name' | 'usAudio' | 'u
 
 export function resolvePronunciationWordName(word: PronunciationWordInput): string {
   return typeof word === 'string' ? word : word.name
+}
+
+function resolveCustomAudioUrl(ref: WordAudioRef | undefined): string | null {
+  if (!ref || isWordAudioSegment(ref)) return null
+  return publicUrl(ref)
 }
 
 function generateYoudaoSoundSrc(wordName: string, pronunciation: Exclude<PronunciationType, false>): string {
@@ -37,10 +43,12 @@ function generateYoudaoSoundSrc(wordName: string, pronunciation: Exclude<Pronunc
 export function generateWordSoundSrc(word: PronunciationWordInput, pronunciation: Exclude<PronunciationType, false>): string {
   if (typeof word !== 'string') {
     if (pronunciation === 'us' && word.usAudio) {
-      return publicUrl(word.usAudio)
+      const url = resolveCustomAudioUrl(word.usAudio)
+      if (url) return url
     }
     if (pronunciation === 'uk' && word.ukAudio) {
-      return publicUrl(word.ukAudio)
+      const url = resolveCustomAudioUrl(word.ukAudio)
+      if (url) return url
     }
   }
 

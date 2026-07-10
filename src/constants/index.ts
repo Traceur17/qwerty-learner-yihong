@@ -4,6 +4,8 @@ export const CHAPTER_LENGTH = 20
 
 export const DISMISS_START_CARD_DATE_KEY = 'dismissStartCardDate'
 
+export const DISMISS_CHAPTER_ERROR_BOOK_GUIDE_KEY = 'dismissChapterErrorBookGuide'
+
 export const DONATE_DATE = 'donateDate'
 
 export const CONFETTI_DEFAULTS = {

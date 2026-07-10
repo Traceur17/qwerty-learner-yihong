@@ -140,6 +140,9 @@ function normalizeManifest(raw, manifestPath) {
     audio: {
       ...raw.audio,
       dir: raw.audio.dir ? resolveFromManifest(manifestPath, raw.audio.dir) : undefined,
+      chapterDirPattern: raw.audio.chapterDirPattern
+        ? resolveFromManifest(manifestPath, raw.audio.chapterDirPattern)
+        : undefined,
       manualDir: raw.audio.manualDir ? resolveFromManifest(manifestPath, raw.audio.manualDir) : undefined,
     },
     segmentation: {
@@ -157,7 +160,7 @@ function normalizeManifest(raw, manifestPath) {
         maxPhraseSec: 10,
         introMaxSec: 12,
       },
-      anchor: { endPadSec: 0.2, tailEndPadSec: 0.35 },
+      anchor: { startPadSec: 0.2, endPadSec: 0.3, tailEndPadSec: 0.45, minGapSec: 0.02 },
       fixed: {
         skipIntroSec: 10,
         intervalSec: 5,
@@ -166,7 +169,7 @@ function normalizeManifest(raw, manifestPath) {
         calibrationSamples: 25,
       },
       clusterGapSec: 2.5,
-      paddingMs: 100,
+      paddingMs: 150,
       trimSilence: false,
       ...raw.segmentation,
     },

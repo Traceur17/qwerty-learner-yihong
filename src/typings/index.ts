@@ -19,14 +19,16 @@ export const PRONUNCIATION_PHONETIC_MAP: Pronunciation2PhoneticMap = {
   id: 'id',
 }
 
+export type { WordAudioRef, WordAudioSegment } from '@/utils/wordAudio'
+
 export type Word = {
   name: string
   trans: string[]
   usphone: string
   ukphone: string
   notation?: string
-  usAudio?: string
-  ukAudio?: string
+  usAudio?: WordAudioRef
+  ukAudio?: WordAudioRef
 }
 
 export type WordWithIndex = Word & {

@@ -39,8 +39,16 @@ function formatUnitLabel(unitId) {
   return `Unit ${unitId}`
 }
 
+function accentToPronunciationTypes(accent) {
+  if (accent === 'uk') return "['uk']"
+  if (accent === 'us') return "['us']"
+  return undefined
+}
+
 function buildCombinedSnippet(manifest, combinedMeta) {
   const chapterLengths = `[${combinedMeta.chapterLengths.join(', ')}]`
+  const pronunciationTypes = accentToPronunciationTypes(manifest.dict.accent)
+  const pronunciationTypesLine = pronunciationTypes ? `\n    pronunciationTypes: ${pronunciationTypes},` : ''
   return `  // dict-audio-pipeline:${manifest.dict.id}
   {
     id: '${combinedMeta.dictId}',
@@ -53,7 +61,7 @@ function buildCombinedSnippet(manifest, combinedMeta) {
     chapterLengths: ${chapterLengths},
     language: '${manifest.dict.language}',
     languageCategory: '${manifest.dict.languageCategory ?? manifest.dict.language}',
-    defaultPronIndex: ${manifest.dict.defaultPronIndex ?? 1},
+    defaultPronIndex: ${manifest.dict.defaultPronIndex ?? 1},${pronunciationTypesLine}
   },
   // dict-audio-pipeline:${manifest.dict.id}-end`
 }

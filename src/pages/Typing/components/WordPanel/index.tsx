@@ -162,8 +162,8 @@ export default function WordPanel() {
   }, [isShowTranslation, state.isTransVisible])
 
   return (
-    <div className="container flex h-full w-full flex-col items-center justify-center">
-      <div className="container flex h-24 w-full shrink-0 grow-0 justify-between px-12 pt-10">
+    <div className="container flex h-full min-h-0 w-full flex-col items-center justify-center">
+      <div className="flex h-16 w-full max-w-5xl shrink-0 grow-0 items-center justify-between px-2 pt-6 md:h-20 md:px-6 md:pt-8 xl:px-10">
         {state.isTyping && listenDictationConfig.isOpen && listenDictationConfig.showPrevWord && (
           <PrevAndNextWord type="prev" showTrans={listenDictationConfig.showTranslation} />
         )}
@@ -174,7 +174,7 @@ export default function WordPanel() {
           </>
         )}
       </div>
-      <div className="container flex flex-grow flex-col items-center justify-center">
+      <div className="flex min-h-0 w-full max-w-5xl flex-1 flex-col items-center justify-center px-2 md:px-6 xl:px-10">
         {currentWord && (
           <div className="relative flex w-full justify-center">
             {!state.isTyping && (

@@ -1,7 +1,7 @@
 dict:
   id: wang-c5-biscuit
   name: 雅思wang C5（饼干专属）
-  description: 吞音连读混合训练语料库（王陆 C5 教材音频，11 个 Test 单元）
+  description: 吞音连读混合训练语料库（王陆 C5 教材音频，12 个 Test 单元）
   category: 国际考试
   tags: [IELTS, 音频]
   language: en
@@ -10,7 +10,7 @@ dict:
   defaultPronIndex: 1
 
 units:
-  excel: ./source/wang-c5.xlsx
+  excel: ./source/IETS-wang.xlsx
   # 本 manifest 仅处理第5章（C5 教材音频 Test 1–12）
   chapterFilter: '5'
   # 只处理形如 5.3-1 的单元 sheet（排除「使用说明」「错词排行」「5.2」等）
@@ -26,19 +26,21 @@ units:
     trans: 4
 
 audio:
-  dir: ./source/audio
+  chapterDirPattern: ./source/audio/C5
   filePattern: '^(?<order>\d+)\s+Test\s+(?<unit>\d+)-.+\.mp3$'
   # 当前仅有 Test 1–11 音频，缺 Test 12 时跳过该单元继续构建
   skipMissingAudio: true
-  manualDir: ./source/manual
+  manualDir: ./source/manual/C5
 
 segmentation:
   # 推荐：跳过中文介绍 + 词组锚点裁切（王陆教材）
   strategy: anchor-boundary
   fallback: [calibrated-fixed, fixed]
   anchor:
-    endPadSec: 0.2
-    tailEndPadSec: 0.35
+    startPadSec: 0.2
+    endPadSec: 0.3
+    tailEndPadSec: 0.45
+    minGapSec: 0.02
   clusterGapSec: 2.5
   whisper:
     model: Xenova/whisper-tiny.en
@@ -64,7 +66,7 @@ segmentation:
     phraseDurationSec: 4.5
     skipOutlierIntervals: 2
     calibrationSamples: 25
-  paddingMs: 100
+  paddingMs: 150
   trimSilence: false
 
 validation:
@@ -83,3 +85,5 @@ output:
   combinedDict: true
   combinedDictId: wang-c5-biscuit
   perUnitDict: false
+  mergedAudio: false
+  cleanupClipFiles: false

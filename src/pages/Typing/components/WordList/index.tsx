@@ -2,11 +2,12 @@ import { TypingContext, TypingStateActionType } from '../../store'
 import WordCard from './WordCard'
 import Drawer from '@/components/Drawer'
 import Tooltip from '@/components/Tooltip'
+import { Button } from '@/components/ui/button'
 import { currentChapterAtom, currentDictInfoAtom, isReviewModeAtom } from '@/store'
 import { Dialog } from '@headlessui/react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import { atom, useAtomValue } from 'jotai'
-import { useContext, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import ListIcon from '~icons/tabler/list'
 import IconX from '~icons/tabler/x'
 
@@ -25,16 +26,35 @@ export default function WordList() {
   const { state, dispatch } = useContext(TypingContext)!
 
   const [isOpen, setIsOpen] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const currentDictTitleValue = useAtomValue(currentDictTitle)
+  const currentLanguage = useAtomValue(currentDictInfoAtom).language
 
   function closeModal() {
     setIsOpen(false)
+    setSelectedIndex(null)
   }
 
   function openModal() {
     setIsOpen(true)
     dispatch({ type: TypingStateActionType.SET_IS_TYPING, payload: false })
   }
+
+  const handleSelectWord = useCallback((index: number) => {
+    setSelectedIndex(index)
+  }, [])
+
+  const handleStartFromSelected = useCallback(() => {
+    if (selectedIndex === null) return
+
+    dispatch({ type: TypingStateActionType.SKIP_2_WORD_INDEX, newIndex: selectedIndex })
+    dispatch({ type: TypingStateActionType.SET_IS_TYPING, payload: true })
+    setIsOpen(false)
+    setSelectedIndex(null)
+  }, [dispatch, selectedIndex])
+
+  const selectedWord = selectedIndex !== null ? state.chapterData.words[selectedIndex] : undefined
+  const selectedWordLabel = selectedWord && ['romaji', 'hapin'].includes(currentLanguage) ? selectedWord.notation : selectedWord?.name
 
   return (
     <>
@@ -49,20 +69,44 @@ export default function WordList() {
       </Tooltip>
 
       <Drawer open={isOpen} onClose={closeModal} classNames="bg-stone-50 dark:bg-gray-900">
-        <Dialog.Title as="h3" className="flex items-center justify-between p-4 text-lg font-medium leading-6 dark:text-gray-50">
-          {currentDictTitleValue}
-          <IconX onClick={closeModal} className="cursor-pointer" />
+        <Dialog.Title as="h3" className="flex items-center justify-between gap-2 p-4 text-lg font-medium leading-6 dark:text-gray-50">
+          <div className="min-w-0">
+            <p className="truncate">{currentDictTitleValue}</p>
+            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">点击单词选择起始位置</p>
+          </div>
+          <IconX onClick={closeModal} className="shrink-0 cursor-pointer" />
         </Dialog.Title>
-        <ScrollArea.Root className="flex-1 select-none overflow-y-auto ">
+        <ScrollArea.Root className="flex-1 overflow-hidden">
           <ScrollArea.Viewport className="h-full w-full px-3">
-            <div className="flex h-full w-full flex-col gap-1">
+            <div className="flex w-full flex-col gap-1 pb-3 pr-2">
               {state.chapterData.words?.map((word, index) => {
-                return <WordCard word={word} key={`${word.name}_${index}`} isActive={state.chapterData.index === index} />
+                return (
+                  <WordCard
+                    word={word}
+                    index={index}
+                    key={`${word.name}_${index}`}
+                    isActive={state.chapterData.index === index}
+                    isSelected={selectedIndex === index}
+                    onSelect={handleSelectWord}
+                  />
+                )
               })}
             </div>
           </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar className="flex touch-none select-none bg-transparent " orientation="vertical"></ScrollArea.Scrollbar>
+          <ScrollArea.Scrollbar
+            className="flex w-3 touch-none select-none bg-gray-100/80 p-0.5 transition-colors hover:bg-gray-200/90 dark:bg-gray-800/80 dark:hover:bg-gray-700/90"
+            orientation="vertical"
+          >
+            <ScrollArea.Thumb className="relative min-h-[3rem] flex-1 rounded-full bg-indigo-400/80 hover:bg-indigo-500 dark:bg-indigo-500/80 dark:hover:bg-indigo-400" />
+          </ScrollArea.Scrollbar>
         </ScrollArea.Root>
+        {selectedIndex !== null && (
+          <div className="border-t border-gray-200 p-4 dark:border-gray-700">
+            <Button type="button" className="w-full" disabled={selectedIndex === state.chapterData.index} onClick={handleStartFromSelected}>
+              {selectedIndex === state.chapterData.index ? '已是当前词' : `从「${selectedWordLabel}」开始练习`}
+            </Button>
+          </div>
+        )}
       </Drawer>
     </>
   )

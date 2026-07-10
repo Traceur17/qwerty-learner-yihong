@@ -23,9 +23,9 @@ const HeadWrongNumber: FC<IHeadWrongNumberProps> = ({ className, sortType, setSo
   }, [setSortType, sortType])
 
   return (
-    <span className={`relative cursor-pointer ${className}`} onClick={onClick}>
+    <span className={`relative inline-block cursor-pointer whitespace-nowrap ${className ?? ''}`} onClick={onClick}>
       错误次数
-      <div className="absolute -right-2 bottom-0 top-0 flex flex-col items-center justify-center text-[12px]">
+      <span className="absolute -right-3 top-1/2 flex -translate-y-1/2 flex-col text-[10px] leading-none">
         <UPIcon
           className={classNames('-mb-2 ', {
             'text-indigo-500': sortType === 'asc',
@@ -38,7 +38,7 @@ const HeadWrongNumber: FC<IHeadWrongNumberProps> = ({ className, sortType, setSo
             'text-gray-400': sortType !== 'desc',
           })}
         />
-      </div>
+      </span>
     </span>
   )
 }

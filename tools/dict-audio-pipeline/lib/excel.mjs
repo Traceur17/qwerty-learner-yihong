@@ -16,7 +16,7 @@ export function readExcelUnits(excelPath, options = {}) {
   const matcher = globToRegExp(sheetPattern)
   const sheetIdRegex = options.sheetIdRegex ?? '^(?<chapter>\\d+)\\.[\\d.]+-(?<unit>\\d+)$'
 
-  const sheets = workbook.SheetNames.filter((name) => {
+  const regexSheets = workbook.SheetNames.filter((name) => {
     if (!matcher.test(name)) return false
     if (options.requireSheetIdMatch !== false) {
       return new RegExp(sheetIdRegex).test(name)
@@ -24,14 +24,38 @@ export function readExcelUnits(excelPath, options = {}) {
     return true
   })
 
+  const includedSheetNames = []
+  for (const item of options.includeSheets ?? []) {
+    const name = typeof item === 'string' ? item : item.name
+    if (!workbook.SheetNames.includes(name)) continue
+    if (regexSheets.includes(name)) continue
+    includedSheetNames.push(name)
+  }
+
+  const sheets = [...regexSheets, ...includedSheetNames]
+
   if (sheets.length === 0) {
     throw new Error(`No unit sheets matched (pattern="${sheetPattern}", sheetIdRegex="${sheetIdRegex}") in ${excelPath}`)
   }
 
   return sheets.map((sheetName) => {
     const sheet = workbook.Sheets[sheetName]
-    const parsed = parseSheetUnit(sheetName, options)
-    const rows = options.fixedColumns ? readFixedColumnRows(sheet, options.fixedColumns) : readNamedColumnRows(sheet, options)
+    const includeMeta = (options.includeSheets ?? []).find((item) => (typeof item === 'string' ? item : item.name) === sheetName)
+    const parsed =
+      includeMeta && typeof includeMeta !== 'string'
+        ? {
+            chapter: String(includeMeta.chapter),
+            unit: String(includeMeta.unit),
+            unitId: includeMeta.unitId ?? `${includeMeta.chapter}-${String(includeMeta.unit).padStart(2, '0')}`,
+            sheetName,
+            label: includeMeta.label ?? `第${includeMeta.chapter}章第${Number(includeMeta.unit)}单元`,
+          }
+        : parseSheetUnit(sheetName, options)
+    const rowLayout =
+      includeMeta && typeof includeMeta !== 'string' && includeMeta.fixedColumns
+        ? includeMeta.fixedColumns
+        : options.fixedColumns
+    const rows = rowLayout ? readFixedColumnRows(sheet, rowLayout) : readNamedColumnRows(sheet, options)
 
     return { ...parsed, rows }
   })

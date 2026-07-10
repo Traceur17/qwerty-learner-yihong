@@ -3,9 +3,21 @@ import { WordPronunciationIcon } from '@/components/WordPronunciationIcon'
 import { currentDictInfoAtom } from '@/store'
 import type { Word } from '@/typings'
 import { useAtomValue } from 'jotai'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, type MouseEvent } from 'react'
 
-export default function WordCard({ word, isActive }: { word: Word; isActive: boolean }) {
+export default function WordCard({
+  word,
+  index,
+  isActive,
+  isSelected,
+  onSelect,
+}: {
+  word: Word
+  index: number
+  isActive: boolean
+  isSelected: boolean
+  onSelect: (index: number) => void
+}) {
   const wordPronunciationIconRef = useRef<WordPronunciationIconRef>(null)
   const currentLanguage = useAtomValue(currentDictInfoAtom).language
 
@@ -13,13 +25,30 @@ export default function WordCard({ word, isActive }: { word: Word; isActive: boo
     wordPronunciationIconRef.current?.play()
   }, [])
 
+  const handleCardClick = useCallback(() => {
+    onSelect(index)
+    handlePlay()
+  }, [handlePlay, index, onSelect])
+
+  const handlePlayClick = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation()
+      handlePlay()
+    },
+    [handlePlay],
+  )
+
   return (
     <div
       className={`mb-2 flex cursor-pointer select-text items-center rounded-xl p-4 shadow focus:outline-none ${
-        isActive ? 'bg-indigo-50 dark:bg-indigo-800 dark:bg-opacity-20' : 'bg-white dark:bg-gray-700 dark:bg-opacity-20'
+        isSelected
+          ? 'bg-indigo-50 ring-2 ring-indigo-500 dark:bg-indigo-800 dark:bg-opacity-30'
+          : isActive
+          ? 'bg-indigo-50 dark:bg-indigo-800 dark:bg-opacity-20'
+          : 'bg-white dark:bg-gray-700 dark:bg-opacity-20'
       }   `}
       key={word.name}
-      onClick={handlePlay}
+      onClick={handleCardClick}
     >
       <div className="flex-1">
         <p className="select-all font-mono text-xl font-normal leading-6 dark:text-gray-50">
@@ -27,7 +56,13 @@ export default function WordCard({ word, isActive }: { word: Word; isActive: boo
         </p>
         <div className="mt-2 max-w-sm font-sans text-sm text-gray-400">{word.trans.join('；')}</div>
       </div>
-      <WordPronunciationIcon word={word} lang={currentLanguage} className="h-8 w-8" ref={wordPronunciationIconRef} />
+      <button
+        type="button"
+        onClick={handlePlayClick}
+        className="shrink-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+      >
+        <WordPronunciationIcon word={word} lang={currentLanguage} className="h-8 w-8" ref={wordPronunciationIconRef} />
+      </button>
     </div>
   )
 }

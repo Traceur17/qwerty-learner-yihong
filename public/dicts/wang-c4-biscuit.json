@@ -1,0 +1,3116 @@
+[
+    {
+        "name": "abnormal",
+        "trans": [
+            "不正常的"
+        ],
+        "usphone": "æbˈnɔːml̩",
+        "ukphone": "æbˈnɔːml̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/001_abnormal.mp3"
+    },
+    {
+        "name": "academic",
+        "trans": [
+            "学术的"
+        ],
+        "usphone": "ˌækəˈdemɪk",
+        "ukphone": "ˌækəˈdemɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/002_academic.mp3"
+    },
+    {
+        "name": "accessible",
+        "trans": [
+            "可接近的"
+        ],
+        "usphone": "əkˈsesəbl̩",
+        "ukphone": "əkˈsesəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/003_accessible.mp3"
+    },
+    {
+        "name": "accountable",
+        "trans": [
+            "负有责任的"
+        ],
+        "usphone": "əˈkaʊntəbl̩",
+        "ukphone": "əˈkaʊntəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/004_accountable.mp3"
+    },
+    {
+        "name": "accurate",
+        "trans": [
+            "正确无误的"
+        ],
+        "usphone": "ˈækjərət",
+        "ukphone": "ˈækjərət",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/005_accurate.mp3"
+    },
+    {
+        "name": "additional",
+        "trans": [
+            "额外的"
+        ],
+        "usphone": "əˈdɪʃn̩əl",
+        "ukphone": "əˈdɪʃn̩əl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/006_additional.mp3"
+    },
+    {
+        "name": "adequate",
+        "trans": [
+            "充足的，令人满意的"
+        ],
+        "usphone": "ˈædɪkwət",
+        "ukphone": "ˈædɪkwət",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/007_adequate.mp3"
+    },
+    {
+        "name": "advanced",
+        "trans": [
+            "高级的，先进的"
+        ],
+        "usphone": "ədˈvɑːnst",
+        "ukphone": "ədˈvɑːnst",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/008_advanced.mp3"
+    },
+    {
+        "name": "advisable",
+        "trans": [
+            "明智的"
+        ],
+        "usphone": "ədˈvaɪzəbl̩",
+        "ukphone": "ədˈvaɪzəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/009_advisable.mp3"
+    },
+    {
+        "name": "allergic",
+        "trans": [
+            "过敏的"
+        ],
+        "usphone": "əˈlɜːdʒɪk",
+        "ukphone": "əˈlɜːdʒɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/010_allergic.mp3"
+    },
+    {
+        "name": "alternative",
+        "trans": [
+            "可选择的"
+        ],
+        "usphone": "ɔːlˈtɜːnətɪv",
+        "ukphone": "ɔːlˈtɜːnətɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/011_alternative.mp3"
+    },
+    {
+        "name": "amazing",
+        "trans": [
+            "令人惊讶的"
+        ],
+        "usphone": "əˈmeɪzɪŋ",
+        "ukphone": "əˈmeɪzɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/012_amazing.mp3"
+    },
+    {
+        "name": "ambiguous",
+        "trans": [
+            "有歧义的"
+        ],
+        "usphone": "æmˈbɪɡjuəs",
+        "ukphone": "æmˈbɪɡjuəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/013_ambiguous.mp3"
+    },
+    {
+        "name": "ambitious",
+        "trans": [
+            "极富野心的"
+        ],
+        "usphone": "æmˈbɪʃəs",
+        "ukphone": "æmˈbɪʃəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/014_ambitious.mp3"
+    },
+    {
+        "name": "analytical",
+        "trans": [
+            "分析的"
+        ],
+        "usphone": "ˌænəˈlɪtɪkl̩",
+        "ukphone": "ˌænəˈlɪtɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/015_analytical.mp3"
+    },
+    {
+        "name": "ancient",
+        "trans": [
+            "古代的"
+        ],
+        "usphone": "ˈeɪnʃənt",
+        "ukphone": "ˈeɪnʃənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/016_ancient.mp3"
+    },
+    {
+        "name": "angry",
+        "trans": [
+            "气愤的，生气的"
+        ],
+        "usphone": "ˈæŋɡri",
+        "ukphone": "ˈæŋɡri",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/017_angry.mp3"
+    },
+    {
+        "name": "applied",
+        "trans": [
+            "应用的"
+        ],
+        "usphone": "əˈplaɪd",
+        "ukphone": "əˈplaɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/018_applied.mp3"
+    },
+    {
+        "name": "archaeological",
+        "trans": [
+            "考古学的"
+        ],
+        "usphone": "ˌɑːkiəˈlɒdʒɪkl̩",
+        "ukphone": "ˌɑːkiəˈlɒdʒɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/019_archaeological.mp3"
+    },
+    {
+        "name": "artificial",
+        "trans": [
+            "人工的"
+        ],
+        "usphone": "ˌɑːtɪˈfɪʃl̩",
+        "ukphone": "ˌɑːtɪˈfɪʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/020_artificial.mp3"
+    },
+    {
+        "name": "artistic",
+        "trans": [
+            "艺术的"
+        ],
+        "usphone": "ɑːˈtɪstɪk",
+        "ukphone": "ɑːˈtɪstɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/021_artistic.mp3"
+    },
+    {
+        "name": "ascending",
+        "trans": [
+            "上升的"
+        ],
+        "usphone": "əˈsendɪŋ",
+        "ukphone": "əˈsendɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/022_ascending.mp3"
+    },
+    {
+        "name": "atmospheric",
+        "trans": [
+            "大气的"
+        ],
+        "usphone": "ˌætməsˈferɪk",
+        "ukphone": "ˌætməsˈferɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/023_atmospheric.mp3"
+    },
+    {
+        "name": "attentive",
+        "trans": [
+            "注意的"
+        ],
+        "usphone": "əˈtentɪv",
+        "ukphone": "əˈtentɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/024_attentive.mp3"
+    },
+    {
+        "name": "audio",
+        "trans": [
+            "声音的"
+        ],
+        "usphone": "ˈɔːdiəʊ",
+        "ukphone": "ˈɔːdiəʊ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/025_audio.mp3"
+    },
+    {
+        "name": "available",
+        "trans": [
+            "可获得的，有时间的"
+        ],
+        "usphone": "əˈveɪləbl̩",
+        "ukphone": "əˈveɪləbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/026_available.mp3"
+    },
+    {
+        "name": "aware",
+        "trans": [
+            "意识到的"
+        ],
+        "usphone": "əˈweə",
+        "ukphone": "əˈweə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/027_aware.mp3"
+    },
+    {
+        "name": "awful",
+        "trans": [
+            "可怕的"
+        ],
+        "usphone": "ˈɔːfl̩",
+        "ukphone": "ˈɔːfl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/028_awful.mp3"
+    },
+    {
+        "name": "auto",
+        "trans": [
+            "自动的"
+        ],
+        "usphone": "ˈɔːtəʊ",
+        "ukphone": "ˈɔːtəʊ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/029_auto.mp3"
+    },
+    {
+        "name": "bald",
+        "trans": [
+            "光秃的"
+        ],
+        "usphone": "bɔːld",
+        "ukphone": "bɔːld",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/030_bald.mp3"
+    },
+    {
+        "name": "barren",
+        "trans": [
+            "贫瘠的"
+        ],
+        "usphone": "ˈbærən",
+        "ukphone": "ˈbærən",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/031_barren.mp3"
+    },
+    {
+        "name": "basic",
+        "trans": [
+            "基础的"
+        ],
+        "usphone": "ˈbeɪsɪk",
+        "ukphone": "ˈbeɪsɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/032_basic.mp3"
+    },
+    {
+        "name": "beautiful",
+        "trans": [
+            "美丽的"
+        ],
+        "usphone": "ˈbjuːtəfl̩",
+        "ukphone": "ˈbjuːtəfl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/033_beautiful.mp3"
+    },
+    {
+        "name": "biological",
+        "trans": [
+            "生物的"
+        ],
+        "usphone": "ˌbaɪəˈlɒdʒɪkl̩",
+        "ukphone": "ˌbaɪəˈlɒdʒɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/034_biological.mp3"
+    },
+    {
+        "name": "blind",
+        "trans": [
+            "盲的"
+        ],
+        "usphone": "blaɪnd",
+        "ukphone": "blaɪnd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/035_blind.mp3"
+    },
+    {
+        "name": "blond",
+        "trans": [
+            "金发的"
+        ],
+        "usphone": "blɒnd",
+        "ukphone": "blɒnd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/036_blond.mp3"
+    },
+    {
+        "name": "British",
+        "trans": [
+            "英国的"
+        ],
+        "usphone": "ˈbrɪtɪʃ",
+        "ukphone": "ˈbrɪtɪʃ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/037_british.mp3"
+    },
+    {
+        "name": "broad",
+        "trans": [
+            "广泛的"
+        ],
+        "usphone": "brɔːd",
+        "ukphone": "brɔːd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/038_broad.mp3"
+    },
+    {
+        "name": "buried",
+        "trans": [
+            "埋藏的"
+        ],
+        "usphone": "ˈberɪd",
+        "ukphone": "ˈberɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/039_buried.mp3"
+    },
+    {
+        "name": "calculating",
+        "trans": [
+            "计算的"
+        ],
+        "usphone": "ˈkælkjʊleɪtɪŋ",
+        "ukphone": "ˈkælkjʊleɪtɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/040_calculating.mp3"
+    },
+    {
+        "name": "casual",
+        "trans": [
+            "随便的"
+        ],
+        "usphone": "ˈkæʒʊəl",
+        "ukphone": "ˈkæʒʊəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/041_casual.mp3"
+    },
+    {
+        "name": "central",
+        "trans": [
+            "中央的"
+        ],
+        "usphone": "ˈsentrəl",
+        "ukphone": "ˈsentrəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/042_central.mp3"
+    },
+    {
+        "name": "challenging",
+        "trans": [
+            "挑战的"
+        ],
+        "usphone": "ˈtʃæləndʒɪŋ",
+        "ukphone": "ˈtʃæləndʒɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/043_challenging.mp3"
+    },
+    {
+        "name": "cheaper",
+        "trans": [
+            "便宜些的"
+        ],
+        "usphone": "ˈtʃiːpə",
+        "ukphone": "ˈtʃiːpə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/044_cheaper.mp3"
+    },
+    {
+        "name": "cheerful",
+        "trans": [
+            "高兴的"
+        ],
+        "usphone": "ˈtʃɪəfəl",
+        "ukphone": "ˈtʃɪəfəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/045_cheerful.mp3"
+    },
+    {
+        "name": "children's",
+        "trans": [
+            "儿童的"
+        ],
+        "usphone": "ˈtʃɪldrənz",
+        "ukphone": "ˈtʃɪldrənz",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/046_children-s.mp3"
+    },
+    {
+        "name": "classical",
+        "trans": [
+            "古典的"
+        ],
+        "usphone": "ˈkl̩æsɪkl",
+        "ukphone": "ˈkl̩æsɪkl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/047_classical.mp3"
+    },
+    {
+        "name": "clean",
+        "trans": [
+            "干净的"
+        ],
+        "usphone": "kliːn",
+        "ukphone": "kliːn",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/048_clean.mp3"
+    },
+    {
+        "name": "cleanest",
+        "trans": [
+            "最干净的"
+        ],
+        "usphone": "ˈkliːnɪst",
+        "ukphone": "ˈkliːnɪst",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/049_cleanest.mp3"
+    },
+    {
+        "name": "clear",
+        "trans": [
+            "清楚的"
+        ],
+        "usphone": "klɪə",
+        "ukphone": "klɪə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/050_clear.mp3"
+    },
+    {
+        "name": "clever",
+        "trans": [
+            "聪明的"
+        ],
+        "usphone": "ˈklevə",
+        "ukphone": "ˈklevə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/051_clever.mp3"
+    },
+    {
+        "name": "coastal",
+        "trans": [
+            "海边的"
+        ],
+        "usphone": "ˈkəʊstl̩",
+        "ukphone": "ˈkəʊstl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/052_coastal.mp3"
+    },
+    {
+        "name": "comfortable",
+        "trans": [
+            "舒适的"
+        ],
+        "usphone": "ˈkʌmftəbl̩",
+        "ukphone": "ˈkʌmftəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/053_comfortable.mp3"
+    },
+    {
+        "name": "common",
+        "trans": [
+            "普通的"
+        ],
+        "usphone": "ˈkɒmən",
+        "ukphone": "ˈkɒmən",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/054_common.mp3"
+    },
+    {
+        "name": "commonsense",
+        "trans": [
+            "有常识的"
+        ],
+        "usphone": "ˌkɑːmənˈsens",
+        "ukphone": "ˌkɑːmənˈsens",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/055_commonsense.mp3"
+    },
+    {
+        "name": "complete",
+        "trans": [
+            "完全的"
+        ],
+        "usphone": "kəmˈpliːt",
+        "ukphone": "kəmˈpliːt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/056_complete.mp3"
+    },
+    {
+        "name": "completed",
+        "trans": [
+            "完成的"
+        ],
+        "usphone": "kəmˈpliːtɪd",
+        "ukphone": "kəmˈpliːtɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/057_completed.mp3"
+    },
+    {
+        "name": "confident",
+        "trans": [
+            "自信的"
+        ],
+        "usphone": "ˈkɒnfɪdənt",
+        "ukphone": "ˈkɒnfɪdənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/058_confident.mp3"
+    },
+    {
+        "name": "conservative",
+        "trans": [
+            "保守的"
+        ],
+        "usphone": "kənˈsɜːvətɪv",
+        "ukphone": "kənˈsɜːvətɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/059_conservative.mp3"
+    },
+    {
+        "name": "convenient",
+        "trans": [
+            "方便的"
+        ],
+        "usphone": "kənˈviːnɪənt",
+        "ukphone": "kənˈviːnɪənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/060_convenient.mp3"
+    },
+    {
+        "name": "cooperative",
+        "trans": [
+            "合作的=co-operative"
+        ],
+        "usphone": "kəʊˈɒpərətɪv",
+        "ukphone": "kəʊˈɒpərətɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/061_cooperative.mp3"
+    },
+    {
+        "name": "corrupt",
+        "trans": [
+            "腐败的"
+        ],
+        "usphone": "kəˈrʌpt",
+        "ukphone": "kəˈrʌpt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/062_corrupt.mp3"
+    },
+    {
+        "name": "costly",
+        "trans": [
+            "昂贵的，费钱的"
+        ],
+        "usphone": "ˈkɒstli",
+        "ukphone": "ˈkɒstli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/063_costly.mp3"
+    },
+    {
+        "name": "cream",
+        "trans": [
+            "奶油色的"
+        ],
+        "usphone": "kriːm",
+        "ukphone": "kriːm",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/064_cream.mp3"
+    },
+    {
+        "name": "critical",
+        "trans": [
+            "批评的"
+        ],
+        "usphone": "ˈkrɪtɪkl̩",
+        "ukphone": "ˈkrɪtɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/065_critical.mp3"
+    },
+    {
+        "name": "crucial",
+        "trans": [
+            "至关重要的，决定性的"
+        ],
+        "usphone": "ˈkruːʃl̩",
+        "ukphone": "ˈkruːʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/066_crucial.mp3"
+    },
+    {
+        "name": "cultural",
+        "trans": [
+            "文化的"
+        ],
+        "usphone": "ˈkʌltʃərəl",
+        "ukphone": "ˈkʌltʃərəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/067_cultural.mp3"
+    },
+    {
+        "name": "curly",
+        "trans": [
+            "卷发的"
+        ],
+        "usphone": "ˈkɜːli",
+        "ukphone": "ˈkɜːli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/068_curly.mp3"
+    },
+    {
+        "name": "current",
+        "trans": [
+            "目前的"
+        ],
+        "usphone": "ˈkʌrənt",
+        "ukphone": "ˈkʌrənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/069_current.mp3"
+    },
+    {
+        "name": "daily",
+        "trans": [
+            "每日的"
+        ],
+        "usphone": "ˈdeɪli",
+        "ukphone": "ˈdeɪli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/070_daily.mp3"
+    },
+    {
+        "name": "dairy",
+        "trans": [
+            "牛奶的"
+        ],
+        "usphone": "ˈdeəri",
+        "ukphone": "ˈdeəri",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/071_dairy.mp3"
+    },
+    {
+        "name": "dangerous",
+        "trans": [
+            "危险的"
+        ],
+        "usphone": "ˈdeɪndʒərəs",
+        "ukphone": "ˈdeɪndʒərəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/072_dangerous.mp3"
+    },
+    {
+        "name": "dark",
+        "trans": [
+            "黑暗的，深色的"
+        ],
+        "usphone": "dɑːk",
+        "ukphone": "dɑːk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/073_dark.mp3"
+    },
+    {
+        "name": "departmental",
+        "trans": [
+            "部门的"
+        ],
+        "usphone": "ˌdiːpɑːtˈmentl̩",
+        "ukphone": "ˌdiːpɑːtˈmentl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/074_departmental.mp3"
+    },
+    {
+        "name": "dependent",
+        "trans": [
+            "依赖的"
+        ],
+        "usphone": "dɪˈpendənt",
+        "ukphone": "dɪˈpendənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/075_dependent.mp3"
+    },
+    {
+        "name": "detailed",
+        "trans": [
+            "细节的"
+        ],
+        "usphone": "ˈdiːteɪld",
+        "ukphone": "ˈdiːteɪld",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/076_detailed.mp3"
+    },
+    {
+        "name": "different",
+        "trans": [
+            "不同的"
+        ],
+        "usphone": "ˈdɪfrənt",
+        "ukphone": "ˈdɪfrənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/077_different.mp3"
+    },
+    {
+        "name": "direct",
+        "trans": [
+            "直接的"
+        ],
+        "usphone": "dɪˈrekt",
+        "ukphone": "dɪˈrekt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/078_direct.mp3"
+    },
+    {
+        "name": "disabled",
+        "trans": [
+            "肢体有残疾的"
+        ],
+        "usphone": "dɪsˈeɪbl̩d",
+        "ukphone": "dɪsˈeɪbl̩d",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/079_disabled.mp3"
+    },
+    {
+        "name": "distant",
+        "trans": [
+            "远的"
+        ],
+        "usphone": "ˈdɪstənt",
+        "ukphone": "ˈdɪstənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/080_distant.mp3"
+    },
+    {
+        "name": "distinct",
+        "trans": [
+            "明显的"
+        ],
+        "usphone": "dɪˈstɪŋkt",
+        "ukphone": "dɪˈstɪŋkt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/081_distinct.mp3"
+    },
+    {
+        "name": "domestic",
+        "trans": [
+            "国内的，家里的，内部的"
+        ],
+        "usphone": "dəˈmestɪk",
+        "ukphone": "dəˈmestɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/082_domestic.mp3"
+    },
+    {
+        "name": "dominant",
+        "trans": [
+            "最主要的"
+        ],
+        "usphone": "ˈdɒmɪnənt",
+        "ukphone": "ˈdɒmɪnənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/083_dominant.mp3"
+    },
+    {
+        "name": "eastern",
+        "trans": [
+            "东方的，东部的"
+        ],
+        "usphone": "ˈiːstən",
+        "ukphone": "ˈiːstən",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/084_eastern.mp3"
+    },
+    {
+        "name": "economic",
+        "trans": [
+            "经济的"
+        ],
+        "usphone": "ˌiːkəˈnɒmɪk",
+        "ukphone": "ˌiːkəˈnɒmɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/085_economic.mp3"
+    },
+    {
+        "name": "educational",
+        "trans": [
+            "教育的"
+        ],
+        "usphone": "ˌedʒʊˈkeɪʃn̩əl",
+        "ukphone": "ˌedʒʊˈkeɪʃn̩əl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/086_educational.mp3"
+    },
+    {
+        "name": "effective",
+        "trans": [
+            "有效的"
+        ],
+        "usphone": "ɪˈfektɪv",
+        "ukphone": "ɪˈfektɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/087_effective.mp3"
+    },
+    {
+        "name": "efficient",
+        "trans": [
+            "有效率的"
+        ],
+        "usphone": "ɪˈfɪʃnt",
+        "ukphone": "ɪˈfɪʃnt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/088_efficient.mp3"
+    },
+    {
+        "name": "elementary",
+        "trans": [
+            "初级的"
+        ],
+        "usphone": "ˌelɪˈmentəri",
+        "ukphone": "ˌelɪˈmentəri",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/089_elementary.mp3"
+    },
+    {
+        "name": "empty",
+        "trans": [
+            "空的"
+        ],
+        "usphone": "ˈempti",
+        "ukphone": "ˈempti",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/090_empty.mp3"
+    },
+    {
+        "name": "enormous",
+        "trans": [
+            "广泛的，大的"
+        ],
+        "usphone": "ɪˈnɔːməs",
+        "ukphone": "ɪˈnɔːməs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/091_enormous.mp3"
+    },
+    {
+        "name": "enthusiastic",
+        "trans": [
+            "热情的"
+        ],
+        "usphone": "ɪnˌθjuːzɪˈæstɪk",
+        "ukphone": "ɪnˌθjuːzɪˈæstɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/092_enthusiastic.mp3"
+    },
+    {
+        "name": "environmental",
+        "trans": [
+            "环境的"
+        ],
+        "usphone": "ɪnˌvaɪərənˈmentl̩",
+        "ukphone": "ɪnˌvaɪərənˈmentl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/093_environmental.mp3"
+    },
+    {
+        "name": "essential",
+        "trans": [
+            "基本的"
+        ],
+        "usphone": "ɪˈsenʃl̩",
+        "ukphone": "ɪˈsenʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/094_essential.mp3"
+    },
+    {
+        "name": "excited",
+        "trans": [
+            "兴奋的"
+        ],
+        "usphone": "ɪkˈsaɪtɪd",
+        "ukphone": "ɪkˈsaɪtɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/095_excited.mp3"
+    },
+    {
+        "name": "exciting",
+        "trans": [
+            "令人兴奋的"
+        ],
+        "usphone": "ɪkˈsaɪtɪŋ",
+        "ukphone": "ɪkˈsaɪtɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/096_exciting.mp3"
+    },
+    {
+        "name": "existent",
+        "trans": [
+            "存在的"
+        ],
+        "usphone": "ɪɡˈzɪstənt",
+        "ukphone": "ɪɡˈzɪstənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/097_existent.mp3"
+    },
+    {
+        "name": "expensive",
+        "trans": [
+            "昂贵的"
+        ],
+        "usphone": "ɪkˈspensɪv",
+        "ukphone": "ɪkˈspensɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/098_expensive.mp3"
+    },
+    {
+        "name": "experienced",
+        "trans": [
+            "有经验的"
+        ],
+        "usphone": "ɪkˈspɪərɪənst",
+        "ukphone": "ɪkˈspɪərɪənst",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/099_experienced.mp3"
+    },
+    {
+        "name": "experimental",
+        "trans": [
+            "实验的"
+        ],
+        "usphone": "ɪkˌsperɪˈmentl̩",
+        "ukphone": "ɪkˌsperɪˈmentl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/100_experimental.mp3"
+    },
+    {
+        "name": "extensive",
+        "trans": [
+            "广泛的"
+        ],
+        "usphone": "ɪkˈstensɪv",
+        "ukphone": "ɪkˈstensɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/101_extensive.mp3"
+    },
+    {
+        "name": "extra",
+        "trans": [
+            "额外的"
+        ],
+        "usphone": "ˈekstrə",
+        "ukphone": "ˈekstrə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/102_extra.mp3"
+    },
+    {
+        "name": "fair",
+        "trans": [
+            "美丽的，公平的"
+        ],
+        "usphone": "feə",
+        "ukphone": "feə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/103_fair.mp3"
+    },
+    {
+        "name": "fake",
+        "trans": [
+            "假的，伪造的"
+        ],
+        "usphone": "feɪk",
+        "ukphone": "feɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-01/104_fake.mp3"
+    },
+    {
+        "name": "famed",
+        "trans": [
+            "著名的"
+        ],
+        "usphone": "feɪmd",
+        "ukphone": "feɪmd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/001_famed.mp3"
+    },
+    {
+        "name": "familiar",
+        "trans": [
+            "熟悉的"
+        ],
+        "usphone": "fəˈmɪlɪə",
+        "ukphone": "fəˈmɪlɪə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/002_familiar.mp3"
+    },
+    {
+        "name": "famous",
+        "trans": [
+            "著名的"
+        ],
+        "usphone": "ˈfeɪməs",
+        "ukphone": "ˈfeɪməs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/003_famous.mp3"
+    },
+    {
+        "name": "fancy",
+        "trans": [
+            "奇怪的"
+        ],
+        "usphone": "ˈfænsi",
+        "ukphone": "ˈfænsi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/004_fancy.mp3"
+    },
+    {
+        "name": "fashionable",
+        "trans": [
+            "流行的，时髦的"
+        ],
+        "usphone": "ˈfæʃnəbl̩",
+        "ukphone": "ˈfæʃnəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/005_fashionable.mp3"
+    },
+    {
+        "name": "favourite",
+        "trans": [
+            "最喜爱的"
+        ],
+        "usphone": "ˈfeɪvərɪt",
+        "ukphone": "ˈfeɪvərɪt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/006_favourite.mp3"
+    },
+    {
+        "name": "final",
+        "trans": [
+            "最后的"
+        ],
+        "usphone": "ˈfaɪnl̩",
+        "ukphone": "ˈfaɪnl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/007_final.mp3"
+    },
+    {
+        "name": "financial",
+        "trans": [
+            "金融的"
+        ],
+        "usphone": "faɪˈnænʃl̩",
+        "ukphone": "faɪˈnænʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/008_financial.mp3"
+    },
+    {
+        "name": "fine",
+        "trans": [
+            "好的"
+        ],
+        "usphone": "faɪn",
+        "ukphone": "faɪn",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/009_fine.mp3"
+    },
+    {
+        "name": "firm",
+        "trans": [
+            "坚实的"
+        ],
+        "usphone": "fɜːm",
+        "ukphone": "fɜːm",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/010_firm.mp3"
+    },
+    {
+        "name": "flexible",
+        "trans": [
+            "灵活的"
+        ],
+        "usphone": "ˈfleksəbl̩",
+        "ukphone": "ˈfleksəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/011_flexible.mp3"
+    },
+    {
+        "name": "foreign",
+        "trans": [
+            "国外的"
+        ],
+        "usphone": "ˈfɒrən",
+        "ukphone": "ˈfɒrən",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/012_foreign.mp3"
+    },
+    {
+        "name": "formal",
+        "trans": [
+            "正式的"
+        ],
+        "usphone": "ˈfɔːml̩",
+        "ukphone": "ˈfɔːml̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/013_formal.mp3"
+    },
+    {
+        "name": "former",
+        "trans": [
+            "以前的"
+        ],
+        "usphone": "ˈfɔːmə",
+        "ukphone": "ˈfɔːmə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/014_former.mp3"
+    },
+    {
+        "name": "free",
+        "trans": [
+            "自由的"
+        ],
+        "usphone": "friː",
+        "ukphone": "friː",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/015_free.mp3"
+    },
+    {
+        "name": "frequent",
+        "trans": [
+            "经常的，频繁的"
+        ],
+        "usphone": "frɪˈkwent",
+        "ukphone": "frɪˈkwent",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/016_frequent.mp3"
+    },
+    {
+        "name": "fundamental",
+        "trans": [
+            "基本的，基础的"
+        ],
+        "usphone": "ˌfʌndəˈmentl̩",
+        "ukphone": "ˌfʌndəˈmentl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/017_fundamental.mp3"
+    },
+    {
+        "name": "further",
+        "trans": [
+            "进一步的"
+        ],
+        "usphone": "ˈfɜːðə",
+        "ukphone": "ˈfɜːðə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/018_further.mp3"
+    },
+    {
+        "name": "general",
+        "trans": [
+            "普通的，笼统的"
+        ],
+        "usphone": "ˈdʒenr̩əl",
+        "ukphone": "ˈdʒenr̩əl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/019_general.mp3"
+    },
+    {
+        "name": "genetic",
+        "trans": [
+            "遗传的"
+        ],
+        "usphone": "dʒɪˈnetɪk",
+        "ukphone": "dʒɪˈnetɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/020_genetic.mp3"
+    },
+    {
+        "name": "geographical",
+        "trans": [
+            "地理学的"
+        ],
+        "usphone": "ˌdʒɪəˈɡræfɪkl̩",
+        "ukphone": "ˌdʒɪəˈɡræfɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/021_geographical.mp3"
+    },
+    {
+        "name": "global",
+        "trans": [
+            "全球的，整体的"
+        ],
+        "usphone": "ˈɡləʊbl̩",
+        "ukphone": "ˈɡləʊbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/022_global.mp3"
+    },
+    {
+        "name": "handy",
+        "trans": [
+            "方便的"
+        ],
+        "usphone": "ˈhændi",
+        "ukphone": "ˈhændi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/023_handy.mp3"
+    },
+    {
+        "name": "harmful",
+        "trans": [
+            "有害的"
+        ],
+        "usphone": "ˈhɑːmfəl",
+        "ukphone": "ˈhɑːmfəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/024_harmful.mp3"
+    },
+    {
+        "name": "hazardous",
+        "trans": [
+            "冒险的，危险的"
+        ],
+        "usphone": "ˈhæzədəs",
+        "ukphone": "ˈhæzədəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/025_hazardous.mp3"
+    },
+    {
+        "name": "healthy",
+        "trans": [
+            "健康的"
+        ],
+        "usphone": "ˈhelθi",
+        "ukphone": "ˈhelθi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/026_healthy.mp3"
+    },
+    {
+        "name": "heavier",
+        "trans": [
+            "更沉重的"
+        ],
+        "usphone": "ˈhevɪə",
+        "ukphone": "ˈhevɪə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/027_heavier.mp3"
+    },
+    {
+        "name": "heavy",
+        "trans": [
+            "重的"
+        ],
+        "usphone": "ˈhevi",
+        "ukphone": "ˈhevi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/028_heavy.mp3"
+    },
+    {
+        "name": "helpful",
+        "trans": [
+            "有用的"
+        ],
+        "usphone": "ˈhelpfəl",
+        "ukphone": "ˈhelpfəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/029_helpful.mp3"
+    },
+    {
+        "name": "herbivorous",
+        "trans": [
+            "食草的"
+        ],
+        "usphone": "hɜːˈbɪvərəs",
+        "ukphone": "hɜːˈbɪvərəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/030_herbivorous.mp3"
+    },
+    {
+        "name": "higher",
+        "trans": [
+            "更高的"
+        ],
+        "usphone": "ˈhaɪə",
+        "ukphone": "ˈhaɪə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/031_higher.mp3"
+    },
+    {
+        "name": "highly-trained",
+        "trans": [
+            "高度训练的"
+        ],
+        "usphone": "<highly-trained>",
+        "ukphone": "<highly-trained>",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/032_highly-trained.mp3"
+    },
+    {
+        "name": "historical",
+        "trans": [
+            "历史的"
+        ],
+        "usphone": "hɪˈstɒrɪkl̩",
+        "ukphone": "hɪˈstɒrɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/033_historical.mp3"
+    },
+    {
+        "name": "least",
+        "trans": [
+            "最少的，最小的"
+        ],
+        "usphone": "liːst",
+        "ukphone": "liːst",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/034_least.mp3"
+    },
+    {
+        "name": "ill",
+        "trans": [
+            "生病的"
+        ],
+        "usphone": "ɪl",
+        "ukphone": "ɪl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/035_ill.mp3"
+    },
+    {
+        "name": "illegal",
+        "trans": [
+            "非法的"
+        ],
+        "usphone": "ɪˈliːɡl̩",
+        "ukphone": "ɪˈliːɡl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/036_illegal.mp3"
+    },
+    {
+        "name": "immune",
+        "trans": [
+            "免疫的"
+        ],
+        "usphone": "ɪˈmjuːn",
+        "ukphone": "ɪˈmjuːn",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/037_immune.mp3"
+    },
+    {
+        "name": "important",
+        "trans": [
+            "重要的"
+        ],
+        "usphone": "ɪmˈpɔːtnt",
+        "ukphone": "ɪmˈpɔːtnt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/038_important.mp3"
+    },
+    {
+        "name": "impossible",
+        "trans": [
+            "不可能的"
+        ],
+        "usphone": "ɪmˈpɒsəbl̩",
+        "ukphone": "ɪmˈpɒsəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/039_impossible.mp3"
+    },
+    {
+        "name": "inaccurate",
+        "trans": [
+            "不准确的"
+        ],
+        "usphone": "ɪnˈækjʊrət",
+        "ukphone": "ɪnˈækjʊrət",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/040_inaccurate.mp3"
+    },
+    {
+        "name": "inadequate",
+        "trans": [
+            "不足的"
+        ],
+        "usphone": "ɪnˈædɪkwət",
+        "ukphone": "ɪnˈædɪkwət",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/041_inadequate.mp3"
+    },
+    {
+        "name": "individual",
+        "trans": [
+            "个人的"
+        ],
+        "usphone": "ˌɪndɪˈvɪdʒʊəl",
+        "ukphone": "ˌɪndɪˈvɪdʒʊəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/042_individual.mp3"
+    },
+    {
+        "name": "industrial",
+        "trans": [
+            "工业的"
+        ],
+        "usphone": "ɪnˈdʌstrɪəl",
+        "ukphone": "ɪnˈdʌstrɪəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/043_industrial.mp3"
+    },
+    {
+        "name": "informative",
+        "trans": [
+            "通知的，有信息的"
+        ],
+        "usphone": "ɪnˈfɔːmətɪv",
+        "ukphone": "ɪnˈfɔːmətɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/044_informative.mp3"
+    },
+    {
+        "name": "initial",
+        "trans": [
+            "最初的"
+        ],
+        "usphone": "ɪˈnɪʃl̩",
+        "ukphone": "ɪˈnɪʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/045_initial.mp3"
+    },
+    {
+        "name": "inspiring",
+        "trans": [
+            "鼓舞人心的"
+        ],
+        "usphone": "ɪnˈspaɪərɪŋ",
+        "ukphone": "ɪnˈspaɪərɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/046_inspiring.mp3"
+    },
+    {
+        "name": "intact",
+        "trans": [
+            "完好无损的"
+        ],
+        "usphone": "ɪnˈtækt",
+        "ukphone": "ɪnˈtækt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/047_intact.mp3"
+    },
+    {
+        "name": "intelligent",
+        "trans": [
+            "智力的"
+        ],
+        "usphone": "ɪnˈtelɪdʒənt",
+        "ukphone": "ɪnˈtelɪdʒənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/048_intelligent.mp3"
+    },
+    {
+        "name": "intensive",
+        "trans": [
+            "强化的"
+        ],
+        "usphone": "ɪnˈtensɪv",
+        "ukphone": "ɪnˈtensɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/049_intensive.mp3"
+    },
+    {
+        "name": "interesting",
+        "trans": [
+            "有趣的"
+        ],
+        "usphone": "ˈɪntrəstɪŋ",
+        "ukphone": "ˈɪntrəstɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/050_interesting.mp3"
+    },
+    {
+        "name": "intermediate",
+        "trans": [
+            "中级的"
+        ],
+        "usphone": "ˌɪntəˈmiːdɪət",
+        "ukphone": "ˌɪntəˈmiːdɪət",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/051_intermediate.mp3"
+    },
+    {
+        "name": "internal",
+        "trans": [
+            "内部的"
+        ],
+        "usphone": "ɪnˈtɜːnl̩",
+        "ukphone": "ɪnˈtɜːnl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/052_internal.mp3"
+    },
+    {
+        "name": "international",
+        "trans": [
+            "国际的"
+        ],
+        "usphone": "ˌɪntəˈnæʃn̩əl",
+        "ukphone": "ˌɪntəˈnæʃn̩əl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/053_international.mp3"
+    },
+    {
+        "name": "irregular",
+        "trans": [
+            "不规则的"
+        ],
+        "usphone": "ɪˈreɡjʊlə",
+        "ukphone": "ɪˈreɡjʊlə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/054_irregular.mp3"
+    },
+    {
+        "name": "irritable",
+        "trans": [
+            "易怒的"
+        ],
+        "usphone": "ˈɪrɪtəbl̩",
+        "ukphone": "ˈɪrɪtəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/055_irritable.mp3"
+    },
+    {
+        "name": "isolated",
+        "trans": [
+            "与世隔绝的"
+        ],
+        "usphone": "ˈaɪsəleɪtɪd",
+        "ukphone": "ˈaɪsəleɪtɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/056_isolated.mp3"
+    },
+    {
+        "name": "key",
+        "trans": [
+            "重点的，关键的"
+        ],
+        "usphone": "kiː",
+        "ukphone": "kiː",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/057_key.mp3"
+    },
+    {
+        "name": "latest",
+        "trans": [
+            "最新的"
+        ],
+        "usphone": "ˈleɪtɪst",
+        "ukphone": "ˈleɪtɪst",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/058_latest.mp3"
+    },
+    {
+        "name": "legal",
+        "trans": [
+            "合法的"
+        ],
+        "usphone": "ˈliːɡl̩",
+        "ukphone": "ˈliːɡl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/059_legal.mp3"
+    },
+    {
+        "name": "little-known",
+        "trans": [
+            "不知名的，无名的"
+        ],
+        "usphone": "<little-known>",
+        "ukphone": "<little-known>",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/060_little-known.mp3"
+    },
+    {
+        "name": "loyal",
+        "trans": [
+            "忠诚的"
+        ],
+        "usphone": "ˈlɔɪəl",
+        "ukphone": "ˈlɔɪəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/061_loyal.mp3"
+    },
+    {
+        "name": "magic",
+        "trans": [
+            "魔术的"
+        ],
+        "usphone": "ˈmædʒɪk",
+        "ukphone": "ˈmædʒɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/062_magic.mp3"
+    },
+    {
+        "name": "magical",
+        "trans": [
+            "难以想象的，不可思议的"
+        ],
+        "usphone": "ˈmædʒɪkl̩",
+        "ukphone": "ˈmædʒɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/063_magical.mp3"
+    },
+    {
+        "name": "magnificent",
+        "trans": [
+            "华丽的"
+        ],
+        "usphone": "mæɡˈnɪfɪsnt",
+        "ukphone": "mæɡˈnɪfɪsnt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/064_magnificent.mp3"
+    },
+    {
+        "name": "major",
+        "trans": [
+            "主要的"
+        ],
+        "usphone": "ˈmeɪdʒə",
+        "ukphone": "ˈmeɪdʒə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/065_major.mp3"
+    },
+    {
+        "name": "martial",
+        "trans": [
+            "武术的"
+        ],
+        "usphone": "ˈmɑːʃl̩",
+        "ukphone": "ˈmɑːʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/066_martial.mp3"
+    },
+    {
+        "name": "mature",
+        "trans": [
+            "成熟的"
+        ],
+        "usphone": "məˈtjʊə",
+        "ukphone": "məˈtjʊə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/067_mature.mp3"
+    },
+    {
+        "name": "medical",
+        "trans": [
+            "医疗的"
+        ],
+        "usphone": "ˈmedɪkl̩",
+        "ukphone": "ˈmedɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/068_medical.mp3"
+    },
+    {
+        "name": "mental",
+        "trans": [
+            "精神的"
+        ],
+        "usphone": "ˈmentl̩",
+        "ukphone": "ˈmentl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/069_mental.mp3"
+    },
+    {
+        "name": "mid",
+        "trans": [
+            "中间的"
+        ],
+        "usphone": "mɪd",
+        "ukphone": "mɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/070_mid.mp3"
+    },
+    {
+        "name": "migratory",
+        "trans": [
+            "迁移的"
+        ],
+        "usphone": "ˈmaɪɡrətr̩i",
+        "ukphone": "ˈmaɪɡrətr̩i",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/071_migratory.mp3"
+    },
+    {
+        "name": "military",
+        "trans": [
+            "军人的，军队的"
+        ],
+        "usphone": "ˈmɪlɪtri",
+        "ukphone": "ˈmɪlɪtri",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/072_military.mp3"
+    },
+    {
+        "name": "miserable",
+        "trans": [
+            "痛苦的"
+        ],
+        "usphone": "ˈmɪzrəbl̩",
+        "ukphone": "ˈmɪzrəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/073_miserable.mp3"
+    },
+    {
+        "name": "mobile",
+        "trans": [
+            "运动的"
+        ],
+        "usphone": "ˈməʊbaɪl",
+        "ukphone": "ˈməʊbaɪl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/074_mobile.mp3"
+    },
+    {
+        "name": "moderate",
+        "trans": [
+            "中度的"
+        ],
+        "usphone": "ˈmɒdəreɪt",
+        "ukphone": "ˈmɒdəreɪt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/075_moderate.mp3"
+    },
+    {
+        "name": "modern",
+        "trans": [
+            "现代的"
+        ],
+        "usphone": "ˈmɒdn̩",
+        "ukphone": "ˈmɒdn̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/076_modern.mp3"
+    },
+    {
+        "name": "musical",
+        "trans": [
+            "音乐的"
+        ],
+        "usphone": "ˈmjuːzɪkl̩",
+        "ukphone": "ˈmjuːzɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/077_musical.mp3"
+    },
+    {
+        "name": "natural",
+        "trans": [
+            "自然的"
+        ],
+        "usphone": "ˈnætʃrəl",
+        "ukphone": "ˈnætʃrəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/078_natural.mp3"
+    },
+    {
+        "name": "negative",
+        "trans": [
+            "消极的"
+        ],
+        "usphone": "ˈneɡətɪv",
+        "ukphone": "ˈneɡətɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/079_negative.mp3"
+    },
+    {
+        "name": "neighbouring",
+        "trans": [
+            "附近的，临近的"
+        ],
+        "usphone": "ˈneɪbərɪŋ",
+        "ukphone": "ˈneɪbərɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/080_neighbouring.mp3"
+    },
+    {
+        "name": "nervous",
+        "trans": [
+            "紧张的"
+        ],
+        "usphone": "ˈnɜːvəs",
+        "ukphone": "ˈnɜːvəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/081_nervous.mp3"
+    },
+    {
+        "name": "noble",
+        "trans": [
+            "高尚的，贵族的"
+        ],
+        "usphone": "ˈnəʊbl̩",
+        "ukphone": "ˈnəʊbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/082_noble.mp3"
+    },
+    {
+        "name": "noisy",
+        "trans": [
+            "嘈杂的"
+        ],
+        "usphone": "ˈnɔɪzi",
+        "ukphone": "ˈnɔɪzi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/083_noisy.mp3"
+    },
+    {
+        "name": "non-active",
+        "trans": [
+            "不活跃的"
+        ],
+        "usphone": "<non-active>",
+        "ukphone": "<non-active>",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/084_non-active.mp3"
+    },
+    {
+        "name": "normal",
+        "trans": [
+            "正常的"
+        ],
+        "usphone": "ˈnɔːml̩",
+        "ukphone": "ˈnɔːml̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/085_normal.mp3"
+    },
+    {
+        "name": "northern",
+        "trans": [
+            "北方的"
+        ],
+        "usphone": "ˈnɔːðən",
+        "ukphone": "ˈnɔːðən",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/086_northern.mp3"
+    },
+    {
+        "name": "objective",
+        "trans": [
+            "客观的"
+        ],
+        "usphone": "əbˈdʒektɪv",
+        "ukphone": "əbˈdʒektɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/087_objective.mp3"
+    },
+    {
+        "name": "occupational",
+        "trans": [
+            "职业的"
+        ],
+        "usphone": "ˌɒkjʊˈpeɪʃnəl",
+        "ukphone": "ˌɒkjʊˈpeɪʃnəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/088_occupational.mp3"
+    },
+    {
+        "name": "Olympic",
+        "trans": [
+            "奥运会的"
+        ],
+        "usphone": "əˈlɪmpɪk",
+        "ukphone": "əˈlɪmpɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/089_olympic.mp3"
+    },
+    {
+        "name": "optic",
+        "trans": [
+            "光学的"
+        ],
+        "usphone": "ˈɒptɪk",
+        "ukphone": "ˈɒptɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/090_optic.mp3"
+    },
+    {
+        "name": "optional",
+        "trans": [
+            "可选择的"
+        ],
+        "usphone": "ˈɒpʃnəl",
+        "ukphone": "ˈɒpʃnəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/091_optional.mp3"
+    },
+    {
+        "name": "oral",
+        "trans": [
+            "口语的"
+        ],
+        "usphone": "ˈɔːrəl",
+        "ukphone": "ˈɔːrəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/092_oral.mp3"
+    },
+    {
+        "name": "organic",
+        "trans": [
+            "有机的"
+        ],
+        "usphone": "ɔːˈɡænɪk",
+        "ukphone": "ɔːˈɡænɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/093_organic.mp3"
+    },
+    {
+        "name": "overall",
+        "trans": [
+            "整个的"
+        ],
+        "usphone": "ˌəʊvəˈrɔːl",
+        "ukphone": "ˌəʊvəˈrɔːl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/094_overall.mp3"
+    },
+    {
+        "name": "overhead",
+        "trans": [
+            "头上的"
+        ],
+        "usphone": "ˌəʊvəˈhed",
+        "ukphone": "ˌəʊvəˈhed",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/095_overhead.mp3"
+    },
+    {
+        "name": "overseas",
+        "trans": [
+            "海外的"
+        ],
+        "usphone": "ˌəʊvəˈsiːz",
+        "ukphone": "ˌəʊvəˈsiːz",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/096_overseas.mp3"
+    },
+    {
+        "name": "parental",
+        "trans": [
+            "父母的"
+        ],
+        "usphone": "pəˈrentl̩",
+        "ukphone": "pəˈrentl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/097_parental.mp3"
+    },
+    {
+        "name": "payable",
+        "trans": [
+            "可支付的"
+        ],
+        "usphone": "ˈpeɪəbl̩",
+        "ukphone": "ˈpeɪəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/098_payable.mp3"
+    },
+    {
+        "name": "perfect",
+        "trans": [
+            "完美的"
+        ],
+        "usphone": "pəˈfekt",
+        "ukphone": "pəˈfekt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/099_perfect.mp3"
+    },
+    {
+        "name": "personal",
+        "trans": [
+            "个人的"
+        ],
+        "usphone": "ˈpɜːsənl̩",
+        "ukphone": "ˈpɜːsənl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/100_personal.mp3"
+    },
+    {
+        "name": "physical",
+        "trans": [
+            "肉体的，身体的"
+        ],
+        "usphone": "ˈfɪzɪkl̩",
+        "ukphone": "ˈfɪzɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/101_physical.mp3"
+    },
+    {
+        "name": "pleasant",
+        "trans": [
+            "愉快的"
+        ],
+        "usphone": "ˈpleznt",
+        "ukphone": "ˈpleznt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/102_pleasant.mp3"
+    },
+    {
+        "name": "political",
+        "trans": [
+            "政治的"
+        ],
+        "usphone": "pəˈlɪtɪkl̩",
+        "ukphone": "pəˈlɪtɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/103_political.mp3"
+    },
+    {
+        "name": "pop",
+        "trans": [
+            "流行的"
+        ],
+        "usphone": "pɒp",
+        "ukphone": "pɒp",
+        "ukAudio": "/audio/wang-c4-audio/unit4-02/104_pop.mp3"
+    },
+    {
+        "name": "popular",
+        "trans": [
+            "时髦的"
+        ],
+        "usphone": "ˈpɒpjʊlə",
+        "ukphone": "ˈpɒpjʊlə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/001_popular.mp3"
+    },
+    {
+        "name": "positive",
+        "trans": [
+            "积极的"
+        ],
+        "usphone": "ˈpɒzətɪv",
+        "ukphone": "ˈpɒzətɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/002_positive.mp3"
+    },
+    {
+        "name": "possible",
+        "trans": [
+            "可能的"
+        ],
+        "usphone": "ˈpɒsəbl̩",
+        "ukphone": "ˈpɒsəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/003_possible.mp3"
+    },
+    {
+        "name": "potential",
+        "trans": [
+            "潜在的"
+        ],
+        "usphone": "pəˈtenʃl̩",
+        "ukphone": "pəˈtenʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/004_potential.mp3"
+    },
+    {
+        "name": "practical",
+        "trans": [
+            "实际的"
+        ],
+        "usphone": "ˈpræktɪkl̩",
+        "ukphone": "ˈpræktɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/005_practical.mp3"
+    },
+    {
+        "name": "precious",
+        "trans": [
+            "珍贵的"
+        ],
+        "usphone": "ˈpreʃəs",
+        "ukphone": "ˈpreʃəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/006_precious.mp3"
+    },
+    {
+        "name": "predictable",
+        "trans": [
+            "可预言的"
+        ],
+        "usphone": "prɪˈdɪktəbl̩",
+        "ukphone": "prɪˈdɪktəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/007_predictable.mp3"
+    },
+    {
+        "name": "present",
+        "trans": [
+            "目前的"
+        ],
+        "usphone": "prɪˈzent",
+        "ukphone": "prɪˈzent",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/008_present.mp3"
+    },
+    {
+        "name": "previous",
+        "trans": [
+            "以前的，原来的"
+        ],
+        "usphone": "ˈpriːvɪəs",
+        "ukphone": "ˈpriːvɪəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/009_previous.mp3"
+    },
+    {
+        "name": "printed",
+        "trans": [
+            "打印出来的"
+        ],
+        "usphone": "ˈprɪntɪd",
+        "ukphone": "ˈprɪntɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/010_printed.mp3"
+    },
+    {
+        "name": "private",
+        "trans": [
+            "私人的"
+        ],
+        "usphone": "ˈpraɪvɪt",
+        "ukphone": "ˈpraɪvɪt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/011_private.mp3"
+    },
+    {
+        "name": "professional",
+        "trans": [
+            "专业的"
+        ],
+        "usphone": "prəˈfeʃnəl",
+        "ukphone": "prəˈfeʃnəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/012_professional.mp3"
+    },
+    {
+        "name": "promising",
+        "trans": [
+            "有前途的"
+        ],
+        "usphone": "ˈprɒmɪsɪŋ",
+        "ukphone": "ˈprɒmɪsɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/013_promising.mp3"
+    },
+    {
+        "name": "psychiatric",
+        "trans": [
+            "精神病的"
+        ],
+        "usphone": "ˌsaɪkɪˈætrɪk",
+        "ukphone": "ˌsaɪkɪˈætrɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/014_psychiatric.mp3"
+    },
+    {
+        "name": "psychological",
+        "trans": [
+            "心理的"
+        ],
+        "usphone": "ˌsaɪkəˈlɒdʒɪkl̩",
+        "ukphone": "ˌsaɪkəˈlɒdʒɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/015_psychological.mp3"
+    },
+    {
+        "name": "public",
+        "trans": [
+            "公共的"
+        ],
+        "usphone": "ˈpʌblɪk",
+        "ukphone": "ˈpʌblɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/016_public.mp3"
+    },
+    {
+        "name": "pure",
+        "trans": [
+            "纯洁的"
+        ],
+        "usphone": "pjʊə",
+        "ukphone": "pjʊə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/017_pure.mp3"
+    },
+    {
+        "name": "purest",
+        "trans": [
+            "最纯净的"
+        ],
+        "usphone": "ˈpjʊərɪst",
+        "ukphone": "ˈpjʊərɪst",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/018_purest.mp3"
+    },
+    {
+        "name": "Queen's",
+        "trans": [
+            "女王的"
+        ],
+        "usphone": "ˈkwiːnz",
+        "ukphone": "ˈkwiːnz",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/019_queen-s.mp3"
+    },
+    {
+        "name": "random",
+        "trans": [
+            "随机的"
+        ],
+        "usphone": "ˈrændəm",
+        "ukphone": "ˈrændəm",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/020_random.mp3"
+    },
+    {
+        "name": "rapid",
+        "trans": [
+            "快速的"
+        ],
+        "usphone": "ˈræpɪd",
+        "ukphone": "ˈræpɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/021_rapid.mp3"
+    },
+    {
+        "name": "rare",
+        "trans": [
+            "罕见的"
+        ],
+        "usphone": "reə",
+        "ukphone": "reə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/022_rare.mp3"
+    },
+    {
+        "name": "raw",
+        "trans": [
+            "生的"
+        ],
+        "usphone": "rɔː",
+        "ukphone": "rɔː",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/023_raw.mp3"
+    },
+    {
+        "name": "recycled",
+        "trans": [
+            "回收的"
+        ],
+        "usphone": "ˌriːˈsaɪkl̩d",
+        "ukphone": "ˌriːˈsaɪkl̩d",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/024_recycled.mp3"
+    },
+    {
+        "name": "redundant",
+        "trans": [
+            "多余的"
+        ],
+        "usphone": "rɪˈdʌndənt",
+        "ukphone": "rɪˈdʌndənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/025_redundant.mp3"
+    },
+    {
+        "name": "regional",
+        "trans": [
+            "局域的"
+        ],
+        "usphone": "ˈriːdʒənl̩",
+        "ukphone": "ˈriːdʒənl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/026_regional.mp3"
+    },
+    {
+        "name": "regular",
+        "trans": [
+            "定期的，规律的"
+        ],
+        "usphone": "ˈreɡjʊlə",
+        "ukphone": "ˈreɡjʊlə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/027_regular.mp3"
+    },
+    {
+        "name": "reinforced",
+        "trans": [
+            "加强的"
+        ],
+        "usphone": "ˌriːɪnˈfɔːst",
+        "ukphone": "ˌriːɪnˈfɔːst",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/028_reinforced.mp3"
+    },
+    {
+        "name": "related",
+        "trans": [
+            "相关的"
+        ],
+        "usphone": "rɪˈleɪtɪd",
+        "ukphone": "rɪˈleɪtɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/029_related.mp3"
+    },
+    {
+        "name": "relevant",
+        "trans": [
+            "相关的"
+        ],
+        "usphone": "ˈreləvənt",
+        "ukphone": "ˈreləvənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/030_relevant.mp3"
+    },
+    {
+        "name": "reliable",
+        "trans": [
+            "可信赖的，可靠的，可依赖的"
+        ],
+        "usphone": "rɪˈlaɪəbl̩",
+        "ukphone": "rɪˈlaɪəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/031_reliable.mp3"
+    },
+    {
+        "name": "remote",
+        "trans": [
+            "远的"
+        ],
+        "usphone": "rɪˈməʊt",
+        "ukphone": "rɪˈməʊt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/032_remote.mp3"
+    },
+    {
+        "name": "resistant",
+        "trans": [
+            "抵抗的"
+        ],
+        "usphone": "rɪˈzɪstənt",
+        "ukphone": "rɪˈzɪstənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/033_resistant.mp3"
+    },
+    {
+        "name": "reverse",
+        "trans": [
+            "相反的"
+        ],
+        "usphone": "rɪˈvɜːs",
+        "ukphone": "rɪˈvɜːs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/034_reverse.mp3"
+    },
+    {
+        "name": "rising",
+        "trans": [
+            "上升的"
+        ],
+        "usphone": "ˈraɪzɪŋ",
+        "ukphone": "ˈraɪzɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/035_rising.mp3"
+    },
+    {
+        "name": "royal",
+        "trans": [
+            "皇家的"
+        ],
+        "usphone": "ˈrɔɪəl",
+        "ukphone": "ˈrɔɪəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/036_royal.mp3"
+    },
+    {
+        "name": "rural",
+        "trans": [
+            "乡下的"
+        ],
+        "usphone": "ˈrʊərəl",
+        "ukphone": "ˈrʊərəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/037_rural.mp3"
+    },
+    {
+        "name": "sacked",
+        "trans": [
+            "被解雇的"
+        ],
+        "usphone": "sækt",
+        "ukphone": "sækt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/038_sacked.mp3"
+    },
+    {
+        "name": "safe",
+        "trans": [
+            "安全的"
+        ],
+        "usphone": "seɪf",
+        "ukphone": "seɪf",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/039_safe.mp3"
+    },
+    {
+        "name": "satisfactory",
+        "trans": [
+            "满意的"
+        ],
+        "usphone": "ˌsætɪsˈfæktəri",
+        "ukphone": "ˌsætɪsˈfæktəri",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/040_satisfactory.mp3"
+    },
+    {
+        "name": "scarce",
+        "trans": [
+            "不足的"
+        ],
+        "usphone": "skeəs",
+        "ukphone": "skeəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/041_scarce.mp3"
+    },
+    {
+        "name": "scientific",
+        "trans": [
+            "科学的"
+        ],
+        "usphone": "ˌsaɪənˈtɪfɪk",
+        "ukphone": "ˌsaɪənˈtɪfɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/042_scientific.mp3"
+    },
+    {
+        "name": "seasonal",
+        "trans": [
+            "季节的"
+        ],
+        "usphone": "ˈsiːzənl̩",
+        "ukphone": "ˈsiːzənl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/043_seasonal.mp3"
+    },
+    {
+        "name": "seasoned",
+        "trans": [
+            "风干的"
+        ],
+        "usphone": "ˈsiːzn̩d",
+        "ukphone": "ˈsiːzn̩d",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/044_seasoned.mp3"
+    },
+    {
+        "name": "secondary",
+        "trans": [
+            "第二的"
+        ],
+        "usphone": "ˈsekəndri",
+        "ukphone": "ˈsekəndri",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/045_secondary.mp3"
+    },
+    {
+        "name": "second-hand",
+        "trans": [
+            "二手的"
+        ],
+        "usphone": "ˈsekənd hænd",
+        "ukphone": "ˈsekənd hænd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/046_second-hand.mp3"
+    },
+    {
+        "name": "self-funded",
+        "trans": [
+            "自给自足的"
+        ],
+        "usphone": "<self-funded>",
+        "ukphone": "<self-funded>",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/047_self-funded.mp3"
+    },
+    {
+        "name": "self-sufficient",
+        "trans": [
+            "自给自足的"
+        ],
+        "usphone": "self səˈfɪʃnt",
+        "ukphone": "self səˈfɪʃnt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/048_self-sufficient.mp3"
+    },
+    {
+        "name": "senior",
+        "trans": [
+            "高级的"
+        ],
+        "usphone": "ˈsiːnɪə",
+        "ukphone": "ˈsiːnɪə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/049_senior.mp3"
+    },
+    {
+        "name": "sensible",
+        "trans": [
+            "明智的"
+        ],
+        "usphone": "ˈsensəbl̩",
+        "ukphone": "ˈsensəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/050_sensible.mp3"
+    },
+    {
+        "name": "serial",
+        "trans": [
+            "连续的"
+        ],
+        "usphone": "ˈsɪərɪəl",
+        "ukphone": "ˈsɪərɪəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/051_serial.mp3"
+    },
+    {
+        "name": "serious",
+        "trans": [
+            "严肃的"
+        ],
+        "usphone": "ˈsɪərɪəs",
+        "ukphone": "ˈsɪərɪəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/052_serious.mp3"
+    },
+    {
+        "name": "seven-screen",
+        "trans": [
+            "七个屏幕的"
+        ],
+        "usphone": "<seven-screen>",
+        "ukphone": "<seven-screen>",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/053_seven-screen.mp3"
+    },
+    {
+        "name": "several",
+        "trans": [
+            "几个"
+        ],
+        "usphone": "ˈsevrəl",
+        "ukphone": "ˈsevrəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/054_several.mp3"
+    },
+    {
+        "name": "shared",
+        "trans": [
+            "共享的"
+        ],
+        "usphone": "ʃeəd",
+        "ukphone": "ʃeəd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/055_shared.mp3"
+    },
+    {
+        "name": "sharp",
+        "trans": [
+            "锋利的，紧急的"
+        ],
+        "usphone": "ʃɑːp",
+        "ukphone": "ʃɑːp",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/056_sharp.mp3"
+    },
+    {
+        "name": "short",
+        "trans": [
+            "短的"
+        ],
+        "usphone": "ʃɔːt",
+        "ukphone": "ʃɔːt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/057_short.mp3"
+    },
+    {
+        "name": "sick",
+        "trans": [
+            "生病的"
+        ],
+        "usphone": "sɪk",
+        "ukphone": "sɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/058_sick.mp3"
+    },
+    {
+        "name": "silent",
+        "trans": [
+            "安静的"
+        ],
+        "usphone": "ˈsaɪlənt",
+        "ukphone": "ˈsaɪlənt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/059_silent.mp3"
+    },
+    {
+        "name": "silver",
+        "trans": [
+            "银的"
+        ],
+        "usphone": "ˈsɪlvə",
+        "ukphone": "ˈsɪlvə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/060_silver.mp3"
+    },
+    {
+        "name": "similar",
+        "trans": [
+            "相似的"
+        ],
+        "usphone": "ˈsɪmələ",
+        "ukphone": "ˈsɪmələ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/061_similar.mp3"
+    },
+    {
+        "name": "simple",
+        "trans": [
+            "简单的"
+        ],
+        "usphone": "ˈsɪmpl̩",
+        "ukphone": "ˈsɪmpl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/062_simple.mp3"
+    },
+    {
+        "name": "sleepy",
+        "trans": [
+            "想睡的"
+        ],
+        "usphone": "ˈsliːpi",
+        "ukphone": "ˈsliːpi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/063_sleepy.mp3"
+    },
+    {
+        "name": "slim",
+        "trans": [
+            "苗条的"
+        ],
+        "usphone": "slɪm",
+        "ukphone": "slɪm",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/064_slim.mp3"
+    },
+    {
+        "name": "smart",
+        "trans": [
+            "聪明的"
+        ],
+        "usphone": "smɑːt",
+        "ukphone": "smɑːt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/065_smart.mp3"
+    },
+    {
+        "name": "smelly",
+        "trans": [
+            "有臭味的"
+        ],
+        "usphone": "ˈsmeli",
+        "ukphone": "ˈsmeli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/066_smelly.mp3"
+    },
+    {
+        "name": "social",
+        "trans": [
+            "社会的"
+        ],
+        "usphone": "ˈsəʊʃl̩",
+        "ukphone": "ˈsəʊʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/067_social.mp3"
+    },
+    {
+        "name": "solar",
+        "trans": [
+            "太阳的"
+        ],
+        "usphone": "ˈsəʊlə",
+        "ukphone": "ˈsəʊlə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/068_solar.mp3"
+    },
+    {
+        "name": "soundproof",
+        "trans": [
+            "隔音的"
+        ],
+        "usphone": "ˈsaʊndpruːf",
+        "ukphone": "ˈsaʊndpruːf",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/069_soundproof.mp3"
+    },
+    {
+        "name": "southern",
+        "trans": [
+            "南方的"
+        ],
+        "usphone": "ˈsʌðən",
+        "ukphone": "ˈsʌðən",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/070_southern.mp3"
+    },
+    {
+        "name": "spacious",
+        "trans": [
+            "宽敞的，宽广的"
+        ],
+        "usphone": "ˈspeɪʃəs",
+        "ukphone": "ˈspeɪʃəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/071_spacious.mp3"
+    },
+    {
+        "name": "spare",
+        "trans": [
+            "多余的"
+        ],
+        "usphone": "speə",
+        "ukphone": "speə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/072_spare.mp3"
+    },
+    {
+        "name": "special",
+        "trans": [
+            "特别的"
+        ],
+        "usphone": "ˈspeʃl̩",
+        "ukphone": "ˈspeʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/073_special.mp3"
+    },
+    {
+        "name": "specialized",
+        "trans": [
+            "特别的，专门的"
+        ],
+        "usphone": "ˈspeʃəlaɪzd",
+        "ukphone": "ˈspeʃəlaɪzd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/074_specialized.mp3"
+    },
+    {
+        "name": "species",
+        "trans": [
+            "种类，物种"
+        ],
+        "usphone": "ˈspiːʃiːz",
+        "ukphone": "ˈspiːʃiːz",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/075_species.mp3"
+    },
+    {
+        "name": "specific",
+        "trans": [
+            "特别的"
+        ],
+        "usphone": "spəˈsɪfɪk",
+        "ukphone": "spəˈsɪfɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/076_specific.mp3"
+    },
+    {
+        "name": "spiral",
+        "trans": [
+            "螺旋的"
+        ],
+        "usphone": "ˈspaɪərəl",
+        "ukphone": "ˈspaɪərəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/077_spiral.mp3"
+    },
+    {
+        "name": "stable",
+        "trans": [
+            "稳定的"
+        ],
+        "usphone": "ˈsteɪbl̩",
+        "ukphone": "ˈsteɪbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/078_stable.mp3"
+    },
+    {
+        "name": "steady",
+        "trans": [
+            "稳定的"
+        ],
+        "usphone": "ˈstedi",
+        "ukphone": "ˈstedi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/079_steady.mp3"
+    },
+    {
+        "name": "stout",
+        "trans": [
+            "（形容人）结实，强壮"
+        ],
+        "usphone": "staʊt",
+        "ukphone": "staʊt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/080_stout.mp3"
+    },
+    {
+        "name": "strained",
+        "trans": [
+            "紧张的"
+        ],
+        "usphone": "streɪnd",
+        "ukphone": "streɪnd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/081_strained.mp3"
+    },
+    {
+        "name": "stressful",
+        "trans": [
+            "压力的"
+        ],
+        "usphone": "ˈstresfl̩",
+        "ukphone": "ˈstresfl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/082_stressful.mp3"
+    },
+    {
+        "name": "stretching",
+        "trans": [
+            "伸展的"
+        ],
+        "usphone": "ˈstretʃɪŋ",
+        "ukphone": "ˈstretʃɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/083_stretching.mp3"
+    },
+    {
+        "name": "strong",
+        "trans": [
+            "强壮的"
+        ],
+        "usphone": "strɒŋ",
+        "ukphone": "strɒŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/084_strong.mp3"
+    },
+    {
+        "name": "stronger",
+        "trans": [
+            "更强的"
+        ],
+        "usphone": "ˈstrɒŋɡə",
+        "ukphone": "ˈstrɒŋɡə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/085_stronger.mp3"
+    },
+    {
+        "name": "subjective",
+        "trans": [
+            "主观的"
+        ],
+        "usphone": "səbˈdʒektɪv",
+        "ukphone": "səbˈdʒektɪv",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/086_subjective.mp3"
+    },
+    {
+        "name": "successful",
+        "trans": [
+            "成功的"
+        ],
+        "usphone": "səkˈsesfəl",
+        "ukphone": "səkˈsesfəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/087_successful.mp3"
+    },
+    {
+        "name": "sufficient",
+        "trans": [
+            "充分的"
+        ],
+        "usphone": "səˈfɪʃnt",
+        "ukphone": "səˈfɪʃnt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/088_sufficient.mp3"
+    },
+    {
+        "name": "suitable",
+        "trans": [
+            "合适的"
+        ],
+        "usphone": "ˈsuːtəbl̩",
+        "ukphone": "ˈsuːtəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/089_suitable.mp3"
+    },
+    {
+        "name": "super",
+        "trans": [
+            "超级的"
+        ],
+        "usphone": "ˈsuːpə",
+        "ukphone": "ˈsuːpə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/090_super.mp3"
+    },
+    {
+        "name": "surprised",
+        "trans": [
+            "惊奇的"
+        ],
+        "usphone": "səˈpraɪzd",
+        "ukphone": "səˈpraɪzd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/091_surprised.mp3"
+    },
+    {
+        "name": "systematic",
+        "trans": [
+            "系统的"
+        ],
+        "usphone": "ˌsɪstəˈmætɪk",
+        "ukphone": "ˌsɪstəˈmætɪk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/092_systematic.mp3"
+    },
+    {
+        "name": "technical",
+        "trans": [
+            "科技的"
+        ],
+        "usphone": "ˈteknɪkl̩",
+        "ukphone": "ˈteknɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/093_technical.mp3"
+    },
+    {
+        "name": "theoretical",
+        "trans": [
+            "理论的"
+        ],
+        "usphone": "θɪəˈretɪkl̩",
+        "ukphone": "θɪəˈretɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/094_theoretical.mp3"
+    },
+    {
+        "name": "traditional",
+        "trans": [
+            "传统的"
+        ],
+        "usphone": "trəˈdɪʃn̩əl",
+        "ukphone": "trəˈdɪʃn̩əl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/095_traditional.mp3"
+    },
+    {
+        "name": "troublesome",
+        "trans": [
+            "带来麻烦的"
+        ],
+        "usphone": "ˈtrʌblsəm",
+        "ukphone": "ˈtrʌblsəm",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/096_troublesome.mp3"
+    },
+    {
+        "name": "typical",
+        "trans": [
+            "典型的"
+        ],
+        "usphone": "ˈtɪpɪkl̩",
+        "ukphone": "ˈtɪpɪkl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/097_typical.mp3"
+    },
+    {
+        "name": "unanimous",
+        "trans": [
+            "意见一致的"
+        ],
+        "usphone": "juːˈnænɪməs",
+        "ukphone": "juːˈnænɪməs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/098_unanimous.mp3"
+    },
+    {
+        "name": "uncomfortable",
+        "trans": [
+            "不舒服的"
+        ],
+        "usphone": "ʌnˈkʌmftəbl̩",
+        "ukphone": "ʌnˈkʌmftəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/099_uncomfortable.mp3"
+    },
+    {
+        "name": "unconvincing",
+        "trans": [
+            "没有说服力的"
+        ],
+        "usphone": "ˌʌnkənˈvɪnsɪŋ",
+        "ukphone": "ˌʌnkənˈvɪnsɪŋ",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/100_unconvincing.mp3"
+    },
+    {
+        "name": "underground",
+        "trans": [
+            "地下的"
+        ],
+        "usphone": "ˈʌndəɡraʊnd",
+        "ukphone": "ˈʌndəɡraʊnd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/101_underground.mp3"
+    },
+    {
+        "name": "unfair",
+        "trans": [
+            "不公平的"
+        ],
+        "usphone": "ˌʌnˈfeə",
+        "ukphone": "ˌʌnˈfeə",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/102_unfair.mp3"
+    },
+    {
+        "name": "unhealthy",
+        "trans": [
+            "不健康的"
+        ],
+        "usphone": "ʌnˈhelθi",
+        "ukphone": "ʌnˈhelθi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/103_unhealthy.mp3"
+    },
+    {
+        "name": "unique",
+        "trans": [
+            "独特的"
+        ],
+        "usphone": "juːˈniːk",
+        "ukphone": "juːˈniːk",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/104_unique.mp3"
+    },
+    {
+        "name": "united",
+        "trans": [
+            "联合的"
+        ],
+        "usphone": "juˈnaɪtɪd",
+        "ukphone": "juˈnaɪtɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/105_united.mp3"
+    },
+    {
+        "name": "unreliable",
+        "trans": [
+            "不可依赖的"
+        ],
+        "usphone": "ˌʌnrɪˈlaɪəbl̩",
+        "ukphone": "ˌʌnrɪˈlaɪəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/106_unreliable.mp3"
+    },
+    {
+        "name": "unsocial",
+        "trans": [
+            "不合群的"
+        ],
+        "usphone": "ʌnˈsəʊʃl̩",
+        "ukphone": "ʌnˈsəʊʃl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/107_unsocial.mp3"
+    },
+    {
+        "name": "unusual",
+        "trans": [
+            "非同寻常的"
+        ],
+        "usphone": "ʌnˈjuːʒʊəl",
+        "ukphone": "ʌnˈjuːʒʊəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/108_unusual.mp3"
+    },
+    {
+        "name": "useful",
+        "trans": [
+            "有用 的"
+        ],
+        "usphone": "ˈjuːsfəl",
+        "ukphone": "ˈjuːsfəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/109_useful.mp3"
+    },
+    {
+        "name": "useless",
+        "trans": [
+            "没用的"
+        ],
+        "usphone": "ˈjuːsləs",
+        "ukphone": "ˈjuːsləs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/110_useless.mp3"
+    },
+    {
+        "name": "usual",
+        "trans": [
+            "平常的，普通的"
+        ],
+        "usphone": "ˈjuːʒʊəl",
+        "ukphone": "ˈjuːʒʊəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/111_usual.mp3"
+    },
+    {
+        "name": "various",
+        "trans": [
+            "各种的"
+        ],
+        "usphone": "ˈveərɪəs",
+        "ukphone": "ˈveərɪəs",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/112_various.mp3"
+    },
+    {
+        "name": "violent",
+        "trans": [
+            "猛烈的，暴力的"
+        ],
+        "usphone": "ˈvaɪələnt",
+        "ukphone": "ˈvaɪələnt",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/113_violent.mp3"
+    },
+    {
+        "name": "virtual",
+        "trans": [
+            "虚拟的"
+        ],
+        "usphone": "ˈvɜːtʃʊəl",
+        "ukphone": "ˈvɜːtʃʊəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/114_virtual.mp3"
+    },
+    {
+        "name": "visible",
+        "trans": [
+            "可见的"
+        ],
+        "usphone": "ˈvɪzəbl̩",
+        "ukphone": "ˈvɪzəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/115_visible.mp3"
+    },
+    {
+        "name": "visual",
+        "trans": [
+            "视觉的"
+        ],
+        "usphone": "ˈvɪʒuəl",
+        "ukphone": "ˈvɪʒuəl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/116_visual.mp3"
+    },
+    {
+        "name": "warm",
+        "trans": [
+            "温暖的"
+        ],
+        "usphone": "wɔːm",
+        "ukphone": "wɔːm",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/117_warm.mp3"
+    },
+    {
+        "name": "washable",
+        "trans": [
+            "可洗的"
+        ],
+        "usphone": "ˈwɒʃəbl̩",
+        "ukphone": "ˈwɒʃəbl̩",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/118_washable.mp3"
+    },
+    {
+        "name": "wealthy",
+        "trans": [
+            "有钱的"
+        ],
+        "usphone": "ˈwelθi",
+        "ukphone": "ˈwelθi",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/119_wealthy.mp3"
+    },
+    {
+        "name": "weekly",
+        "trans": [
+            "每周的"
+        ],
+        "usphone": "ˈwiːkli",
+        "ukphone": "ˈwiːkli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/120_weekly.mp3"
+    },
+    {
+        "name": "western",
+        "trans": [
+            "西方的"
+        ],
+        "usphone": "ˈwestən",
+        "ukphone": "ˈwestən",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/121_western.mp3"
+    },
+    {
+        "name": "whole",
+        "trans": [
+            "整个的"
+        ],
+        "usphone": "həʊl",
+        "ukphone": "həʊl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/122_whole.mp3"
+    },
+    {
+        "name": "wide",
+        "trans": [
+            "广泛的"
+        ],
+        "usphone": "waɪd",
+        "ukphone": "waɪd",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/123_wide.mp3"
+    },
+    {
+        "name": "wise",
+        "trans": [
+            "明智的"
+        ],
+        "usphone": "waɪz",
+        "ukphone": "waɪz",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/124_wise.mp3"
+    },
+    {
+        "name": "worthwhile",
+        "trans": [
+            "值得的"
+        ],
+        "usphone": "ˈwɜːθwaɪl",
+        "ukphone": "ˈwɜːθwaɪl",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/125_worthwhile.mp3"
+    },
+    {
+        "name": "worthy",
+        "trans": [
+            "值得做某事"
+        ],
+        "usphone": "ˈwɜːði",
+        "ukphone": "ˈwɜːði",
+        "ukAudio": "/audio/wang-c4-audio/unit4-03/126_worthy.mp3"
+    },
+    {
+        "name": "almost",
+        "trans": [
+            "几乎，差不多"
+        ],
+        "usphone": "ˈɔːlməʊst",
+        "ukphone": "ˈɔːlməʊst",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/001_almost.mp3"
+    },
+    {
+        "name": "currently",
+        "trans": [
+            "目前地"
+        ],
+        "usphone": "ˈkʌrəntli",
+        "ukphone": "ˈkʌrəntli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/002_currently.mp3"
+    },
+    {
+        "name": "directly",
+        "trans": [
+            "直接地"
+        ],
+        "usphone": "dɪˈrektli",
+        "ukphone": "dɪˈrektli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/003_directly.mp3"
+    },
+    {
+        "name": "effectively",
+        "trans": [
+            "有效地"
+        ],
+        "usphone": "ɪˈfektɪvli",
+        "ukphone": "ɪˈfektɪvli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/004_effectively.mp3"
+    },
+    {
+        "name": "efficiently",
+        "trans": [
+            "有效率地"
+        ],
+        "usphone": "ɪˈfɪʃntli",
+        "ukphone": "ɪˈfɪʃntli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/005_efficiently.mp3"
+    },
+    {
+        "name": "originally",
+        "trans": [
+            "最初地"
+        ],
+        "usphone": "əˈrɪdʒn̩əli",
+        "ukphone": "əˈrɪdʒn̩əli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/006_originally.mp3"
+    },
+    {
+        "name": "physically",
+        "trans": [
+            "身体地"
+        ],
+        "usphone": "ˈfɪzɪkl̩i",
+        "ukphone": "ˈfɪzɪkl̩i",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/007_physically.mp3"
+    },
+    {
+        "name": "professionally",
+        "trans": [
+            "专业地"
+        ],
+        "usphone": "prəˈfeʃnəli",
+        "ukphone": "prəˈfeʃnəli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/008_professionally.mp3"
+    },
+    {
+        "name": "rapidly",
+        "trans": [
+            "快速地"
+        ],
+        "usphone": "ˈræpɪdli",
+        "ukphone": "ˈræpɪdli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/009_rapidly.mp3"
+    },
+    {
+        "name": "regularly",
+        "trans": [
+            "定期地"
+        ],
+        "usphone": "ˈreɡjʊləli",
+        "ukphone": "ˈreɡjʊləli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/010_regularly.mp3"
+    },
+    {
+        "name": "scarcely",
+        "trans": [
+            "不足地"
+        ],
+        "usphone": "ˈskeəsli",
+        "ukphone": "ˈskeəsli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/011_scarcely.mp3"
+    },
+    {
+        "name": "virtually",
+        "trans": [
+            "几乎"
+        ],
+        "usphone": "ˈvɜːtʃʊəli",
+        "ukphone": "ˈvɜːtʃʊəli",
+        "ukAudio": "/audio/wang-c4-audio/unit4-04/012_virtually.mp3"
+    }
+]

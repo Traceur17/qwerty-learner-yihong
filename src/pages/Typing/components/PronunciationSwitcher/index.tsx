@@ -1,9 +1,9 @@
 import Tooltip from '@/components/Tooltip'
-import { LANG_PRON_MAP } from '@/resources/soundResource'
 import { currentDictInfoAtom, phoneticConfigAtom, pronunciationConfigAtom } from '@/store'
 import type { PronunciationType } from '@/typings'
 import { PRONUNCIATION_PHONETIC_MAP } from '@/typings'
 import { CTRL } from '@/utils'
+import { getDictPronunciationOptions, resolveDictDefaultPronunciation } from '@/utils/dictPronunciation'
 import { Listbox, Popover, Switch, Transition } from '@headlessui/react'
 import { useAtom, useAtomValue } from 'jotai'
 import { Fragment, useCallback, useEffect, useMemo } from 'react'
@@ -14,23 +14,20 @@ const PronunciationSwitcher = () => {
   const currentDictInfo = useAtomValue(currentDictInfoAtom)
   const [pronunciationConfig, setPronunciationConfig] = useAtom(pronunciationConfigAtom)
   const [phoneticConfig, setPhoneticConfig] = useAtom(phoneticConfigAtom)
-  const pronunciationList = useMemo(() => LANG_PRON_MAP[currentDictInfo.language].pronunciation, [currentDictInfo.language])
+  const pronunciationList = useMemo(() => getDictPronunciationOptions(currentDictInfo), [currentDictInfo])
 
   useEffect(() => {
-    const defaultPronIndex = currentDictInfo.defaultPronIndex || LANG_PRON_MAP[currentDictInfo.language].defaultPronIndex
-    const defaultPron = pronunciationList[defaultPronIndex]
+    const defaultPron = resolveDictDefaultPronunciation(currentDictInfo)
 
-    // if the current pronunciation is not in the pronunciation list, reset the pronunciation config to default
     const index = pronunciationList.findIndex((item) => item.pron === pronunciationConfig.type)
     if (index === -1) {
-      // only change the type and name, keep the isOpen state
       setPronunciationConfig((old) => ({
         ...old,
         type: defaultPron.pron,
         name: defaultPron.name,
       }))
     }
-  }, [currentDictInfo.defaultPronIndex, currentDictInfo.language, setPronunciationConfig, pronunciationList, pronunciationConfig.type])
+  }, [currentDictInfo, setPronunciationConfig, pronunciationList, pronunciationConfig.type])
 
   useEffect(() => {
     const phoneticType = PRONUNCIATION_PHONETIC_MAP[pronunciationConfig.type]
@@ -186,39 +183,41 @@ const PronunciationSwitcher = () => {
                       }`}</span>
                     </div>
                   </div>
-                  <div className="flex w-full  flex-col  items-start gap-2 py-0">
-                    <span className="text-sm font-normal leading-5 text-gray-900 dark:text-white dark:text-opacity-60">单词发音口音</span>
-                    <div className="flex w-full flex-row items-center justify-between">
-                      <Listbox value={pronunciationConfig.type} onChange={onChangePronunciationType}>
-                        <div className="relative">
-                          <Listbox.Button className="listbox-button">
-                            <span>{pronunciationConfig.name}</span>
-                            <span>
-                              <IconChevronDown className="focus:outline-none" />
-                            </span>
-                          </Listbox.Button>
-                          <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-                            <Listbox.Options className="listbox-options">
-                              {pronunciationList.map((item) => (
-                                <Listbox.Option key={item.pron} value={item.pron}>
-                                  {({ selected }) => (
-                                    <>
-                                      <span>{item.name}</span>
-                                      {selected ? (
-                                        <span className="listbox-options-icon">
-                                          <IconCheck className="focus:outline-none" />
-                                        </span>
-                                      ) : null}
-                                    </>
-                                  )}
-                                </Listbox.Option>
-                              ))}
-                            </Listbox.Options>
-                          </Transition>
-                        </div>
-                      </Listbox>
+                  {pronunciationList.length > 1 && (
+                    <div className="flex w-full  flex-col  items-start gap-2 py-0">
+                      <span className="text-sm font-normal leading-5 text-gray-900 dark:text-white dark:text-opacity-60">单词发音口音</span>
+                      <div className="flex w-full flex-row items-center justify-between">
+                        <Listbox value={pronunciationConfig.type} onChange={onChangePronunciationType}>
+                          <div className="relative">
+                            <Listbox.Button className="listbox-button">
+                              <span>{pronunciationConfig.name}</span>
+                              <span>
+                                <IconChevronDown className="focus:outline-none" />
+                              </span>
+                            </Listbox.Button>
+                            <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+                              <Listbox.Options className="listbox-options">
+                                {pronunciationList.map((item) => (
+                                  <Listbox.Option key={item.pron} value={item.pron}>
+                                    {({ selected }) => (
+                                      <>
+                                        <span>{item.name}</span>
+                                        {selected ? (
+                                          <span className="listbox-options-icon">
+                                            <IconCheck className="focus:outline-none" />
+                                          </span>
+                                        ) : null}
+                                      </>
+                                    )}
+                                  </Listbox.Option>
+                                ))}
+                              </Listbox.Options>
+                            </Transition>
+                          </div>
+                        </Listbox>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   {pronunciationConfig.isOpen && (
                     <span className="text-colo text-xs font-medium text-gray-500 dark:text-white dark:text-opacity-60">
                       Tips: 朗读发音快捷键（{CTRL} + J）

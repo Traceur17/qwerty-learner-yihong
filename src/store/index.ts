@@ -1,6 +1,6 @@
 import atomForConfig from './atomForConfig'
 import { reviewInfoAtom } from './reviewInfoAtom'
-import { DISMISS_START_CARD_DATE_KEY, defaultFontSizeConfig } from '@/constants'
+import { DISMISS_CHAPTER_ERROR_BOOK_GUIDE_KEY, DISMISS_START_CARD_DATE_KEY, defaultFontSizeConfig } from '@/constants'
 import { idDictionaryMap } from '@/resources/dictionary'
 import { correctSoundResources, keySoundResources, wrongSoundResources } from '@/resources/soundResource'
 import type {
@@ -118,8 +118,12 @@ export const listenDictationConfigAtom = atomForConfig<ListenDictationConfig>('l
 
 export const dismissStartCardDateAtom = atomWithStorage<Date | null>(DISMISS_START_CARD_DATE_KEY, null)
 
+export const dismissChapterErrorBookGuideAtom = atomWithStorage<boolean>(DISMISS_CHAPTER_ERROR_BOOK_GUIDE_KEY, false)
+
 // Enhanced version promotion popup state
 export const hasSeenEnhancedPromotionAtom = atomWithStorage('hasSeenEnhancedPromotion', false)
+export { errorBookFilterAtom, typingResumeAtom } from './errorBookFilterAtom'
+export type { ErrorBookFilter, TypingResumeSnapshot } from './errorBookFilterAtom'
 
 // for dev test
 //   dismissStartCardDateAtom = atom<Date | null>(new Date())

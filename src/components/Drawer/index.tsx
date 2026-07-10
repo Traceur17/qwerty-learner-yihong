@@ -55,7 +55,7 @@ export default function Drawer(props: DrawerProps) {
               className={classNames(
                 `${placement}-0`,
                 props.classNames || '',
-                'absolute flex h-full w-[35rem] flex-col drop-shadow-2xl transition-all duration-300 ease-out',
+                'absolute flex h-full w-full max-w-[min(90vw,36rem)] flex-col drop-shadow-2xl transition-all duration-300 ease-out',
               )}
             >
               {children}

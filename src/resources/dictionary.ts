@@ -583,19 +583,52 @@ const chinaExam: DictionaryResource[] = [
 
 // 国际考试
 const internationalExam: DictionaryResource[] = [
+  // dict-audio-pipeline:wang-c4-biscuit
+  {
+    id: 'wang-c4-biscuit',
+    name: '雅思wang C4（饼干专属）',
+    description: '吞音连读混合训练语料库（王陆 C4 教材音频，形容词 Test 1–3 + 副词）',
+    category: '国际考试',
+    tags: ['IELTS', '音频'],
+    url: '/dicts/wang-c4-biscuit.json',
+    length: 346,
+    chapterLengths: [104, 104, 126, 12],
+    language: 'en',
+    languageCategory: 'en',
+    defaultPronIndex: 1,
+    pronunciationTypes: ['uk'],
+  },
+  // dict-audio-pipeline:wang-c4-biscuit-end
+  // dict-audio-pipeline:wang-c3-biscuit
+  {
+    id: 'wang-c3-biscuit',
+    name: '雅思wang C3（饼干专属）',
+    description: '吞音连读混合训练语料库（王陆 C3 教材音频，9 个 Test 单元）',
+    category: '国际考试',
+    tags: ['IELTS', '音频'],
+    url: '/dicts/wang-c3-biscuit.json',
+    length: 1135,
+    chapterLengths: [112, 143, 113, 112, 145, 113, 104, 152, 141],
+    language: 'en',
+    languageCategory: 'en',
+    defaultPronIndex: 1,
+    pronunciationTypes: ['uk'],
+  },
+  // dict-audio-pipeline:wang-c3-biscuit-end
   // dict-audio-pipeline:wang-c5-biscuit
   {
     id: 'wang-c5-biscuit',
     name: '雅思wang C5（饼干专属）',
-    description: '吞音连读混合训练语料库（王陆 C5 教材音频，11 个 Test 单元）',
+    description: '吞音连读混合训练语料库（王陆 C5 教材音频，12 个 Test 单元）',
     category: '国际考试',
     tags: ['IELTS', '音频'],
     url: '/dicts/wang-c5-biscuit.json',
-    length: 1335,
-    chapterLengths: [114, 111, 114, 105, 100, 108, 130, 144, 140, 142, 127],
+    length: 1569,
+    chapterLengths: [114, 111, 114, 105, 100, 108, 130, 144, 139, 142, 127, 235],
     language: 'en',
     languageCategory: 'en',
     defaultPronIndex: 1,
+    pronunciationTypes: ['uk'],
   },
   // dict-audio-pipeline:wang-c5-biscuit-end
 

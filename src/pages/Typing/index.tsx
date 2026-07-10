@@ -14,7 +14,15 @@ import { DonateCard } from '@/components/DonateCard'
 import Header from '@/components/Header'
 import Tooltip from '@/components/Tooltip'
 import { idDictionaryMap } from '@/resources/dictionary'
-import { currentChapterAtom, currentDictIdAtom, isReviewModeAtom, randomConfigAtom, reviewModeInfoAtom } from '@/store'
+import {
+  currentChapterAtom,
+  currentDictIdAtom,
+  currentDictInfoAtom,
+  isReviewModeAtom,
+  randomConfigAtom,
+  reviewModeInfoAtom,
+  typingResumeAtom,
+} from '@/store'
 import { IsDesktop, isLegal } from '@/utils'
 import { useSaveChapterRecord } from '@/utils/db'
 import { useMixPanelChapterLogUploader } from '@/utils/mixpanel'
@@ -36,6 +44,8 @@ const App: React.FC = () => {
 
   const reviewModeInfo = useAtomValue(reviewModeInfoAtom)
   const isReviewMode = useAtomValue(isReviewModeAtom)
+  const typingResume = useAtomValue(typingResumeAtom)
+  const setTypingResume = useSetAtom(typingResumeAtom)
 
   useEffect(() => {
     // 检测用户设备
@@ -92,6 +102,26 @@ const App: React.FC = () => {
   }, [state.isTyping, isLoading, dispatch])
 
   useEffect(() => {
+    if (!typingResume) return
+
+    setCurrentChapter(typingResume.chapter)
+    dispatch({
+      type: TypingStateActionType.SETUP_CHAPTER,
+      payload: {
+        words: typingResume.words,
+        shouldShuffle: false,
+        initialIndex: typingResume.index,
+      },
+    })
+    if (typingResume.isTransVisible) {
+      dispatch({ type: TypingStateActionType.TOGGLE_TRANS_VISIBLE })
+    }
+    dispatch({ type: TypingStateActionType.SET_IS_TYPING, payload: typingResume.isTyping })
+    setTypingResume(null)
+  }, [dispatch, setCurrentChapter, setTypingResume, typingResume])
+
+  useEffect(() => {
+    if (typingResume) return
     if (words !== undefined) {
       const initialIndex = isReviewMode && reviewModeInfo.reviewRecord?.index ? reviewModeInfo.reviewRecord.index : 0
 
@@ -101,7 +131,7 @@ const App: React.FC = () => {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [words])
+  }, [words, typingResume])
 
   useEffect(() => {
     // 当用户完成章节后且完成 word Record 数据保存，记录 chapter Record 数据,
@@ -147,9 +177,9 @@ const App: React.FC = () => {
             </button>
           </Tooltip>
         </Header>
-        <div className="container mx-auto flex h-full flex-1 flex-col items-center justify-center pb-5">
-          <div className="container relative mx-auto flex h-full flex-col items-center">
-            <div className="container flex flex-grow items-center justify-center">
+        <div className="mx-auto flex h-full min-h-0 w-full max-w-[1600px] flex-1 flex-col px-4 pb-5 xl:px-8">
+          <div className="relative flex min-h-0 w-full flex-1 flex-col items-center">
+            <div className="flex min-h-0 w-full flex-1 items-center justify-center">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center ">
                   <div

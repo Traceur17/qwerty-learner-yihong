@@ -2,9 +2,9 @@ import { writeJson } from './utils.mjs'
 import path from 'node:path'
 
 /**
- * @param {{ manifest: any, unit: any, clips: Array<{ publicPath: string }> }} params
+ * @param {{ manifest: any, unit: any, clips: Array<{ publicPath: string }>, segmentRefs?: Array<object> }} params
  */
-export function buildDictEntries({ manifest, unit, clips }) {
+export function buildDictEntries({ manifest, unit, clips, segmentRefs }) {
   const accent = manifest.dict.accent ?? 'uk'
   const audioField = accent === 'us' ? 'usAudio' : 'ukAudio'
 
@@ -16,7 +16,11 @@ export function buildDictEntries({ manifest, unit, clips }) {
       usphone: row.usphone ?? '',
       ukphone: row.ukphone ?? '',
     }
-    entry[audioField] = clip.publicPath
+    if (segmentRefs?.[idx]) {
+      entry[audioField] = segmentRefs[idx]
+    } else {
+      entry[audioField] = clip.publicPath
+    }
     return entry
   })
 }

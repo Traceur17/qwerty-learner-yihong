@@ -1,3 +1,4 @@
+import DictationDiff from './DictationDiff'
 import Tooltip from '@/components/Tooltip'
 import { SoundIcon } from '@/components/WordPronunciationIcon/SoundIcon'
 import useKeySounds from '@/hooks/useKeySounds'
@@ -7,16 +8,14 @@ import { fontSizeConfigAtom, isIgnoreCaseAtom } from '@/store'
 import type { Word } from '@/typings'
 import { CTRL, isChineseSymbol } from '@/utils'
 import { useSaveWordRecord } from '@/utils/db'
+import { diffPhrase, formatTranslation } from '@/utils/dictationDiff'
 import { useAtomValue } from 'jotai'
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import IconCheck from '~icons/tabler/check'
-import IconX from '~icons/tabler/x'
 
 type FeedbackState = 'none' | 'correct' | 'wrong'
 
 const CORRECT_DELAY_MS = 1000
-const WRONG_DELAY_MS = 1500
 
 export default function DictationWord({ word, onFinish }: { word: Word; onFinish: () => void }) {
   const { state, dispatch } = useContext(TypingContext)!
@@ -24,6 +23,7 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
   const [isLocked, setIsLocked] = useState(false)
   const [feedback, setFeedback] = useState<FeedbackState>('none')
   const inputRef = useRef<HTMLInputElement>(null)
+  const feedbackRef = useRef<HTMLDivElement>(null)
   const saveWordRecord = useSaveWordRecord()
   const [, playBeepSound, playHintSound] = useKeySounds()
   const { play, stop, isPlaying } = usePronunciationSound(word)
@@ -32,6 +32,12 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
   const fontSizeConfig = useAtomValue(fontSizeConfigAtom)
 
   const displayWord = word.name
+  const translation = useMemo(() => formatTranslation(word.trans), [word.trans])
+
+  const diffResult = useMemo(() => {
+    if (feedback !== 'wrong') return null
+    return diffPhrase(inputWord, displayWord, isIgnoreCase)
+  }, [displayWord, feedback, inputWord, isIgnoreCase])
 
   const playSound = useCallback(() => {
     stop()
@@ -56,6 +62,12 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
     }
   }, [state.isTyping, word, isLocked, playSound])
 
+  useEffect(() => {
+    if (feedback === 'wrong' && isLocked) {
+      feedbackRef.current?.focus()
+    }
+  }, [feedback, isLocked])
+
   const isAnswerCorrect = useCallback(
     (input: string) => {
       if (isIgnoreCase) {
@@ -65,6 +77,11 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
     },
     [displayWord, isIgnoreCase],
   )
+
+  const handleContinueAfterWrong = useCallback(() => {
+    if (feedback !== 'wrong' || !isLocked) return
+    onFinish()
+  }, [feedback, isLocked, onFinish])
 
   const handleSubmit = useCallback(() => {
     if (isLocked || !state.isTyping) return
@@ -98,12 +115,11 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
         letterTimeArray: [],
         letterMistake: {},
       })
-      window.setTimeout(() => onFinish(), WRONG_DELAY_MS)
     }
   }, [dispatch, inputWord, isAnswerCorrect, isLocked, onFinish, playBeepSound, playHintSound, saveWordRecord, state.isTyping, word.name])
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: React.KeyboardEvent<HTMLInputElement | HTMLDivElement>) => {
       if (isChineseSymbol(e.key)) {
         alert('您正在使用输入法，请关闭输入法。')
         e.preventDefault()
@@ -113,10 +129,14 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
       if (e.key === 'Enter') {
         e.preventDefault()
         e.stopPropagation()
-        handleSubmit()
+        if (feedback === 'wrong' && isLocked) {
+          handleContinueAfterWrong()
+        } else {
+          handleSubmit()
+        }
       }
     },
-    [handleSubmit],
+    [feedback, handleContinueAfterWrong, handleSubmit, isLocked],
   )
 
   useHotkeys(
@@ -130,6 +150,17 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
     { enableOnFormTags: true, preventDefault: true },
   )
 
+  useHotkeys(
+    'enter',
+    () => {
+      if (feedback === 'wrong' && isLocked) {
+        handleContinueAfterWrong()
+      }
+    },
+    { enableOnFormTags: true, preventDefault: true },
+    [feedback, handleContinueAfterWrong, isLocked],
+  )
+
   return (
     <div className="flex flex-col items-center justify-center pb-1 pt-4">
       <div className="mb-6 flex h-9 w-9 items-center justify-center">
@@ -139,47 +170,48 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
       </div>
 
       <div className="w-full max-w-2xl px-4">
-        <input
-          ref={inputRef}
-          type="text"
-          value={inputWord}
-          onChange={(e) => setInputWord(e.target.value)}
-          onKeyDown={handleKeyDown}
-          readOnly={isLocked}
-          disabled={!state.isTyping}
-          className="w-full appearance-none rounded-none border-0 border-b-2 border-gray-400 bg-transparent px-0 py-2 text-center font-mono text-gray-800 shadow-none outline-none ring-0 focus:border-indigo-500 focus:outline-none focus:ring-0 disabled:opacity-70 dark:border-gray-500 dark:text-gray-50 dark:focus:border-indigo-400"
-          style={{ fontSize: fontSizeConfig.foreignFont.toString() + 'px' }}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          aria-label="听写输入"
-        />
-      </div>
+        {feedback === 'wrong' && isLocked && diffResult ? (
+          <div
+            ref={feedbackRef}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+            className="w-full border-0 border-b-2 border-gray-400 bg-transparent px-0 py-2 outline-none ring-0 dark:border-gray-500"
+          >
+            <DictationDiff parts={diffResult.userLine} variant="user" fontSize={fontSizeConfig.foreignFont} />
+          </div>
+        ) : (
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputWord}
+            onChange={(e) => setInputWord(e.target.value)}
+            onKeyDown={handleKeyDown}
+            readOnly={isLocked}
+            disabled={!state.isTyping}
+            className="w-full appearance-none rounded-none border-0 border-b-2 border-gray-400 bg-transparent px-0 py-2 text-center font-mono text-gray-800 shadow-none outline-none ring-0 focus:border-indigo-500 focus:outline-none focus:ring-0 disabled:opacity-70 dark:border-gray-500 dark:text-gray-50 dark:focus:border-indigo-400"
+            style={{ fontSize: fontSizeConfig.foreignFont.toString() + 'px' }}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            aria-label="听写输入"
+          />
+        )}
 
-      {feedback !== 'none' && (
-        <div className="mt-6 flex flex-col items-center gap-2 text-center">
-          {feedback === 'correct' ? (
-            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-              <IconCheck className="h-6 w-6" />
-              <span className="text-lg font-medium">正确</span>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                <IconX className="h-6 w-6" />
-                <span className="text-lg font-medium">错误</span>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                你的输入：<span className="font-mono">{inputWord.trim()}</span>
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                正确答案：<span className="font-mono text-green-600 dark:text-green-400">{displayWord}</span>
-              </p>
-            </>
-          )}
-        </div>
-      )}
+        {feedback === 'correct' && translation && (
+          <p className="mt-3 text-center text-base text-gray-600 dark:text-gray-300">{translation}</p>
+        )}
+
+        {feedback === 'wrong' && (
+          <>
+            {diffResult && (
+              <DictationDiff parts={diffResult.correctLine} variant="correct" fontSize={fontSizeConfig.foreignFont} className="mt-3" />
+            )}
+            {translation && <p className="mt-2 text-center text-base text-gray-600 dark:text-gray-300">{translation}</p>}
+            <p className="mt-2 text-center text-xs text-gray-400 dark:text-gray-500">按 Enter 继续</p>
+          </>
+        )}
+      </div>
     </div>
   )
 }

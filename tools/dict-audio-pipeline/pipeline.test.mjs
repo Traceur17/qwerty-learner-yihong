@@ -1,3 +1,4 @@
+import { buildAnchorBoundarySegments } from './lib/ffmpeg.mjs'
 import { resolveAudioByPattern, partitionUnitsByAudio } from './lib/audio-resolver.mjs'
 import { readExcelUnits } from './lib/excel.mjs'
 import { loadManifest, resolveSegmentationForUnit } from './lib/manifest.mjs'
@@ -13,6 +14,26 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const sampleManifest = path.join(__dirname, 'fixtures', 'sample', 'manifest.yaml')
 const sampleExcel = path.join(__dirname, 'fixtures', 'sample', 'vocab.xlsx')
 const sampleManual = path.join(__dirname, 'fixtures', 'sample', 'manual', 'unit01.csv')
+
+describe('anchor-boundary segments', () => {
+  it('applies startPadSec without overlapping previous segment', () => {
+    const rows = [{ name: 'alpha' }, { name: 'beta' }]
+    const speech = [
+      { start: 10, end: 12 },
+      { start: 15, end: 17 },
+    ]
+    const segments = buildAnchorBoundarySegments(rows, speech, {
+      startPadSec: 0.2,
+      endPadSec: 0.3,
+      tailEndPadSec: 0.45,
+      minGapSec: 0.02,
+    })
+    expect(segments[0].start).toBe(9.8)
+    expect(segments[0].end).toBe(12.3)
+    expect(segments[1].start).toBe(14.8)
+    expect(segments[1].end).toBe(17.45)
+  })
+})
 
 describe('manifest loader', () => {
   it('loads sample manifest with defaults', () => {

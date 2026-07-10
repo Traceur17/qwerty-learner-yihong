@@ -12,6 +12,8 @@ export type DictionaryResource = {
   languageCategory: LanguageCategoryType
   //override default pronunciation when not undefined
   defaultPronIndex?: number
+  /** 词库提供的口音；未设置时沿用语言默认（英/美均可选） */
+  pronunciationTypes?: PronunciationType[]
   /** 按单元/章节自定义每章词数，长度即 chapterCount */
   chapterLengths?: number[]
   /** 词库卡片展示用图标（emoji 或文本） */
@@ -32,6 +34,8 @@ export type Dictionary = {
   chapterCount: number
   //override default pronunciation when not undefined
   defaultPronIndex?: number
+  /** 词库提供的口音；未设置时沿用语言默认（英/美均可选） */
+  pronunciationTypes?: PronunciationType[]
   chapterLengths?: number[]
   icon?: string
 }
