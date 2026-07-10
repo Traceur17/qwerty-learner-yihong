@@ -1,4 +1,5 @@
 import Loading from './components/Loading'
+import UpdateAnnouncement from './components/UpdateAnnouncement'
 import './index.css'
 import { ErrorBook } from './pages/ErrorBook'
 import { FriendLinks } from './pages/FriendLinks'
@@ -77,6 +78,7 @@ function Root() {
           </Routes>
         </Suspense>
       </BrowserRouter>
+      {!isMobile && <UpdateAnnouncement />}
       <Analytics />
     </React.StrictMode>
   )
