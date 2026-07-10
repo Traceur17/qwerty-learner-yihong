@@ -1,21 +1,29 @@
-import { buildVersionRedirectUrl, resolveVersionRedirect } from '@/utils/appVersionCheck'
+import { buildVersionRedirectUrl, resolveCanonicalVersionUrl } from '@/utils/appVersionCheck'
+import { getAppBuildId } from '@/utils/cacheBust'
+import { publicUrl } from '@/utils/publicUrl'
 import { describe, expect, it } from 'vitest'
 
-describe('appVersionCheck helpers', () => {
-  it('noop when remote matches build', () => {
-    expect(resolveVersionRedirect('0431af4', '0431af4', null)).toBe('noop')
+describe('appVersionCheck', () => {
+  it('noop when _v already matches remote', () => {
+    expect(resolveCanonicalVersionUrl('b127823', 'b127823')).toBe('noop')
   })
 
-  it('redirect when remote is newer', () => {
-    expect(resolveVersionRedirect('fe273cb', '0431af4', null)).toBe('redirect')
+  it('redirect when _v is missing', () => {
+    expect(resolveCanonicalVersionUrl('b127823', null)).toBe('redirect')
   })
 
-  it('give up after cache-bust param already applied', () => {
-    expect(resolveVersionRedirect('fe273cb', '0431af4', '0431af4')).toBe('give-up')
+  it('redirect when _v is stale', () => {
+    expect(resolveCanonicalVersionUrl('b127823', '0431af4')).toBe('redirect')
   })
 
   it('builds redirect url with _v query', () => {
-    const url = buildVersionRedirectUrl('https://example.com/qwerty-learner-yihong/', '0431af4')
-    expect(url).toContain('_v=0431af4')
+    const url = buildVersionRedirectUrl('https://example.com/qwerty-learner-yihong/', 'b127823')
+    expect(url).toContain('_v=b127823')
+  })
+})
+
+describe('getAppBuildId', () => {
+  it('strips dev suffix', () => {
+    expect(getAppBuildId()).toBe(LATEST_COMMIT_HASH.replace(/\s*\(dev\)\s*$/, '').trim())
   })
 })

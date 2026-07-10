@@ -42,7 +42,7 @@ export default defineConfig(async ({ mode }) => {
         name: 'inject-version-check-bootstrap',
         transformIndexHtml(html) {
           const pagesPrefix = process.env.REACT_APP_DEPLOY_ENV === 'pages' ? '/qwerty-learner-yihong' : ''
-          const bootstrap = `<script>(function(){var p=${JSON.stringify(pagesPrefix)};var b=${JSON.stringify(latestCommitHash)};fetch((p||'')+'/version.json?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){if(!d||!d.hash||d.hash===b)return;var u=new URL(location.href);if(u.searchParams.get('_v')===d.hash)return;u.searchParams.set('_v',d.hash);location.replace(u.toString())}).catch(function(){});})();</script>`
+          const bootstrap = `<script>(function(){var p=${JSON.stringify(pagesPrefix)};fetch((p||'')+'/version.json?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){if(!d||!d.hash)return;var u=new URL(location.href);if(u.searchParams.get('_v')===d.hash)return;u.searchParams.set('_v',d.hash);location.replace(u.toString())}).catch(function(){});if('serviceWorker' in navigator){navigator.serviceWorker.register((p||'')+'/sw.js',{scope:(p||'/')}).catch(function(){})}})();</script>`
           return html.replace('<meta charset="UTF-8" />', `<meta charset="UTF-8" />\n    ${bootstrap}`)
         },
       },
