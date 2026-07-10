@@ -1,7 +1,8 @@
 import type { PronunciationType, Word } from '@/typings'
+import { withCacheBust } from '@/utils/cacheBust'
 import { romajiToHiragana } from '@/utils/kana'
 import { publicUrl } from '@/utils/publicUrl'
-import { isWordAudioSegment, type WordAudioRef } from '@/utils/wordAudio'
+import { type WordAudioRef, isWordAudioSegment } from '@/utils/wordAudio'
 
 const pronunciationApi = 'https://dict.youdao.com/dictvoice?audio='
 
@@ -13,7 +14,7 @@ export function resolvePronunciationWordName(word: PronunciationWordInput): stri
 
 function resolveCustomAudioUrl(ref: WordAudioRef | undefined): string | null {
   if (!ref || isWordAudioSegment(ref)) return null
-  return publicUrl(ref)
+  return withCacheBust(publicUrl(ref))
 }
 
 function generateYoudaoSoundSrc(wordName: string, pronunciation: Exclude<PronunciationType, false>): string {

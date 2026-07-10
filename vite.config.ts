@@ -28,6 +28,16 @@ export default defineConfig(async ({ mode }) => {
           },
         },
       }),
+      {
+        name: 'emit-version-json',
+        generateBundle() {
+          this.emitFile({
+            type: 'asset',
+            fileName: 'version.json',
+            source: JSON.stringify({ hash: latestCommitHash }, null, 2),
+          })
+        },
+      },
     ],
     build: {
       minify: true,

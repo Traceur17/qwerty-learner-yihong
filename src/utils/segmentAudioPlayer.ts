@@ -1,3 +1,4 @@
+import { withCacheBust } from '@/utils/cacheBust'
 import { publicUrl } from '@/utils/publicUrl'
 import type { WordAudioSegment } from '@/utils/wordAudio'
 import { resolveSegmentAudioUrl } from '@/utils/wordAudio'
@@ -101,7 +102,7 @@ export function stopSegmentPlayback() {
 export function playSegment(segment: WordAudioSegment, options: PlaySegmentOptions = {}): () => void {
   stopSegmentPlayback()
 
-  const url = publicUrl(resolveSegmentAudioUrl(segment))
+  const url = withCacheBust(publicUrl(resolveSegmentAudioUrl(segment)))
   const rate = options.rate ?? 1
   const volume = options.volume ?? 1
   const loop = options.loop ?? false
@@ -171,6 +172,6 @@ export function playSegment(segment: WordAudioSegment, options: PlaySegmentOptio
 }
 
 export function prefetchSegment(segment: WordAudioSegment) {
-  const url = publicUrl(resolveSegmentAudioUrl(segment))
+  const url = withCacheBust(publicUrl(resolveSegmentAudioUrl(segment)))
   void fetchAndDecode(url).catch(() => undefined)
 }

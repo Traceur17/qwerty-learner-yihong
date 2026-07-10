@@ -6,6 +6,8 @@ import { FriendLinks } from './pages/FriendLinks'
 import MobilePage from './pages/Mobile'
 import TypingPage from './pages/Typing'
 import { isOpenDarkModeAtom } from '@/store'
+import { checkForAppUpdate } from '@/utils/appVersionCheck'
+import { getAppBuildId } from '@/utils/cacheBust'
 import { publicUrl } from '@/utils/publicUrl'
 import { Analytics } from '@vercel/analytics/react'
 import 'animate.css'
@@ -35,7 +37,11 @@ function Root() {
   }, [darkMode])
 
   useEffect(() => {
-    const href = publicUrl('/favicon-biscuit.png?v=6')
+    void checkForAppUpdate()
+  }, [])
+
+  useEffect(() => {
+    const href = publicUrl(`/favicon-biscuit.png?v=${getAppBuildId()}`)
     document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']").forEach((link) => {
       link.href = href
       link.type = 'image/png'

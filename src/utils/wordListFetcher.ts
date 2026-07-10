@@ -1,9 +1,9 @@
 import type { Word } from '@/typings'
+import { withCacheBust } from '@/utils/cacheBust'
+import { publicUrl } from '@/utils/publicUrl'
 
 export async function wordListFetcher(url: string): Promise<Word[]> {
-  const URL_PREFIX: string = REACT_APP_DEPLOY_ENV === 'pages' ? '/qwerty-learner-yihong' : ''
-
-  const response = await fetch(URL_PREFIX + url)
+  const response = await fetch(withCacheBust(publicUrl(url)))
   const words: Word[] = await response.json()
   return words
 }
