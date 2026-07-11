@@ -3,7 +3,7 @@ dict:
   name: 雅思wang C5（饼干专属）
   description: 吞音连读混合训练语料库（王陆 C5 教材音频，12 个 Test 单元）
   category: 国际考试
-  tags: [IELTS, 音频]
+  tags: [IELTS, 饼干专属音频]
   language: en
   languageCategory: en
   accent: uk

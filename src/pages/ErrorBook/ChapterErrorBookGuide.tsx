@@ -1,7 +1,7 @@
 import GuideBubble from './GuideBubble'
 import { dismissChapterErrorBookGuideAtom } from '@/store'
 import { useAtom } from 'jotai'
-import { useCallback, useState, type RefObject } from 'react'
+import { type RefObject, useCallback, useState } from 'react'
 
 export type ChapterErrorBookGuideTargets = {
   selectRef: RefObject<HTMLElement | null>

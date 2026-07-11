@@ -15,7 +15,10 @@ const dictPath = path.join(root, 'public/dicts/wang-c5-biscuit.json')
 
 const scales = new Map()
 
-for (const file of fs.readdirSync(audioDir).filter((f) => f.endsWith('.index.json')).sort()) {
+for (const file of fs
+  .readdirSync(audioDir)
+  .filter((f) => f.endsWith('.index.json'))
+  .sort()) {
   const indexPath = path.join(audioDir, file)
   const index = readJson(indexPath)
   const mp3Path = path.join(audioDir, `${index.unit}.mp3`)

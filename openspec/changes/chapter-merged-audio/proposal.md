@@ -6,7 +6,7 @@
 
 - 流水线新增按单元合并：`unit5-01.mp3` + `unit5-01.index.json`
 - 词库 `ukAudio` 支持 **片段引用** `{ unit, start, end }`（与现有 URL 字符串并存）
-- 应用侧新增 `playSegment` 播放器：单章一次 HTTP，seek 播放词段；LRU 缓存最近 2～3 章
+- 应用侧新增 `playSegment` 播放器：单章一次 HTTP，seek 播放词段；LRU 缓存最近 2 ～ 3 章
 - 提供对现有 `wang-c5-biscuit` 已裁切 MP3 的离线合并脚本（无需从教材原音频重跑）
 - manifest 增加 `output.mergedAudio` 开关；合并后可选清理逐词 MP3
 

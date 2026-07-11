@@ -1,6 +1,6 @@
-import { buildAnchorBoundarySegments } from './lib/ffmpeg.mjs'
 import { resolveAudioByPattern, partitionUnitsByAudio } from './lib/audio-resolver.mjs'
 import { readExcelUnits } from './lib/excel.mjs'
+import { buildAnchorBoundarySegments } from './lib/ffmpeg.mjs'
 import { loadManifest, resolveSegmentationForUnit } from './lib/manifest.mjs'
 import { alignSpeechSegmentsToRows } from './lib/segment-align.mjs'
 import { phraseSimilarity, normalizePhrase } from './lib/similarity.mjs'
@@ -32,6 +32,18 @@ describe('anchor-boundary segments', () => {
     expect(segments[0].end).toBe(12.3)
     expect(segments[1].start).toBe(14.8)
     expect(segments[1].end).toBe(17.45)
+  })
+
+  it('allowPartial maps available speech only', () => {
+    const rows = [{ name: 'a' }, { name: 'b' }, { name: 'c' }]
+    const speech = [
+      { start: 1, end: 2 },
+      { start: 3, end: 4 },
+    ]
+    const segments = buildAnchorBoundarySegments(rows, speech, { allowPartial: true, endPadSec: 0.1, tailEndPadSec: 0.1 })
+    expect(segments).toHaveLength(2)
+    expect(segments[0].text).toBe('a')
+    expect(segments[1].strategy).toBe('anchor-boundary-partial')
   })
 })
 

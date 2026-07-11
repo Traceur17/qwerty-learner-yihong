@@ -1,9 +1,9 @@
 import { mapUnitsToAudio, partitionUnitsByAudio } from './audio-resolver.mjs'
 import { writeCombinedDict } from './combined-dict.mjs'
 import { cutSegmentsToFiles } from './cutter.mjs'
-import { clipsToSegmentRefs, mergeUnitAudio } from './merge-unit-audio.mjs'
 import { readExcelUnits } from './excel.mjs'
 import { loadManifest, resolveSegmentationForUnit } from './manifest.mjs'
+import { clipsToSegmentRefs, mergeUnitAudio } from './merge-unit-audio.mjs'
 import { registerDictionaryEntries } from './register-dict.mjs'
 import { createBuildReport, writeBuildReports } from './report.mjs'
 import { findManualCsv } from './strategies/index.mjs'
@@ -132,13 +132,17 @@ export async function runBuild(manifestPath, options = {}) {
         registered.push(dictMeta)
       }
 
+      const matched = clipsWithMeta.length
+      const missing = Math.max(0, unit.rows.length - matched)
       results.push({
         unitId: unit.unitId,
         sheetName: unit.sheetName,
         status: 'success',
         strategy: segments[0]?.strategy,
         message:
-          manifest.output.combinedDict && !manifest.output.perUnitDict
+          missing > 0
+            ? `Built ${entries.length} entries (${matched} with audio, ${missing} missing)`
+            : manifest.output.combinedDict && !manifest.output.perUnitDict
             ? `Built ${entries.length} entries`
             : `Wrote ${entries.length} entries`,
         dictMeta: dictMeta.dictId ? dictMeta : undefined,

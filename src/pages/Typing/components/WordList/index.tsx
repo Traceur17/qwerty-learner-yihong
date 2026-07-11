@@ -4,22 +4,15 @@ import Drawer from '@/components/Drawer'
 import Tooltip from '@/components/Tooltip'
 import { Button } from '@/components/ui/button'
 import { currentChapterAtom, currentDictInfoAtom, isReviewModeAtom } from '@/store'
-import { Dialog } from '@headlessui/react'
+import range from '@/utils/range'
+import { Dialog, Listbox, Transition } from '@headlessui/react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
-import { atom, useAtomValue } from 'jotai'
-import { useCallback, useContext, useState } from 'react'
+import { useAtom, useAtomValue } from 'jotai'
+import { Fragment, useCallback, useContext, useEffect, useState } from 'react'
+import IconCheck from '~icons/tabler/check'
+import IconChevronDown from '~icons/tabler/chevron-down'
 import ListIcon from '~icons/tabler/list'
 import IconX from '~icons/tabler/x'
-
-const currentDictTitle = atom((get) => {
-  const isReviewMode = get(isReviewModeAtom)
-
-  if (isReviewMode) {
-    return `${get(currentDictInfoAtom).name} 错题复习`
-  } else {
-    return `${get(currentDictInfoAtom).name} 第 ${get(currentChapterAtom) + 1} 章`
-  }
-})
 
 export default function WordList() {
   // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
@@ -27,8 +20,15 @@ export default function WordList() {
 
   const [isOpen, setIsOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-  const currentDictTitleValue = useAtomValue(currentDictTitle)
-  const currentLanguage = useAtomValue(currentDictInfoAtom).language
+  const currentDictInfo = useAtomValue(currentDictInfoAtom)
+  const [currentChapter, setCurrentChapter] = useAtom(currentChapterAtom)
+  const isReviewMode = useAtomValue(isReviewModeAtom)
+  const currentLanguage = currentDictInfo.language
+  const chapterCount = currentDictInfo.chapterCount
+
+  useEffect(() => {
+    setSelectedIndex(null)
+  }, [currentChapter])
 
   function closeModal() {
     setIsOpen(false)
@@ -43,6 +43,14 @@ export default function WordList() {
   const handleSelectWord = useCallback((index: number) => {
     setSelectedIndex(index)
   }, [])
+
+  const handleChapterChange = useCallback(
+    (chapter: number) => {
+      setCurrentChapter(chapter)
+      setSelectedIndex(null)
+    },
+    [setCurrentChapter],
+  )
 
   const handleStartFromSelected = useCallback(() => {
     if (selectedIndex === null) return
@@ -70,8 +78,46 @@ export default function WordList() {
 
       <Drawer open={isOpen} onClose={closeModal} classNames="bg-stone-50 dark:bg-gray-900">
         <Dialog.Title as="h3" className="flex items-center justify-between gap-2 p-4 text-lg font-medium leading-6 dark:text-gray-50">
-          <div className="min-w-0">
-            <p className="truncate">{currentDictTitleValue}</p>
+          <div className="min-w-0 flex-1">
+            {isReviewMode ? (
+              <p className="truncate">{currentDictInfo.name} 错题复习</p>
+            ) : (
+              <div className="flex min-w-0 items-center gap-1.5">
+                <p className="truncate">{currentDictInfo.name}</p>
+                <Listbox value={currentChapter} onChange={handleChapterChange}>
+                  <div className="relative shrink-0">
+                    <Listbox.Button className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-lg font-medium hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none dark:hover:bg-indigo-900/40 dark:hover:text-indigo-300">
+                      第 {currentChapter + 1} 章
+                      <IconChevronDown className="h-4 w-4 opacity-60" />
+                    </Listbox.Button>
+                    <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+                      <Listbox.Options className="absolute left-0 z-20 mt-1 max-h-60 w-28 overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 dark:ring-white/10">
+                        {range(0, chapterCount, 1).map((index) => (
+                          <Listbox.Option
+                            key={index}
+                            value={index}
+                            className={({ active }) =>
+                              `relative cursor-pointer select-none px-3 py-1.5 ${
+                                active
+                                  ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-200'
+                                  : 'text-gray-700 dark:text-gray-200'
+                              }`
+                            }
+                          >
+                            {({ selected }) => (
+                              <div className="flex items-center justify-between gap-2">
+                                <span>第 {index + 1} 章</span>
+                                {selected ? <IconCheck className="h-4 w-4 text-indigo-500" /> : null}
+                              </div>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </Listbox>
+              </div>
+            )}
             <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">点击单词选择起始位置</p>
           </div>
           <IconX onClick={closeModal} className="shrink-0 cursor-pointer" />

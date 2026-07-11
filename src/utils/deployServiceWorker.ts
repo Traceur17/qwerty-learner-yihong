@@ -1,4 +1,4 @@
-import { applyCanonicalVersionUrl, buildVersionRedirectUrl } from '@/utils/appVersionCheck'
+import { applyCanonicalVersionUrl } from '@/utils/appVersionCheck'
 import { getAppBuildId } from '@/utils/cacheBust'
 import { publicUrl } from '@/utils/publicUrl'
 

@@ -52,9 +52,7 @@ export function readExcelUnits(excelPath, options = {}) {
           }
         : parseSheetUnit(sheetName, options)
     const rowLayout =
-      includeMeta && typeof includeMeta !== 'string' && includeMeta.fixedColumns
-        ? includeMeta.fixedColumns
-        : options.fixedColumns
+      includeMeta && typeof includeMeta !== 'string' && includeMeta.fixedColumns ? includeMeta.fixedColumns : options.fixedColumns
     const rows = rowLayout ? readFixedColumnRows(sheet, rowLayout) : readNamedColumnRows(sheet, options)
 
     return { ...parsed, rows }

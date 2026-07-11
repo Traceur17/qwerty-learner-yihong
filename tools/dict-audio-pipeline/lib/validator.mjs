@@ -6,13 +6,21 @@ import { phraseSimilarity } from './similarity.mjs'
  */
 export async function validateUnit({ rows, segments, validation, segmentation }) {
   const issues = []
+  const allowPartial = segmentation?.allowPartial === true
 
   if (segments.length !== rows.length) {
-    issues.push({
-      type: 'count-mismatch',
-      message: `Expected ${rows.length} segments, got ${segments.length}`,
-    })
-    return { ok: false, issues }
+    if (allowPartial && segments.length > 0 && segments.length < rows.length) {
+      issues.push({
+        type: 'partial-match',
+        message: `Partial match: ${segments.length}/${rows.length} phrases have audio (${rows.length - segments.length} missing)`,
+      })
+    } else {
+      issues.push({
+        type: 'count-mismatch',
+        message: `Expected ${rows.length} segments, got ${segments.length}`,
+      })
+      return { ok: false, issues }
+    }
   }
 
   for (let i = 0; i < segments.length; i++) {
@@ -51,5 +59,6 @@ export async function validateUnit({ rows, segments, validation, segmentation })
     }
   }
 
-  return { ok: issues.length === 0, issues }
+  const blocking = issues.filter((issue) => issue.type !== 'partial-match')
+  return { ok: blocking.length === 0, issues }
 }

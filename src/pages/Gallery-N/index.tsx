@@ -35,7 +35,9 @@ export default function GalleryPage() {
   const currentDictInfo = useAtomValue(currentDictInfoAtom)
 
   const { groupedByCategoryAndTag } = useMemo(() => {
-    const currentLanguageCategoryDicts = dictionaries.filter((dict) => dict.languageCategory === galleryState.currentLanguageTab)
+    const currentLanguageCategoryDicts = dictionaries.filter(
+      (dict) => dict.languageCategory === galleryState.currentLanguageTab && dict.tags.includes('IELTS'),
+    )
     const groupedByCategory = Object.entries(groupBy(currentLanguageCategoryDicts, (dict) => dict.category))
     const groupedByCategoryAndTag = groupedByCategory.map(
       ([category, dicts]) => [category, groupByDictTags(dicts)] as [string, Record<string, Dictionary[]>],

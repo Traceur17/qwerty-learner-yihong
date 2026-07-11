@@ -1,4 +1,7 @@
 import { spawn } from 'node:child_process'
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
 export function runCommand(command, args, options = {}) {
   return new Promise((resolve, reject) => {
@@ -156,16 +159,24 @@ function median(values) {
 
 /**
  * 词组锚点裁切：起点可前移 startPadSec，终点后延 endPadSec / tailEndPadSec
+ * allowPartial=true 时：音频词组少于词表则只匹配前 N 个，不抛错（供词表多于录音的情况）
  */
 export function buildAnchorBoundarySegments(rows, speechSegments, options = {}) {
   const startPadSec = options.startPadSec ?? 0
   const endPadSec = options.endPadSec ?? 0.2
   const tailEndPadSec = options.tailEndPadSec ?? 0.35
   const minGapSec = options.minGapSec ?? 0.02
-  const count = rows.length
+  const allowPartial = options.allowPartial === true
+  const count = allowPartial ? Math.min(rows.length, speechSegments.length) : rows.length
 
   if (speechSegments.length < count) {
     throw new Error(`anchor-boundary: need ${count} phrase anchors, got ${speechSegments.length}`)
+  }
+  if (!allowPartial && speechSegments.length < rows.length) {
+    throw new Error(`anchor-boundary: need ${rows.length} phrase anchors, got ${speechSegments.length}`)
+  }
+  if (count === 0) {
+    throw new Error('anchor-boundary: no phrase anchors available')
   }
 
   const anchors = speechSegments.slice(0, count)
@@ -182,7 +193,7 @@ export function buildAnchorBoundarySegments(rows, speechSegments, options = {}) 
       start,
       end,
       text: rows[idx].name,
-      strategy: 'anchor-boundary',
+      strategy: allowPartial && speechSegments.length < rows.length ? 'anchor-boundary-partial' : 'anchor-boundary',
     })
   }
 
@@ -217,21 +228,41 @@ export function buildCalibratedFixedSegments(rows, contentStart, speechSegments,
   })
 }
 
+/**
+ * 高质量裁切：精确 seek → 临时 WAV → 再压成高码率 MP3，避免默认 lame 二次压缩在词中间引入电音。
+ * @param {string} audioPath
+ * @param {string} outputPath
+ * @param {number} startSec
+ * @param {number} endSec
+ * @param {number | { paddingMs?: number, trimSilence?: boolean, mp3Quality?: number }} options
+ *   mp3Quality: lame VBR 质量 0(最好)–9，默认 0
+ */
 export async function cutAudioSegment(audioPath, outputPath, startSec, endSec, options = {}) {
   const paddingMs = typeof options === 'number' ? options : options.paddingMs ?? 60
   const trimSilence = typeof options === 'object' && options.trimSilence === true
+  const mp3Quality = typeof options === 'object' && options.mp3Quality != null ? options.mp3Quality : 0
   const start = Math.max(0, startSec - paddingMs / 1000)
   const duration = Math.max(0.05, endSec - startSec + (paddingMs * 2) / 1000)
 
-  const args = ['-y', '-ss', String(start), '-t', String(duration), '-i', audioPath]
-  if (trimSilence) {
-    args.push(
-      '-af',
-      'silenceremove=start_periods=1:start_duration=0.08:start_threshold=-42dB:stop_periods=1:stop_duration=0.12:stop_threshold=-42dB',
-    )
+  const tempDir = mkdtempSync(join(tmpdir(), 'dict-audio-cut-'))
+  const wavPath = join(tempDir, 'segment.wav')
+
+  try {
+    // -ss after -i: accurate decode seek (avoids mid-stream encoder damage from coarse input seek + default re-encode)
+    const wavArgs = ['-y', '-i', audioPath, '-ss', String(start), '-t', String(duration)]
+    if (trimSilence) {
+      wavArgs.push(
+        '-af',
+        'silenceremove=start_periods=1:start_duration=0.08:start_threshold=-42dB:stop_periods=1:stop_duration=0.12:stop_threshold=-42dB',
+      )
+    }
+    wavArgs.push('-acodec', 'pcm_s16le', wavPath)
+    await runCommand('ffmpeg', wavArgs)
+
+    await runCommand('ffmpeg', ['-y', '-i', wavPath, '-codec:a', 'libmp3lame', '-q:a', String(mp3Quality), outputPath])
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true })
   }
-  args.push('-acodec', 'libmp3lame', outputPath)
-  await runCommand('ffmpeg', args)
 }
 
 export async function transcribeShortClip(audioPath, whisperModel) {

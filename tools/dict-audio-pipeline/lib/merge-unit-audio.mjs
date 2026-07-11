@@ -1,8 +1,8 @@
 import { getAudioDurationSec, runCommand } from './ffmpeg.mjs'
 import { ensureDir, writeJson } from './utils.mjs'
 import fs from 'node:fs'
-import path from 'node:path'
 import os from 'node:os'
+import path from 'node:path'
 
 /**
  * Merge per-word clips in unit{unitId}/ into unit{unitId}.mp3 + index.json
@@ -75,20 +75,7 @@ async function concatMp3Files(inputPaths, outputPath) {
   fs.writeFileSync(listFile, listContent, 'utf-8')
 
   try {
-    await runCommand('ffmpeg', [
-      '-y',
-      '-f',
-      'concat',
-      '-safe',
-      '0',
-      '-i',
-      listFile,
-      '-c:a',
-      'libmp3lame',
-      '-b:a',
-      '128k',
-      outputPath,
-    ])
+    await runCommand('ffmpeg', ['-y', '-f', 'concat', '-safe', '0', '-i', listFile, '-c:a', 'libmp3lame', '-b:a', '128k', outputPath])
   } finally {
     fs.unlinkSync(listFile)
   }

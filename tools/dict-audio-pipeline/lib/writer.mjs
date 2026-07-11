@@ -18,8 +18,10 @@ export function buildDictEntries({ manifest, unit, clips, segmentRefs }) {
     }
     if (segmentRefs?.[idx]) {
       entry[audioField] = segmentRefs[idx]
-    } else {
+    } else if (clip?.publicPath) {
       entry[audioField] = clip.publicPath
+    } else {
+      entry.audioMissing = true
     }
     return entry
   })

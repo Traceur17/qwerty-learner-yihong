@@ -13,6 +13,7 @@ import { TypingContext, TypingStateActionType, initialState, typingReducer } fro
 import { DonateCard } from '@/components/DonateCard'
 import Header from '@/components/Header'
 import Tooltip from '@/components/Tooltip'
+import { formatPreloadBytes, useChapterAudioPreload } from '@/hooks/useChapterAudioPreload'
 import { idDictionaryMap } from '@/resources/dictionary'
 import {
   currentChapterAtom,
@@ -34,10 +35,12 @@ import { useImmerReducer } from 'use-immer'
 const App: React.FC = () => {
   const [state, dispatch] = useImmerReducer(typingReducer, structuredClone(initialState))
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const { words } = useWordList()
+  const { words, wordList } = useWordList()
+  const currentDictInfo = useAtomValue(currentDictInfoAtom)
+  const [currentChapter, setCurrentChapter] = useAtom(currentChapterAtom)
+  const audioPreload = useChapterAudioPreload(currentDictInfo, currentChapter, words, wordList)
 
   const [currentDictId, setCurrentDictId] = useAtom(currentDictIdAtom)
-  const setCurrentChapter = useSetAtom(currentChapterAtom)
   const randomConfig = useAtomValue(randomConfigAtom)
   const chapterLogUploader = useMixPanelChapterLogUploader(state)
   const saveChapterRecord = useSaveChapterRecord()
@@ -62,7 +65,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const id = currentDictId
     if (!(id in idDictionaryMap)) {
-      setCurrentDictId('cet4')
+      setCurrentDictId('wang-c3-biscuit')
       setCurrentChapter(0)
       return
     }
@@ -84,8 +87,9 @@ const App: React.FC = () => {
   }, [dispatch])
 
   useEffect(() => {
-    state.chapterData.words?.length > 0 ? setIsLoading(false) : setIsLoading(true)
-  }, [state.chapterData.words])
+    const wordsReady = state.chapterData.words?.length > 0
+    setIsLoading(!wordsReady || audioPreload.isBlocking)
+  }, [state.chapterData.words, audioPreload.isBlocking])
 
   useEffect(() => {
     if (!state.isTyping) {
@@ -181,14 +185,37 @@ const App: React.FC = () => {
           <div className="relative flex min-h-0 w-full flex-1 flex-col items-center">
             <div className="flex min-h-0 w-full flex-1 items-center justify-center">
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center ">
+                <div className="flex flex-col items-center justify-center gap-3">
                   <div
                     className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid  border-indigo-400 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
                     role="status"
                   ></div>
+                  {audioPreload.isBlocking && audioPreload.progress.total > 0 && (
+                    <div className="flex w-64 flex-col items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                      <p>
+                        加载音频 {audioPreload.progress.loaded}/{audioPreload.progress.total}
+                        {audioPreload.progress.loadedBytes > 0 ? `（${formatPreloadBytes(audioPreload.progress.loadedBytes)}）` : ''}
+                      </p>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                        <div
+                          className="h-full rounded-full bg-indigo-400 transition-all duration-200"
+                          style={{
+                            width: `${Math.round((audioPreload.progress.loaded / audioPreload.progress.total) * 100)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
-                !state.isFinished && <WordPanel />
+                !state.isFinished && (
+                  <>
+                    <WordPanel />
+                    {audioPreload.backgroundLabel && (
+                      <p className="absolute bottom-2 text-xs text-gray-400 dark:text-gray-500">{audioPreload.backgroundLabel}</p>
+                    )}
+                  </>
+                )
               )}
             </div>
             <Speed />

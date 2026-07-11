@@ -8,6 +8,7 @@ import useSWR from 'swr'
 
 export type UseWordListResult = {
   words: WordWithIndex[]
+  wordList: Word[] | undefined
   isLoading: boolean
   error: Error | undefined
 }
@@ -59,7 +60,7 @@ export function useWordList(): UseWordListResult {
     })
   }, [isFirstChapter, isReviewMode, wordList, reviewRecord?.words, currentChapter, currentDictInfo])
 
-  return { words, isLoading, error }
+  return { words, wordList, isLoading, error }
 }
 
 const firstChapter = [

@@ -1,9 +1,9 @@
 dict:
   id: wang-c3-biscuit
   name: 雅思wang C3（饼干专属）
-  description: 吞音连读混合训练语料库（王陆 C3 教材音频，9 个 Test 单元）
+  description: 雅思听力特别名词语料库（王陆 C3 教材音频，9 个 Test 单元）
   category: 国际考试
-  tags: [IELTS, 音频]
+  tags: [IELTS, 饼干专属音频]
   language: en
   languageCategory: en
   accent: uk

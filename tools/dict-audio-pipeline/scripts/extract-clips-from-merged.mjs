@@ -41,7 +41,10 @@ for (const word of dict) {
   wordsByUnit.get(audio.unit).push(word)
 }
 
-const indexFiles = fs.readdirSync(audioDir).filter((f) => f.endsWith('.index.json')).sort()
+const indexFiles = fs
+  .readdirSync(audioDir)
+  .filter((f) => f.endsWith('.index.json'))
+  .sort()
 let clipCount = 0
 
 for (const indexFile of indexFiles) {

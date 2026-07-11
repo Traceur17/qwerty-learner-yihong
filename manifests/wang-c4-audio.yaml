@@ -1,9 +1,9 @@
 dict:
   id: wang-c4-biscuit
   name: 雅思wang C4（饼干专属）
-  description: 吞音连读混合训练语料库（王陆 C4 教材音频，形容词 Test 1–3 + 副词）
+  description: 雅思听力形容词副词语料库（王陆 C4 教材音频，形容词 Test 1–3 + 副词）
   category: 国际考试
-  tags: [IELTS, 音频]
+  tags: [IELTS, 饼干专属音频]
   language: en
   languageCategory: en
   accent: uk
@@ -58,6 +58,10 @@ segmentation:
     '4-01':
       silence:
         minIntroSec: 54
+    '4-03':
+      silence:
+        minIntroSec: 18
+        introMaxSec: 18
   fixed:
     skipIntroSec: 10
     intervalSec: 5

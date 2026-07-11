@@ -6,7 +6,7 @@ import { type WordAudioRef, isWordAudioSegment } from '@/utils/wordAudio'
 
 const pronunciationApi = 'https://dict.youdao.com/dictvoice?audio='
 
-export type PronunciationWordInput = string | Pick<Word, 'name' | 'usAudio' | 'ukAudio'>
+export type PronunciationWordInput = string | Pick<Word, 'name' | 'usAudio' | 'ukAudio' | 'audioMissing'>
 
 export function resolvePronunciationWordName(word: PronunciationWordInput): string {
   return typeof word === 'string' ? word : word.name
@@ -43,6 +43,7 @@ function generateYoudaoSoundSrc(wordName: string, pronunciation: Exclude<Pronunc
 
 export function generateWordSoundSrc(word: PronunciationWordInput, pronunciation: Exclude<PronunciationType, false>): string {
   if (typeof word !== 'string') {
+    if (word.audioMissing) return ''
     if (pronunciation === 'us' && word.usAudio) {
       const url = resolveCustomAudioUrl(word.usAudio)
       if (url) return url

@@ -93,8 +93,12 @@ export async function segmentAnchorBoundary({ audioPath, rows, segmentation }) {
   const speechSegments = await detectSilenceSegments(audioPath, silenceOpts)
   const contentStart = await resolveContentStart(audioPath, silenceOpts, speechSegments)
   const afterIntro = speechAfterIntro(speechSegments, contentStart)
+  const anchorOpts = {
+    ...(segmentation.anchor ?? {}),
+    allowPartial: segmentation.allowPartial === true,
+  }
 
-  return buildAnchorBoundarySegments(rows, afterIntro, segmentation.anchor ?? {})
+  return buildAnchorBoundarySegments(rows, afterIntro, anchorOpts)
 }
 
 /**

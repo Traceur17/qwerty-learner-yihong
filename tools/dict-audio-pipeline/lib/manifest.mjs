@@ -140,9 +140,7 @@ function normalizeManifest(raw, manifestPath) {
     audio: {
       ...raw.audio,
       dir: raw.audio.dir ? resolveFromManifest(manifestPath, raw.audio.dir) : undefined,
-      chapterDirPattern: raw.audio.chapterDirPattern
-        ? resolveFromManifest(manifestPath, raw.audio.chapterDirPattern)
-        : undefined,
+      chapterDirPattern: raw.audio.chapterDirPattern ? resolveFromManifest(manifestPath, raw.audio.chapterDirPattern) : undefined,
       manualDir: raw.audio.manualDir ? resolveFromManifest(manifestPath, raw.audio.manualDir) : undefined,
     },
     segmentation: {

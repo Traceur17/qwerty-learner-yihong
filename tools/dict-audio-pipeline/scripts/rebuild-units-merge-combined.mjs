@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * Rebuild specific units and merge into existing combined dict (wang-c5-biscuit).
  * Usage: node rebuild-units-merge-combined.mjs <manifest> 5-09 5-10
@@ -112,10 +113,7 @@ async function main() {
 
   let dictTs = fs.readFileSync(dictTsPath, 'utf-8')
   dictTs = dictTs.replace(/(id: 'wang-c5-biscuit'[\s\S]*?length: )\d+/, `$1${merged.length}`)
-  dictTs = dictTs.replace(
-    /(id: 'wang-c5-biscuit'[\s\S]*?chapterLengths: )\[([^\]]+)\]/,
-    `$1[${newChapterLengths.join(', ')}]`,
-  )
+  dictTs = dictTs.replace(/(id: 'wang-c5-biscuit'[\s\S]*?chapterLengths: )\[([^\]]+)\]/, `$1[${newChapterLengths.join(', ')}]`)
   fs.writeFileSync(dictTsPath, dictTs, 'utf-8')
   console.log('Updated src/resources/dictionary.ts')
 }

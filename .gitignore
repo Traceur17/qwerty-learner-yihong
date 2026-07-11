@@ -36,7 +36,7 @@ stats.html
 playwright-report
 
 # user-generated dictionary audio
-# 默认忽略；wang C3/C4/C5 裁切音频进仓库以便 GitHub Pages 部署后可播放（C11 除外）
+# 默认忽略；wang C3/C4/C5 裁切音频进仓库以便 GitHub Pages 部署后可播放
 /public/audio/*
 !/public/audio/.gitkeep
 !/public/audio/wang-c3-audio/

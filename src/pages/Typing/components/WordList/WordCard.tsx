@@ -3,7 +3,7 @@ import { WordPronunciationIcon } from '@/components/WordPronunciationIcon'
 import { currentDictInfoAtom } from '@/store'
 import type { Word } from '@/typings'
 import { useAtomValue } from 'jotai'
-import { useCallback, useRef, type MouseEvent } from 'react'
+import { type MouseEvent, useCallback, useRef } from 'react'
 
 export default function WordCard({
   word,
@@ -27,8 +27,8 @@ export default function WordCard({
 
   const handleCardClick = useCallback(() => {
     onSelect(index)
-    handlePlay()
-  }, [handlePlay, index, onSelect])
+    if (!word.audioMissing) handlePlay()
+  }, [handlePlay, index, onSelect, word.audioMissing])
 
   const handlePlayClick = useCallback(
     (event: MouseEvent) => {
@@ -51,18 +51,27 @@ export default function WordCard({
       onClick={handleCardClick}
     >
       <div className="flex-1">
-        <p className="select-all font-mono text-xl font-normal leading-6 dark:text-gray-50">
-          {['romaji', 'hapin'].includes(currentLanguage) ? word.notation : word.name}
-        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="select-all font-mono text-xl font-normal leading-6 dark:text-gray-50">
+            {['romaji', 'hapin'].includes(currentLanguage) ? word.notation : word.name}
+          </p>
+          {word.audioMissing && (
+            <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/50 dark:text-amber-200">
+              无音频
+            </span>
+          )}
+        </div>
         <div className="mt-2 max-w-sm font-sans text-sm text-gray-400">{word.trans.join('；')}</div>
       </div>
-      <button
-        type="button"
-        onClick={handlePlayClick}
-        className="shrink-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-      >
-        <WordPronunciationIcon word={word} lang={currentLanguage} className="h-8 w-8" ref={wordPronunciationIconRef} />
-      </button>
+      {!word.audioMissing && (
+        <button
+          type="button"
+          onClick={handlePlayClick}
+          className="shrink-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+        >
+          <WordPronunciationIcon word={word} lang={currentLanguage} className="h-8 w-8" ref={wordPronunciationIconRef} />
+        </button>
+      )}
     </div>
   )
 }

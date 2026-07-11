@@ -3,9 +3,9 @@
  *
  * Usage: node tools/dict-audio-pipeline/scripts/print-audio-mapping.mjs [3|4|5|all]
  */
-import XLSX from 'xlsx'
 import fs from 'node:fs'
 import path from 'node:path'
+import XLSX from 'xlsx'
 
 const root = process.cwd()
 const excelPath = path.join(root, 'manifests/source/IETS-wang.xlsx')
@@ -31,7 +31,10 @@ const chapterConfigs = {
 
 function listMp3(dir) {
   if (!fs.existsSync(dir)) return []
-  return fs.readdirSync(dir).filter((f) => /\.mp3$/i.test(f)).sort()
+  return fs
+    .readdirSync(dir)
+    .filter((f) => /\.mp3$/i.test(f))
+    .sort()
 }
 
 function matchAudio(files, unitNum, pattern) {

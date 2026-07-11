@@ -1,14 +1,15 @@
 #!/usr/bin/env node
+
 /**
  * Patch wang-c5.xlsx:
  * - 5.3-9: remove "recruiting method"
  * - 5.3-10: move "spinose plants" after "sports shoes"
  */
 import { readExcelUnits } from '../lib/excel.mjs'
-import XLSX from 'xlsx'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import XLSX from 'xlsx'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '../../..')
@@ -100,7 +101,9 @@ function main() {
   const u10 = units.find((u) => u.unitId === '5-10')
   console.log(`Verify 5-09: ${u9?.rows.length} rows, recruiting@${u9?.rows.findIndex((r) => r.name === 'recruiting method') + 1}`)
   const names10 = u10?.rows.map((r) => r.name) ?? []
-  console.log(`Verify 5-10: ${names10.length} rows, spinose@${names10.indexOf('spinose plants') + 1}, shoes@${names10.indexOf('sports shoes') + 1}`)
+  console.log(
+    `Verify 5-10: ${names10.length} rows, spinose@${names10.indexOf('spinose plants') + 1}, shoes@${names10.indexOf('sports shoes') + 1}`,
+  )
   console.log('5.3-10 order 39-49:', names10.slice(38, 49).join(' | '))
 }
 

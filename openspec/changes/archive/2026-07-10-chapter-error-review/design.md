@@ -56,10 +56,10 @@ async function startChapterErrorReview(dict, chapter, errorWords, setters) {
 
 ### 3. UI 落点
 
-| 位置 | 组件 |
-|------|------|
+| 位置   | 组件                                                                        |
+| ------ | --------------------------------------------------------------------------- |
 | 训练页 | 新建 `ChapterErrorReviewButton.tsx`，与 `ErrorBookButton` 并列于 `Switcher` |
-| 结果页 | `ResultScreen` 按钮区，「重复」旁增加「再练本章错词」 |
+| 结果页 | `ResultScreen` 按钮区，「重复」旁增加「再练本章错词」                       |
 
 禁用态：`disabled={count === 0}`，`title="本章暂无错词"`。
 

@@ -29,6 +29,8 @@ export type Word = {
   notation?: string
   usAudio?: WordAudioRef
   ukAudio?: WordAudioRef
+  /** 教材词表有词但未能匹配到录音切片 */
+  audioMissing?: boolean
 }
 
 export type WordWithIndex = Word & {

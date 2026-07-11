@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { idDictionaryMap } from '@/resources/dictionary'
 import { recordErrorBookAction } from '@/utils'
 import { useSetAtom } from 'jotai'
-import { forwardRef, useCallback, type Ref } from 'react'
+import { type Ref, forwardRef, useCallback } from 'react'
 import DeleteIcon from '~icons/weui/delete-filled'
 
 type IErrorRowProps = {

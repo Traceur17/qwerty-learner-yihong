@@ -1,6 +1,5 @@
 import { buildVersionRedirectUrl, resolveCanonicalVersionUrl } from '@/utils/appVersionCheck'
 import { getAppBuildId } from '@/utils/cacheBust'
-import { publicUrl } from '@/utils/publicUrl'
 import { describe, expect, it } from 'vitest'
 
 describe('appVersionCheck', () => {
