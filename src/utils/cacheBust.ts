@@ -10,7 +10,7 @@ export function getAppBuildId(): string {
  * 平时只发功能代码、不改音频：不要改这个值，以便浏览器继续复用音频缓存。
  * 练习记录等 IndexedDB 数据不受影响。
  */
-export const AUDIO_ASSET_EPOCH = '20260712-hq'
+export const AUDIO_ASSET_EPOCH = '20260712-hq-binfix'
 
 /** 为同源静态资源 URL 追加版本查询参数 */
 export function withCacheBust(url: string): string {
