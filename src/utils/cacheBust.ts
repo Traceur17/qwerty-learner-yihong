@@ -1,26 +1,30 @@
-/** 当前构建版本（git 短 hash），用于静态资源 cache bust */
+/** 当前构建版本（git 短 hash），用于词库 JSON 等非音频静态资源 cache bust */
 export function getAppBuildId(): string {
   return LATEST_COMMIT_HASH.replace(/\s*\(dev\)\s*$/, '').trim()
 }
 
 /**
- * 自定义音频资源世代号。重切/替换 public/audio 后务必递增，
- * 避免 GitHub Pages + 浏览器对同路径 MP3 的长期缓存继续播旧文件（含电音问题）。
+ * 自定义音频资源世代号（与 git hash 解耦）。
+ *
+ * 何时递增：重切 / 替换 `public/audio/**` 后，需要用户强制拉新 MP3 时。
+ * 平时只发功能代码、不改音频：不要改这个值，以便浏览器继续复用音频缓存。
+ * 练习记录等 IndexedDB 数据不受影响。
  */
-export const AUDIO_ASSET_EPOCH = 'hq3'
+export const AUDIO_ASSET_EPOCH = '20260712-hq'
 
-/** 为同源静态资源 URL 追加版本查询参数，避免浏览器长期使用旧词库/音频缓存 */
+/** 为同源静态资源 URL 追加版本查询参数 */
 export function withCacheBust(url: string): string {
   if (!url) return url
   if (/^https?:\/\//i.test(url)) return url
 
-  const buildId = getAppBuildId()
   const isAudio = /\/audio\//i.test(url)
-  const parts: string[] = []
-  if (buildId) parts.push(`v=${encodeURIComponent(buildId)}`)
-  if (isAudio) parts.push(`av=${encodeURIComponent(AUDIO_ASSET_EPOCH)}`)
-  if (parts.length === 0) return url
-
   const sep = url.includes('?') ? '&' : '?'
-  return `${url}${sep}${parts.join('&')}`
+
+  if (isAudio) {
+    return `${url}${sep}av=${encodeURIComponent(AUDIO_ASSET_EPOCH)}`
+  }
+
+  const buildId = getAppBuildId()
+  if (!buildId) return url
+  return `${url}${sep}v=${encodeURIComponent(buildId)}`
 }

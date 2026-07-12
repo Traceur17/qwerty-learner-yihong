@@ -1,4 +1,4 @@
-import { getAppBuildId, withCacheBust } from '@/utils/cacheBust'
+import { AUDIO_ASSET_EPOCH, getAppBuildId, withCacheBust } from '@/utils/cacheBust'
 import { describe, expect, it } from 'vitest'
 
 describe('cacheBust', () => {
@@ -6,23 +6,24 @@ describe('cacheBust', () => {
     expect(getAppBuildId()).toBe(LATEST_COMMIT_HASH.replace(/\s*\(dev\)\s*$/, '').trim())
   })
 
-  it('appends version query to relative urls', () => {
+  it('appends build version query to non-audio urls', () => {
     const busted = withCacheBust('/dicts/wang-c5-biscuit.json')
     expect(busted).toContain('v=')
+    expect(busted).not.toContain('av=')
     expect(busted.startsWith('/dicts/wang-c5-biscuit.json?')).toBe(true)
   })
 
-  it('adds audio epoch for audio urls', () => {
+  it('uses audio epoch only for audio urls (not build hash)', () => {
     const busted = withCacheBust('/audio/wang-c3-audio/unit3-01/001.mp3')
-    expect(busted).toContain('v=')
-    expect(busted).toContain('av=')
+    expect(busted).toContain(`av=${AUDIO_ASSET_EPOCH}`)
+    expect(busted).not.toMatch(/[?&]v=/)
   })
 
-  it('uses ampersand when url already has query', () => {
+  it('uses ampersand when audio url already has query', () => {
     const busted = withCacheBust('/audio/foo.mp3?foo=1')
     expect(busted).toContain('foo=1')
-    expect(busted).toContain('&v=')
-    expect(busted).toContain('&av=')
+    expect(busted).toContain(`&av=${AUDIO_ASSET_EPOCH}`)
+    expect(busted).not.toMatch(/[?&]v=/)
   })
 
   it('leaves external urls unchanged', () => {
