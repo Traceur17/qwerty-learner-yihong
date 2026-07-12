@@ -55,7 +55,8 @@ export function formatPreloadBytes(bytes: number): string {
 }
 
 async function fetchOne(url: string): Promise<number> {
-  const response = await fetch(url, { cache: 'force-cache' })
+  // no-cache：带 ETag 协商，避免 force-cache 永久命中部署前的旧 MP3
+  const response = await fetch(url, { cache: 'no-cache' })
   if (!response.ok) throw new Error(`preload failed: ${response.status}`)
   const buffer = await response.arrayBuffer()
   return buffer.byteLength

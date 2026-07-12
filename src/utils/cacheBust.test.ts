@@ -12,10 +12,17 @@ describe('cacheBust', () => {
     expect(busted.startsWith('/dicts/wang-c5-biscuit.json?')).toBe(true)
   })
 
+  it('adds audio epoch for audio urls', () => {
+    const busted = withCacheBust('/audio/wang-c3-audio/unit3-01/001.mp3')
+    expect(busted).toContain('v=')
+    expect(busted).toContain('av=')
+  })
+
   it('uses ampersand when url already has query', () => {
     const busted = withCacheBust('/audio/foo.mp3?foo=1')
     expect(busted).toContain('foo=1')
     expect(busted).toContain('&v=')
+    expect(busted).toContain('&av=')
   })
 
   it('leaves external urls unchanged', () => {
