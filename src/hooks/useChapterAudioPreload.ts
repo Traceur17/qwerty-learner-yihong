@@ -1,7 +1,13 @@
 import { pronunciationConfigAtom } from '@/store'
 import type { Dictionary, Word } from '@/typings'
 import { getChapterRange } from '@/utils'
-import { type AudioPreloadProgress, chapterNeedsAudioPreload, formatPreloadBytes, preloadWordAudios } from '@/utils/chapterAudioPreload'
+import {
+  type AudioPreloadProgress,
+  areWordAudiosPreloaded,
+  chapterNeedsAudioPreload,
+  formatPreloadBytes,
+  preloadWordAudios,
+} from '@/utils/chapterAudioPreload'
 import { useAtomValue } from 'jotai'
 import { useEffect, useState } from 'react'
 
@@ -16,7 +22,8 @@ export type ChapterAudioPreloadState = {
 const idleProgress: AudioPreloadProgress = { loaded: 0, total: 0, loadedBytes: 0 }
 
 /**
- * 进入练习：先阻塞预加载当前章自定义音频，再后台预加载后续章。
+ * 进入练习：当前章未缓存时阻塞预加载；已在本会话加载过则跳过阻塞。
+ * 随后后台预加载后续章（已缓存的 URL 会自动跳过）。
  */
 export function useChapterAudioPreload(
   dictInfo: Dictionary,
@@ -42,16 +49,21 @@ export function useChapterAudioPreload(
         return
       }
 
-      setIsBlocking(true)
-      setProgress({ loaded: 0, total: 0, loadedBytes: 0 })
-      setBackgroundLabel(null)
+      if (areWordAudiosPreloaded(chapterWords, pronunciation)) {
+        setIsBlocking(false)
+        setProgress(idleProgress)
+      } else {
+        setIsBlocking(true)
+        setProgress({ loaded: 0, total: 0, loadedBytes: 0 })
+        setBackgroundLabel(null)
 
-      await preloadWordAudios(chapterWords, pronunciation, (p) => {
-        if (!cancelled) setProgress(p)
-      })
+        await preloadWordAudios(chapterWords, pronunciation, (p) => {
+          if (!cancelled) setProgress(p)
+        })
 
-      if (cancelled) return
-      setIsBlocking(false)
+        if (cancelled) return
+        setIsBlocking(false)
+      }
 
       if (!fullWordList || fullWordList.length === 0) return
 
@@ -60,7 +72,10 @@ export function useChapterAudioPreload(
         const { start, end } = getChapterRange(dictInfo, chapter)
         laterChapters.push(...fullWordList.slice(start, end))
       }
-      if (laterChapters.length === 0) return
+      if (laterChapters.length === 0 || areWordAudiosPreloaded(laterChapters, pronunciation)) {
+        if (!cancelled) setBackgroundLabel(null)
+        return
+      }
 
       setBackgroundLabel('后台缓存后续章节音频…')
       await preloadWordAudios(laterChapters, pronunciation)

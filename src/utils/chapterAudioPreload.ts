@@ -2,9 +2,12 @@ import type { PronunciationType, Word } from '@/typings'
 import { withCacheBust } from '@/utils/cacheBust'
 import { generateWordSoundSrc } from '@/utils/pronunciation'
 import { publicUrl } from '@/utils/publicUrl'
-import { isWordAudioSegment, resolveSegmentAudioUrl, resolveWordAudioSegment } from '@/utils/wordAudio'
+import { resolveSegmentAudioUrl, resolveWordAudioSegment } from '@/utils/wordAudio'
 
 const DEFAULT_CONCURRENCY = 6
+
+/** 本会话已成功预加载过的自定义音频 URL（刷新页面后清空） */
+const preloadedAudioUrls = new Set<string>()
 
 export type AudioPreloadProgress = {
   loaded: number
@@ -34,6 +37,18 @@ export function chapterNeedsAudioPreload(words: Word[], pronunciation: Exclude<P
   return collectCustomAudioUrls(words, pronunciation).length > 0
 }
 
+/** 本章自定义音频是否已在本会话全部预加载过 */
+export function areWordAudiosPreloaded(words: Word[], pronunciation: Exclude<PronunciationType, false>): boolean {
+  const urls = collectCustomAudioUrls(words, pronunciation)
+  if (urls.length === 0) return true
+  return urls.every((url) => preloadedAudioUrls.has(url))
+}
+
+/** 测试用：清空会话预加载记录 */
+export function resetPreloadedAudioCache(): void {
+  preloadedAudioUrls.clear()
+}
+
 export function formatPreloadBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
@@ -47,8 +62,9 @@ async function fetchOne(url: string): Promise<number> {
 }
 
 /**
- * 预加载一组词的自定义音频；返回是否实际执行了预加载。
- * onProgress 在每完成一个 URL 时回调（按真实完成数/字节累计）。
+ * 预加载一组词的自定义音频；已在本会话加载过的 URL 会跳过。
+ * onProgress 在每完成一个待拉取 URL 时回调。
+ * @returns 是否实际发起了拉取（全已缓存则 false）
  */
 export async function preloadWordAudios(
   words: Word[],
@@ -56,8 +72,14 @@ export async function preloadWordAudios(
   onProgress?: (progress: AudioPreloadProgress) => void,
   concurrency = DEFAULT_CONCURRENCY,
 ): Promise<boolean> {
-  const urls = collectCustomAudioUrls(words, pronunciation)
-  if (urls.length === 0) return false
+  const allUrls = collectCustomAudioUrls(words, pronunciation)
+  if (allUrls.length === 0) return false
+
+  const urls = allUrls.filter((url) => !preloadedAudioUrls.has(url))
+  if (urls.length === 0) {
+    onProgress?.({ loaded: allUrls.length, total: allUrls.length, loadedBytes: 0 })
+    return false
+  }
 
   let loaded = 0
   let loadedBytes = 0
@@ -71,8 +93,9 @@ export async function preloadWordAudios(
       try {
         const bytes = await fetchOne(url)
         loadedBytes += bytes
+        preloadedAudioUrls.add(url)
       } catch {
-        // 单个失败不阻断；播放时仍会再请求
+        // 单个失败不阻断；播放时仍会再请求，也不记入已加载集合
       }
       loaded += 1
       onProgress?.({ loaded, total: urls.length, loadedBytes })

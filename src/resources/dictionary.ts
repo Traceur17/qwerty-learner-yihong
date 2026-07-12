@@ -631,6 +631,22 @@ const internationalExam: DictionaryResource[] = [
     pronunciationTypes: ['uk'],
   },
   // dict-audio-pipeline:wang-c5-biscuit-end
+  // dict-audio-pipeline:wang-c11-biscuit
+  {
+    id: 'wang-c11-biscuit',
+    name: '雅思wang C11（饼干专属）',
+    description: '《剑18》专用测试',
+    category: '国际考试',
+    tags: ['IELTS', '饼干专属音频'],
+    url: '/dicts/wang-c11-biscuit.json',
+    length: 1706,
+    chapterLengths: [366, 396, 349, 595],
+    language: 'en',
+    languageCategory: 'en',
+    defaultPronIndex: 1,
+    pronunciationTypes: ['uk'],
+  },
+  // dict-audio-pipeline:wang-c11-biscuit-end
 
   {
     id: 'pet-2024',

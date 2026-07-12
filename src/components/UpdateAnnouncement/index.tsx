@@ -46,9 +46,14 @@ const UPDATE_ITEMS: UpdateItem[] = [
   },
   {
     tag: '词库',
-    title: '新增 C3 / C4 词库',
+    title: '新增 C3 / C4 / C11 词库',
     summary: '王陆雅思语料扩充，配套教材音频，适合吞音连读混合训练。',
-    details: ['词库页 → 国际考试', 'C3：9 个 Test 单元，共 1135 词', 'C4：形容词 Test 1–3 + 副词，共 346 词'],
+    details: [
+      '词库页 → 国际考试',
+      'C3：9 个 Test 单元，共 1135 词',
+      'C4：形容词 Test 1–3 + 副词，共 346 词',
+      'C11：《剑18》专用测试，4 个 Section，共 1706 词',
+    ],
     icon: IconSparkles,
   },
   {

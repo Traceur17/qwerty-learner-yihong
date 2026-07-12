@@ -1,0 +1,80 @@
+# C11 第4章：以整理后的转录词表为主词本 + Section 4 / Session 4 音频
+dict:
+  id: wang-c11-biscuit
+  name: 雅思wang C11（饼干专属）
+  description: 《剑18》专用测试
+  category: 国际考试
+  tags: [IELTS, 饼干专属音频]
+  language: en
+  languageCategory: en
+  accent: uk
+  defaultPronIndex: 1
+
+units:
+  excel: ./source/C11-Section4-transcript.xlsx
+  chapterFilter: '11'
+  sheetPattern: '*'
+  requireSheetIdMatch: false
+  includeSheets:
+    - name: Section 4
+      chapter: 11
+      unit: 4
+      unitId: 11-04
+      label: C11 Section 4
+      # 第2列英文，第3列释义，第4列音标（可选）
+      fixedColumns:
+        startRow: 2
+        seq: 1
+        name: 2
+        trans: 3
+        phone: 4
+
+audio:
+  chapterDirPattern: ./source/audio/C11
+  # Session 4 主音频：Section 4.mp3（不含 Session 4.2 半段）
+  filePattern: '^Section\s+(?<unit>\d+)\.mp3$'
+  skipMissingAudio: false
+  manualDir: ./source/manual/C11
+
+segmentation:
+  strategy: anchor-boundary
+  fallback: []
+  allowPartial: true
+  anchor:
+    startPadSec: 0.2
+    endPadSec: 0.3
+    tailEndPadSec: 0.45
+    minGapSec: 0.02
+  clusterGapSec: 2.5
+  silence:
+    noiseDb: -45
+    minSilenceSec: 0.2
+    minIntroSec: 6
+    contentStartSec: 6
+    rhythmWindowSize: 5
+    rhythmIntervalMin: 3.5
+    rhythmIntervalMax: 6.5
+    minPhraseSec: 0.2
+    maxPhraseSec: 10
+    introMaxSec: 6
+  paddingMs: 150
+  trimSilence: false
+
+validation:
+  minSimilarity: 0.85
+  failOnMismatch: true
+  minDurationSec: 0.2
+  maxDurationSec: 15
+  verifyTranscript: false
+
+output:
+  audioDir: ../public/audio/wang-c11-audio
+  dictDir: ../public/dicts
+  reportDir: ../output/reports
+  # 仅重建第4章时，由脚本合并进完整词库，避免覆盖第1–3章
+  registerDictionary: false
+  combinedDict: true
+  combinedDictId: wang-c11-biscuit-ch4-only
+  perUnitDict: false
+  mergedAudio: false
+  cleanupClipFiles: false
