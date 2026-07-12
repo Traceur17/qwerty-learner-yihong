@@ -17,16 +17,18 @@
 
 ## Decisions
 
-1. **单一常量 `AUDIO_ASSET_EPOCH`**（`src/utils/cacheBust.ts`）  
-   - 音频 URL：`?av=<epoch>`  
+1. **单一常量 `AUDIO_ASSET_EPOCH`**（`src/utils/cacheBust.ts`）
+
+   - 音频 URL：`?av=<epoch>`
    - 非音频同源资源：仍用 `?v=<git hash>`
 
-2. **世代切换钩子**（`deployServiceWorker.ts`）  
-   - `localStorage` 记录上次 epoch  
-   - 变化时 `caches.keys()` 全删 Cache Storage（当前 SW 几乎不缓存音频，作为兜底）  
+2. **世代切换钩子**（`deployServiceWorker.ts`）
+
+   - `localStorage` 记录上次 epoch
+   - 变化时 `caches.keys()` 全删 Cache Storage（当前 SW 几乎不缓存音频，作为兜底）
    - 不调用 Dexie / IndexedDB 清理
 
-3. **预加载**  
+3. **预加载**
    - `fetch(..., { cache: 'no-cache' })`：允许协商，避免 `force-cache` 粘死旧实体
 
 ## 运维手册（以后怎么用）
