@@ -21,8 +21,8 @@ const UPDATE_ITEMS: UpdateItem[] = [
   {
     tag: '词库',
     title: '饼干专属词本核对',
-    summary: '进一步核对并校验 C3–C11（饼干专属）词本与配套音频，减少词条与发音错位。',
-    details: ['覆盖王陆 C3 / C4 / C5 / C11 饼干专属词库', '按教材介绍起点与词序重新对齐章节音频', '建议强制刷新后再练习，以加载最新音频'],
+    summary: '进一步核对并校验 C3–C11（饼干专属）词本，听写时词和声音对得更齐。',
+    details: ['覆盖王陆 C3 / C4 / C5 / C11 饼干专属词库', '章节发音与词条顺序对齐更准确', '建议强制刷新后再练习'],
     icon: IconSparkles,
   },
   {
@@ -34,16 +34,16 @@ const UPDATE_ITEMS: UpdateItem[] = [
   },
   {
     tag: '练习',
-    title: '单词发音更稳定',
-    summary: '进章预加载改为「可播就绪」；侧栏点词、主区自动播与快捷键共用同一套播放逻辑，减少偶发无声。',
-    details: ['进度条表示本章音频已就绪，而非仅下载完', '侧栏连点多词应能连续出声', '若播放失败，发音图标会给出可见提示，可再点一次'],
+    title: '听发音更顺畅',
+    summary: '点词听读、自动播放更不容易「没声音」，连点多个词也能正常接着播。',
+    details: ['练习时发音更跟手', '侧栏连点多个词也能连续出声', '万一没播出来，图标会提示，再点一次即可'],
     icon: IconList,
   },
   {
     tag: '体验',
-    title: '音频本地缓存',
-    summary: '自定义词音频会写入本地缓存；同一音频版本下再次进章，预加载通常更快。',
-    details: ['刷新页面后仍尽量复用已缓存的 MP3', '音频资源更新后会自动换新版本缓存', '练习记录等本地数据不受影响'],
+    title: '再次进章更快',
+    summary: '听过的章节下次进来不用干等那么久，练习节奏更连贯。',
+    details: ['同一章再练，等待更短', '刷新页面后也尽量保留已加载的发音', '你的练习记录不受影响'],
     icon: IconLayout,
   },
 ]
@@ -126,7 +126,7 @@ export default function UpdateAnnouncement() {
                       小圆饼干，你好！这次更新主要为你
                       <strong className="font-medium text-gray-800 dark:text-gray-100">核对了饼干专属词本</strong>，并改进了
                       <strong className="font-medium text-gray-800 dark:text-gray-100">听写音标反馈</strong>与
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">单词发音体验</strong>
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">听发音体验</strong>
                       ，练起来会更稳、更清楚。
                     </p>
                   </div>
