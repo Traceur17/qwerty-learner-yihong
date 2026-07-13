@@ -53,6 +53,11 @@ segmentation:
     '3-01':
       silence:
         minIntroSec: 47
+    '3-09':
+      # 词表 wing 紧接 workforce，但源音频中间多一段朗读，需跳过后再对齐
+      speechSkips:
+        - afterWord: wing
+          skipCount: 1
   fixed:
     skipIntroSec: 10
     intervalSec: 5
