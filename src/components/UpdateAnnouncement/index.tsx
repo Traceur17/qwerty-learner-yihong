@@ -21,29 +21,29 @@ const UPDATE_ITEMS: UpdateItem[] = [
   {
     tag: '词库',
     title: '饼干专属词本核对',
-    summary: '进一步核对并校验 C3–C11（饼干专属）词本，听写时词和声音对得更齐。',
-    details: ['覆盖王陆 C3 / C4 / C5 / C11 饼干专属词库', '章节发音与词条顺序对齐更准确', '建议强制刷新后再练习'],
+    summary: '进一步核对并校验 C3–C11（饼干专属）词本，词条与发音对齐更准确。',
+    details: ['覆盖王陆 C3 / C4 / C5 / C11 饼干专属词库', '章节发音与词序对齐更准确', '建议强制刷新后再练习'],
     icon: IconSparkles,
   },
   {
     tag: '听写',
     title: '对错反馈展示音标',
-    summary: '听写提交后，正确或错误反馈里除释义外，也会显示音标，方便对照发音。',
+    summary: '听写提交后，正确或错误反馈里除释义外也会显示音标，方便对照发音。',
     details: ['工具栏开启听写模式（Ctrl + Shift + D）', '答对 / 答错反馈均可看到音标', '音标跟随设置中的英式 / 美式偏好'],
     icon: IconTarget,
   },
   {
     tag: '练习',
-    title: '听发音更顺畅',
-    summary: '点词听读、自动播放更不容易「没声音」，连点多个词也能正常接着播。',
-    details: ['练习时发音更跟手', '侧栏连点多个词也能连续出声', '万一没播出来，图标会提示，再点一次即可'],
+    title: '音频播放更稳定',
+    summary: '点词听读与自动播放更可靠，连点多个词也能正常接着播。',
+    details: ['减少偶发无声', '侧栏连点可连续出声', '播放失败时图标会提示，可再点一次'],
     icon: IconList,
   },
   {
     tag: '体验',
-    title: '再次进章更快',
-    summary: '听过的章节下次进来不用干等那么久，练习节奏更连贯。',
-    details: ['同一章再练，等待更短', '刷新页面后也尽量保留已加载的发音', '你的练习记录不受影响'],
+    title: '词库加载进缓存',
+    summary: '词库音频首次加载后会保留；之后刷新不再重新拉取，练习节奏更连贯。',
+    details: ['首次进章加载完成后写入本地', '同版本下刷新 / 再进章无需重载', '练习记录不受影响'],
     icon: IconLayout,
   },
 ]
@@ -126,7 +126,7 @@ export default function UpdateAnnouncement() {
                       小圆饼干，你好！这次更新主要为你
                       <strong className="font-medium text-gray-800 dark:text-gray-100">核对了饼干专属词本</strong>，并改进了
                       <strong className="font-medium text-gray-800 dark:text-gray-100">听写音标反馈</strong>与
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">听发音体验</strong>
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">听发音与加载体验</strong>
                       ，练起来会更稳、更清楚。
                     </p>
                   </div>
@@ -137,15 +137,12 @@ export default function UpdateAnnouncement() {
               {/* Content */}
               <div className="customized-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-6 md:px-10 md:py-7">
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-x-6 lg:gap-y-5">
-                  {UPDATE_ITEMS.map((item, index) => {
+                  {UPDATE_ITEMS.map((item) => {
                     const Icon = item.icon
-                    const isWide = index === UPDATE_ITEMS.length - 1
                     return (
                       <article
                         key={item.title}
-                        className={`flex gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-5 dark:border-gray-700 dark:bg-gray-900/40 ${
-                          isWide ? 'lg:col-span-2 lg:px-8' : ''
-                        }`}
+                        className="flex gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-5 dark:border-gray-700 dark:bg-gray-900/40"
                       >
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-white shadow-sm">
                           <Icon className="h-6 w-6" />
