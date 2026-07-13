@@ -93,5 +93,12 @@ export function applySpeechSkips(speechSegments, rows, skips) {
 export function applyExcludeWords(rows, excludeWords) {
   if (!Array.isArray(excludeWords) || excludeWords.length === 0) return rows
   const blocked = new Set(excludeWords.map((word) => String(word).trim().toLowerCase()).filter(Boolean))
-  return rows.filter((row) => !blocked.has(String(row.name ?? '').trim().toLowerCase()))
+  return rows.filter(
+    (row) =>
+      !blocked.has(
+        String(row.name ?? '')
+          .trim()
+          .toLowerCase(),
+      ),
+  )
 }

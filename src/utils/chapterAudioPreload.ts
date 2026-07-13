@@ -3,20 +3,24 @@ import { withCacheBust } from '@/utils/cacheBust'
 import { generateWordSoundSrc } from '@/utils/pronunciation'
 import { publicUrl } from '@/utils/publicUrl'
 import { resolveSegmentAudioUrl, resolveWordAudioSegment } from '@/utils/wordAudio'
+import {
+  ensureMp3OnDisk,
+  isWordAudioOnDisk,
+  resetWordAudioPlayerForTests,
+  retainDecodedUrls,
+  scheduleDecodeUrls,
+} from '@/utils/wordAudioPlayer'
 
 const DEFAULT_CONCURRENCY = 6
-
-/** 本会话已成功预加载过的自定义音频 URL（刷新页面后清空） */
-const preloadedAudioUrls = new Set<string>()
 
 export type AudioPreloadProgress = {
   loaded: number
   total: number
-  /** 已下载字节数（真实网络/磁盘读取量） */
   loadedBytes: number
+  failed: number
 }
 
-function collectCustomAudioUrls(words: Word[], pronunciation: Exclude<PronunciationType, false>): string[] {
+export function collectCustomAudioUrls(words: Word[], pronunciation: Exclude<PronunciationType, false>): string[] {
   const urls = new Set<string>()
   for (const word of words) {
     const segment = resolveWordAudioSegment(word, pronunciation)
@@ -32,21 +36,24 @@ function collectCustomAudioUrls(words: Word[], pronunciation: Exclude<Pronunciat
   return [...urls]
 }
 
-/** 词库是否包含需本地预加载的自定义音频（有道在线发音不预加载整章） */
 export function chapterNeedsAudioPreload(words: Word[], pronunciation: Exclude<PronunciationType, false>): boolean {
   return collectCustomAudioUrls(words, pronunciation).length > 0
 }
 
-/** 本章自定义音频是否已在本会话全部预加载过 */
-export function areWordAudiosPreloaded(words: Word[], pronunciation: Exclude<PronunciationType, false>): boolean {
+/** 本章自定义 MP3 是否已全部在磁盘会话标记中（刷新后需再跑 ensure 才能为 true） */
+export function areWordAudiosOnDisk(words: Word[], pronunciation: Exclude<PronunciationType, false>): boolean {
   const urls = collectCustomAudioUrls(words, pronunciation)
   if (urls.length === 0) return true
-  return urls.every((url) => preloadedAudioUrls.has(url))
+  return urls.every((url) => isWordAudioOnDisk(url))
 }
 
-/** 测试用：清空会话预加载记录 */
+/** @deprecated 使用 areWordAudiosOnDisk；保留别名避免旧引用炸掉 */
+export function areWordAudiosPreloaded(words: Word[], pronunciation: Exclude<PronunciationType, false>): boolean {
+  return areWordAudiosOnDisk(words, pronunciation)
+}
+
 export function resetPreloadedAudioCache(): void {
-  preloadedAudioUrls.clear()
+  resetWordAudioPlayerForTests()
 }
 
 export function formatPreloadBytes(bytes: number): string {
@@ -54,18 +61,50 @@ export function formatPreloadBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-async function fetchOne(url: string): Promise<number> {
-  // no-cache：带 ETag 协商，避免 force-cache 永久命中部署前的旧 MP3
-  const response = await fetch(url, { cache: 'no-cache' })
-  if (!response.ok) throw new Error(`preload failed: ${response.status}`)
-  const buffer = await response.arrayBuffer()
-  return buffer.byteLength
+/**
+ * 确保本章 MP3 已在磁盘 Cache（不 decode）。
+ * 已缓存时静默命中，不触发 onProgress；仅网络下载缺失文件时回调。
+ * @returns fetched>0 表示发生了网络拉取
+ */
+export async function ensureChapterMp3OnDisk(
+  words: Word[],
+  pronunciation: Exclude<PronunciationType, false>,
+  onProgress?: (progress: AudioPreloadProgress) => void,
+  concurrency = DEFAULT_CONCURRENCY,
+  onNetworkStart?: (missCount: number) => void,
+): Promise<{ didFetch: boolean; failed: number }> {
+  const allUrls = collectCustomAudioUrls(words, pronunciation)
+  if (allUrls.length === 0) return { didFetch: false, failed: 0 }
+
+  if (areWordAudiosOnDisk(words, pronunciation)) {
+    return { didFetch: false, failed: 0 }
+  }
+
+  const result = await ensureMp3OnDisk(allUrls, {
+    concurrency,
+    onNetworkStart,
+    onProgress: (p) => {
+      onProgress?.({
+        loaded: p.loaded,
+        total: p.total,
+        loadedBytes: p.loadedBytes,
+        failed: p.failed,
+      })
+    },
+  })
+
+  return { didFetch: result.fetched > 0, failed: result.failed.length }
+}
+
+/** 进入章节：只保留本章 decode，并后台 decode 本章（点击会插队）。 */
+export function activateChapterAudio(words: Word[], pronunciation: Exclude<PronunciationType, false>): void {
+  const urls = collectCustomAudioUrls(words, pronunciation)
+  retainDecodedUrls(urls)
+  scheduleDecodeUrls(urls)
 }
 
 /**
- * 预加载一组词的自定义音频；已在本会话加载过的 URL 会跳过。
- * onProgress 在每完成一个待拉取 URL 时回调。
- * @returns 是否实际发起了拉取（全已缓存则 false）
+ * @deprecated 改为 ensureChapterMp3OnDisk；旧名仍做磁盘 ensure，不再整章 decode 阻塞。
  */
 export async function preloadWordAudios(
   words: Word[],
@@ -73,36 +112,6 @@ export async function preloadWordAudios(
   onProgress?: (progress: AudioPreloadProgress) => void,
   concurrency = DEFAULT_CONCURRENCY,
 ): Promise<boolean> {
-  const allUrls = collectCustomAudioUrls(words, pronunciation)
-  if (allUrls.length === 0) return false
-
-  const urls = allUrls.filter((url) => !preloadedAudioUrls.has(url))
-  if (urls.length === 0) {
-    onProgress?.({ loaded: allUrls.length, total: allUrls.length, loadedBytes: 0 })
-    return false
-  }
-
-  let loaded = 0
-  let loadedBytes = 0
-  onProgress?.({ loaded: 0, total: urls.length, loadedBytes: 0 })
-
-  let cursor = 0
-  const workers = Array.from({ length: Math.min(concurrency, urls.length) }, async () => {
-    while (cursor < urls.length) {
-      const index = cursor++
-      const url = urls[index]
-      try {
-        const bytes = await fetchOne(url)
-        loadedBytes += bytes
-        preloadedAudioUrls.add(url)
-      } catch {
-        // 单个失败不阻断；播放时仍会再请求，也不记入已加载集合
-      }
-      loaded += 1
-      onProgress?.({ loaded, total: urls.length, loadedBytes })
-    }
-  })
-
-  await Promise.all(workers)
-  return true
+  const { didFetch } = await ensureChapterMp3OnDisk(words, pronunciation, onProgress, concurrency)
+  return didFetch
 }

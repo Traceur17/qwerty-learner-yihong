@@ -5,6 +5,8 @@ import Tooltip from '@/components/Tooltip'
 import { Button } from '@/components/ui/button'
 import { currentChapterAtom, currentDictInfoAtom, isReviewModeAtom } from '@/store'
 import range from '@/utils/range'
+import { stopSegmentPlayback } from '@/utils/segmentAudioPlayer'
+import { stopWordAudio } from '@/utils/wordAudioPlayer'
 import { Dialog, Listbox, Transition } from '@headlessui/react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import { useAtom, useAtomValue } from 'jotai'
@@ -55,8 +57,11 @@ export default function WordList() {
   const handleStartFromSelected = useCallback(() => {
     if (selectedIndex === null) return
 
+    // 停掉侧栏预听；跳词后保持暂停，显示「按任意键继续」，勿立刻 isTyping+自动播
+    stopWordAudio()
+    stopSegmentPlayback()
     dispatch({ type: TypingStateActionType.SKIP_2_WORD_INDEX, newIndex: selectedIndex })
-    dispatch({ type: TypingStateActionType.SET_IS_TYPING, payload: true })
+    dispatch({ type: TypingStateActionType.SET_IS_TYPING, payload: false })
     setIsOpen(false)
     setSelectedIndex(null)
   }, [dispatch, selectedIndex])

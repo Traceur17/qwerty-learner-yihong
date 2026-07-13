@@ -1,23 +1,32 @@
 import { applyCanonicalVersionUrl } from '@/utils/appVersionCheck'
-import { AUDIO_ASSET_EPOCH, getAppBuildId } from '@/utils/cacheBust'
+import { clearRuntimeCaches, deleteLegacyWordAudioBuckets, pruneWordAudioCacheForPrefix } from '@/utils/audioDiskCache'
+import { AUDIO_ASSET_EPOCH, AUDIO_ASSET_EPOCH_BY_PREFIX, getAppBuildId } from '@/utils/cacheBust'
 import { publicUrl } from '@/utils/publicUrl'
 
 type VersionPayload = {
   hash?: string
 }
 
-const AUDIO_EPOCH_STORAGE_KEY = 'qwerty.audioAssetEpoch'
+const AUDIO_EPOCH_MAP_KEY = 'qwerty.audioAssetEpochMap'
+
+function currentEpochMap(): Record<string, string> {
+  return {
+    '*': AUDIO_ASSET_EPOCH,
+    ...AUDIO_ASSET_EPOCH_BY_PREFIX,
+  }
+}
 
 /**
  * 拉取线上 version.json，确保 URL 带当前 `_v` 版本号。
- * 同时注册 deploy SW，使无 `_v` 的旧书签在 SW 生效后也能网络优先拉取 index.html。
- * 版本/音频世代变化时清理 Cache Storage，避免旧音频等静态资源残留。
+ * 音频按词典前缀世代失效；代码发版清缓存时保留 word-audio 磁盘桶。
  */
 export async function checkForAppUpdate(): Promise<void> {
+  // Dev 也跑世代 prune，避免改 av 后旧键残留、新键每次都当 miss
+  await ensureAudioEpochsFresh()
+
   if (import.meta.env.DEV) return
 
   registerDeployServiceWorker()
-  await ensureAudioEpochFresh()
 
   try {
     const response = await fetch(publicUrl(`/version.json?_=${Date.now()}`), {
@@ -34,7 +43,7 @@ export async function checkForAppUpdate(): Promise<void> {
 
     const buildId = getAppBuildId()
     if (buildId && buildId !== remoteHash) {
-      await clearRuntimeCaches()
+      await clearRuntimeCaches({ preserveCurrentWordAudio: true })
       const url = new URL(window.location.href)
       url.searchParams.set('_v', remoteHash)
       url.searchParams.set('_bust', String(Date.now()))
@@ -45,24 +54,32 @@ export async function checkForAppUpdate(): Promise<void> {
   }
 }
 
-async function ensureAudioEpochFresh(): Promise<void> {
+async function ensureAudioEpochsFresh(): Promise<void> {
   try {
-    const prev = localStorage.getItem(AUDIO_EPOCH_STORAGE_KEY)
-    if (prev === AUDIO_ASSET_EPOCH) return
-    await clearRuntimeCaches()
-    localStorage.setItem(AUDIO_EPOCH_STORAGE_KEY, AUDIO_ASSET_EPOCH)
+    await deleteLegacyWordAudioBuckets()
+
+    const next = currentEpochMap()
+    let prev: Record<string, string> = {}
+    try {
+      prev = JSON.parse(localStorage.getItem(AUDIO_EPOCH_MAP_KEY) || '{}') as Record<string, string>
+    } catch {
+      prev = {}
+    }
+
+    for (const [prefix, epoch] of Object.entries(AUDIO_ASSET_EPOCH_BY_PREFIX)) {
+      if (prev[prefix] && prev[prefix] !== epoch) {
+        await pruneWordAudioCacheForPrefix(prefix, epoch)
+      }
+    }
+
+    // Default epoch change: prune URLs that use only the default av and are under /audio/
+    // but not covered by a more specific prefix — rare; skip aggressive wipe.
+
+    localStorage.setItem(AUDIO_EPOCH_MAP_KEY, JSON.stringify(next))
+    // Migrate away from old single-key storage
+    localStorage.removeItem('qwerty.audioAssetEpoch')
   } catch {
     // ignore quota / private mode
-  }
-}
-
-async function clearRuntimeCaches(): Promise<void> {
-  try {
-    if (!('caches' in window)) return
-    const keys = await caches.keys()
-    await Promise.all(keys.map((key) => caches.delete(key)))
-  } catch {
-    // ignore
   }
 }
 

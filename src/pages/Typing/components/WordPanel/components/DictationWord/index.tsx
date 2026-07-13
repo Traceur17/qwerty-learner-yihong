@@ -1,3 +1,4 @@
+import Phonetic from '../Phonetic'
 import DictationDiff from './DictationDiff'
 import Tooltip from '@/components/Tooltip'
 import { SoundIcon } from '@/components/WordPronunciationIcon/SoundIcon'
@@ -17,6 +18,10 @@ type FeedbackState = 'none' | 'correct' | 'wrong'
 
 const CORRECT_DELAY_MS = 1000
 
+function hasPhonetic(word: Word): boolean {
+  return Boolean((word.ukphone && word.ukphone.length > 1) || (word.usphone && word.usphone.length > 1))
+}
+
 export default function DictationWord({ word, onFinish }: { word: Word; onFinish: () => void }) {
   const { state, dispatch } = useContext(TypingContext)!
   const [inputWord, setInputWord] = useState('')
@@ -26,13 +31,14 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
   const feedbackRef = useRef<HTMLDivElement>(null)
   const saveWordRecord = useSaveWordRecord()
   const [, playBeepSound, playHintSound] = useKeySounds()
-  const { play, stop, isPlaying } = usePronunciationSound(word)
+  const { play, stop, isPlaying, playError } = usePronunciationSound(word)
 
   const isIgnoreCase = useAtomValue(isIgnoreCaseAtom)
   const fontSizeConfig = useAtomValue(fontSizeConfigAtom)
 
   const displayWord = word.name
   const translation = useMemo(() => formatTranslation(word.trans), [word.trans])
+  const showFeedbackPhonetic = hasPhonetic(word)
 
   const diffResult = useMemo(() => {
     if (feedback !== 'wrong') return null
@@ -40,9 +46,8 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
   }, [displayWord, feedback, inputWord, isIgnoreCase])
 
   const playSound = useCallback(() => {
-    stop()
     play()
-  }, [play, stop])
+  }, [play])
 
   useEffect(() => {
     setInputWord('')
@@ -165,7 +170,12 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
     <div className="flex flex-col items-center justify-center pb-1 pt-4">
       <div className="mb-6 flex h-9 w-9 items-center justify-center">
         <Tooltip content={`快捷键${CTRL} + J`}>
-          <SoundIcon animated={isPlaying} onClick={playSound} className="h-9 w-9 cursor-pointer text-gray-600 dark:text-gray-300" />
+          <SoundIcon
+            animated={isPlaying}
+            onClick={playSound}
+            className={`h-9 w-9 cursor-pointer text-gray-600 dark:text-gray-300 ${playError ? 'text-red-500 dark:text-red-400' : ''}`}
+            title={playError ? '播放失败，请再点一次' : undefined}
+          />
         </Tooltip>
       </div>
 
@@ -198,8 +208,11 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
           />
         )}
 
-        {feedback === 'correct' && translation && (
-          <p className="mt-3 text-center text-base text-gray-600 dark:text-gray-300">{translation}</p>
+        {feedback === 'correct' && (
+          <div className="mt-3 flex flex-col items-center gap-1.5">
+            {showFeedbackPhonetic && <Phonetic word={word} />}
+            {translation && <p className="text-center text-base text-gray-600 dark:text-gray-300">{translation}</p>}
+          </div>
         )}
 
         {feedback === 'wrong' && (
@@ -207,7 +220,10 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
             {diffResult && (
               <DictationDiff parts={diffResult.correctLine} variant="correct" fontSize={fontSizeConfig.foreignFont} className="mt-3" />
             )}
-            {translation && <p className="mt-2 text-center text-base text-gray-600 dark:text-gray-300">{translation}</p>}
+            <div className="mt-2 flex flex-col items-center gap-1.5">
+              {showFeedbackPhonetic && <Phonetic word={word} />}
+              {translation && <p className="text-center text-base text-gray-600 dark:text-gray-300">{translation}</p>}
+            </div>
             <p className="mt-2 text-center text-xs text-gray-400 dark:text-gray-500">按 Enter 继续</p>
           </>
         )}

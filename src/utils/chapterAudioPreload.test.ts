@@ -1,14 +1,64 @@
 import type { PronunciationType, Word } from '@/typings'
 import {
   type AudioPreloadProgress,
-  areWordAudiosPreloaded,
+  areWordAudiosOnDisk,
   chapterNeedsAudioPreload,
-  preloadWordAudios,
+  ensureChapterMp3OnDisk,
   resetPreloadedAudioCache,
 } from '@/utils/chapterAudioPreload'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+function installMockAudioContext() {
+  class MockAudioContext {
+    state: AudioContextState = 'running'
+    destination = {}
+    resume = vi.fn(async () => {
+      this.state = 'running'
+    })
+    close = vi.fn(async () => undefined)
+    createBuffer = vi.fn(() => ({} as AudioBuffer))
+    createBufferSource = vi.fn(() => ({
+      connect: vi.fn(),
+      start: vi.fn(),
+      stop: vi.fn(),
+      disconnect: vi.fn(),
+      playbackRate: { value: 1 },
+    }))
+    createGain = vi.fn(() => ({ connect: vi.fn(), disconnect: vi.fn(), gain: { value: 1 } }))
+    decodeAudioData = vi.fn(async (ab: ArrayBuffer) => {
+      return { duration: 1, byteLength: ab.byteLength } as unknown as AudioBuffer
+    })
+  }
+
+  vi.stubGlobal(
+    'AudioContext',
+    vi.fn(() => new MockAudioContext()),
+  )
+}
+
+function installFakeCaches() {
+  const store = new Map<string, Response>()
+  vi.stubGlobal('caches', {
+    open: async () => ({
+      match: async (url: string) => store.get(url),
+      put: async (url: string, response: Response) => {
+        store.set(url, response)
+      },
+      keys: async () => [...store.keys()].map((u) => new Request(new URL(u, 'http://localhost').href)),
+      delete: async () => true,
+    }),
+    keys: async () => ['qwerty-word-audio-v2'],
+    delete: async () => true,
+  })
+  return store
+}
 
 describe('chapterAudioPreload', () => {
+  beforeEach(() => {
+    installMockAudioContext()
+    installFakeCaches()
+  })
+
   afterEach(() => {
     resetPreloadedAudioCache()
     vi.unstubAllGlobals()
@@ -20,7 +70,7 @@ describe('chapterAudioPreload', () => {
     expect(chapterNeedsAudioPreload([{ name: 'a', trans: [] }], 'uk')).toBe(false)
   })
 
-  it('reports progress while preloading', async () => {
+  it('reports progress while ensuring mp3 on disk', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       arrayBuffer: async () => new ArrayBuffer(8),
@@ -32,14 +82,24 @@ describe('chapterAudioPreload', () => {
       { name: 'b', trans: [], ukAudio: '/audio/wang-c4-audio/unit4-04/002.mp3' },
     ]
     const events: AudioPreloadProgress[] = []
-    const did = await preloadWordAudios(words, 'uk' as Exclude<PronunciationType, false>, (p) => events.push({ ...p }), 2)
-    expect(did).toBe(true)
-    expect(events[0]).toEqual({ loaded: 0, total: 2, loadedBytes: 0 })
-    expect(events.at(-1)).toEqual({ loaded: 2, total: 2, loadedBytes: 16 })
+    let networkStarted = false
+    const result = await ensureChapterMp3OnDisk(
+      words,
+      'uk' as Exclude<PronunciationType, false>,
+      (p) => events.push({ ...p }),
+      2,
+      () => {
+        networkStarted = true
+      },
+    )
+    expect(result.didFetch).toBe(true)
+    expect(networkStarted).toBe(true)
+    expect(events.at(-1)).toMatchObject({ loaded: 2, total: 2, failed: 0 })
     expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(areWordAudiosOnDisk(words, 'uk')).toBe(true)
   })
 
-  it('skips network when urls were already preloaded this session', async () => {
+  it('skips network when urls already on disk this session', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       arrayBuffer: async () => new ArrayBuffer(4),
@@ -51,12 +111,42 @@ describe('chapterAudioPreload', () => {
       { name: 'b', trans: [], ukAudio: '/audio/wang-c4-audio/unit4-04/002.mp3' },
     ]
 
-    expect(areWordAudiosPreloaded(words, 'uk')).toBe(false)
-    await preloadWordAudios(words, 'uk')
-    expect(areWordAudiosPreloaded(words, 'uk')).toBe(true)
-
-    const second = await preloadWordAudios(words, 'uk')
-    expect(second).toBe(false)
+    await ensureChapterMp3OnDisk(words, 'uk')
+    const second = await ensureChapterMp3OnDisk(words, 'uk')
+    expect(second.didFetch).toBe(false)
     expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('rehydrates from Cache index without network after session reset', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      arrayBuffer: async () => new ArrayBuffer(4),
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const words: Word[] = [{ name: 'a', trans: [], ukAudio: '/audio/wang-c4-audio/unit4-04/001.mp3' }]
+    await ensureChapterMp3OnDisk(words, 'uk')
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+
+    resetPreloadedAudioCache()
+    installMockAudioContext()
+    // caches stub is still the same Map from beforeEach — but reset clears diskReady
+    // re-install same store by ensuring put survived; open cache still has entry
+    const events: AudioPreloadProgress[] = []
+    let networkStarted = false
+    const again = await ensureChapterMp3OnDisk(
+      words,
+      'uk',
+      (p) => events.push({ ...p }),
+      2,
+      () => {
+        networkStarted = true
+      },
+    )
+    expect(again.didFetch).toBe(false)
+    expect(networkStarted).toBe(false)
+    expect(events).toHaveLength(0)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(areWordAudiosOnDisk(words, 'uk')).toBe(true)
   })
 })

@@ -3,7 +3,6 @@ import noop from '@/utils/noop'
 import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
 import { Fragment, useEffect, useState } from 'react'
-import IconBook from '~icons/tabler/book'
 import IconLayout from '~icons/tabler/layout'
 import IconList from '~icons/tabler/list'
 import IconSparkles from '~icons/tabler/sparkles'
@@ -20,47 +19,31 @@ type UpdateItem = {
 
 const UPDATE_ITEMS: UpdateItem[] = [
   {
-    tag: '练习',
-    title: '从此开始练习',
-    summary: '长章节不必每次从头练。在词表里点选任意单词，确认后从该词继续本章进度。',
-    details: ['左侧 List 打开本章词表', '点击单词：选中并播放发音', '底部「从 xxx 开始练习」确认跳转'],
-    icon: IconList,
-  },
-  {
-    tag: '错题',
-    title: '章节错题本',
-    summary: '按章复习错词，练完回到原来的章节位置，进度不丢。',
-    details: ['练习页工具栏进入本章错题本', '勾选错词 → 只练选中；不勾选 → 练全部', '关闭返回，自动恢复进入前的章节进度'],
-    icon: IconBook,
-  },
-  {
-    tag: '听写',
-    title: '听写对错反馈',
-    summary: '提交后立即看到哪里写对、哪里写错，错词对照中文释义加深记忆。',
-    details: [
-      '工具栏开启听写模式（Ctrl + Shift + D）',
-      '提交后逐字 diff：错字 / 缺字 / 多字分色高亮',
-      '答错时展示中文释义，按 Enter 继续下一词',
-    ],
-    icon: IconTarget,
-  },
-  {
     tag: '词库',
-    title: '新增 C3 / C4 / C11 词库',
-    summary: '王陆雅思语料扩充，配套教材音频，适合吞音连读混合训练。',
-    details: [
-      '词库页 → 国际考试',
-      'C3：9 个 Test 单元，共 1135 词',
-      'C4：形容词 Test 1–3 + 副词，共 346 词',
-      'C11：《剑18》专用测试，4 个 Section，共 1706 词',
-    ],
+    title: '饼干专属词本核对',
+    summary: '进一步核对并校验 C3–C11（饼干专属）词本与配套音频，减少词条与发音错位。',
+    details: ['覆盖王陆 C3 / C4 / C5 / C11 饼干专属词库', '按教材介绍起点与词序重新对齐章节音频', '建议强制刷新后再练习，以加载最新音频'],
     icon: IconSparkles,
   },
   {
-    tag: '界面',
-    title: '宽屏布局优化',
-    summary: '针对 16:10 及常见笔记本宽屏，重新梳理练习页信息密度与留白。',
-    details: ['顶栏与工具区更紧凑，减少换行挤压', '练习主区、统计栏、结算页宽度更合理', '左侧词表抽屉与滚动体验优化'],
+    tag: '听写',
+    title: '对错反馈展示音标',
+    summary: '听写提交后，正确或错误反馈里除释义外，也会显示音标，方便对照发音。',
+    details: ['工具栏开启听写模式（Ctrl + Shift + D）', '答对 / 答错反馈均可看到音标', '音标跟随设置中的英式 / 美式偏好'],
+    icon: IconTarget,
+  },
+  {
+    tag: '练习',
+    title: '单词发音更稳定',
+    summary: '进章预加载改为「可播就绪」；侧栏点词、主区自动播与快捷键共用同一套播放逻辑，减少偶发无声。',
+    details: ['进度条表示本章音频已就绪，而非仅下载完', '侧栏连点多词应能连续出声', '若播放失败，发音图标会给出可见提示，可再点一次'],
+    icon: IconList,
+  },
+  {
+    tag: '体验',
+    title: '音频本地缓存',
+    summary: '自定义词音频会写入本地缓存；同一音频版本下再次进章，预加载通常更快。',
+    details: ['刷新页面后仍尽量复用已缓存的 MP3', '音频资源更新后会自动换新版本缓存', '练习记录等本地数据不受影响'],
     icon: IconLayout,
   },
 ]
@@ -70,6 +53,7 @@ const TAG_COLORS: Record<string, string> = {
   错题: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-200',
   听写: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
   词库: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200',
+  体验: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200',
   界面: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200',
 }
 
@@ -139,14 +123,14 @@ export default function UpdateAnnouncement() {
                       致 小圆饼干
                     </Dialog.Title>
                     <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
-                      小圆饼干，你好！这次更新主要为你准备了
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">长章节练习</strong>、
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">听写反馈</strong>与
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">雅思语料扩充</strong>，并在 16:10
-                      宽屏下做了界面适配，练起来会更顺手。
+                      小圆饼干，你好！这次更新主要为你
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">核对了饼干专属词本</strong>，并改进了
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">听写音标反馈</strong>与
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">单词发音体验</strong>
+                      ，练起来会更稳、更清楚。
                     </p>
                   </div>
-                  <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-10</p>
+                  <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-13</p>
                 </div>
               </div>
 

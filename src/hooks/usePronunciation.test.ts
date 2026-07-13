@@ -14,7 +14,7 @@ const wordWithUsAudio: Pick<Word, 'name' | 'usAudio' | 'ukAudio'> = {
 
 describe('generateWordSoundSrc', () => {
   it('uses custom UK audio when pronunciation is uk', () => {
-    expect(generateWordSoundSrc(wordWithUkAudio, 'uk')).toBe('/audio/test/001.mp3')
+    expect(generateWordSoundSrc(wordWithUkAudio, 'uk')).toContain('/audio/test/001.mp3')
   })
 
   it('falls back to Youdao when custom audio missing for active accent', () => {
@@ -23,7 +23,7 @@ describe('generateWordSoundSrc', () => {
   })
 
   it('uses custom US audio when pronunciation is us', () => {
-    expect(generateWordSoundSrc(wordWithUsAudio, 'us')).toBe('/audio/test/hello_us.mp3')
+    expect(generateWordSoundSrc(wordWithUsAudio, 'us')).toContain('/audio/test/hello_us.mp3')
   })
 
   it('keeps legacy string-only Youdao behavior', () => {

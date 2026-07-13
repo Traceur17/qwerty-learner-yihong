@@ -1,7 +1,7 @@
 import { SoundIcon } from './SoundIcon'
 import usePronunciationSound from '@/hooks/usePronunciation'
 import type { Word } from '@/typings'
-import { useCallback, useEffect, useImperativeHandle } from 'react'
+import { useCallback, useImperativeHandle } from 'react'
 import React from 'react'
 
 export const WordPronunciationIcon = React.forwardRef<
@@ -22,16 +22,11 @@ export const WordPronunciationIcon = React.forwardRef<
     }
   }
   const pronunciationInput = word.usAudio || word.ukAudio ? word : currentWord()
-  const { play, stop, isPlaying } = usePronunciationSound(pronunciationInput)
+  const { play, isPlaying, playError } = usePronunciationSound(pronunciationInput)
 
   const playSound = useCallback(() => {
-    stop()
     play()
-  }, [play, stop])
-
-  useEffect(() => {
-    return stop
-  }, [word, stop])
+  }, [play])
 
   useImperativeHandle(
     ref,
@@ -45,8 +40,9 @@ export const WordPronunciationIcon = React.forwardRef<
     <SoundIcon
       animated={isPlaying}
       onClick={playSound}
-      className={`cursor-pointer text-gray-600 ${className}`}
+      className={`cursor-pointer text-gray-600 ${playError ? 'text-red-500 dark:text-red-400' : ''} ${className}`}
       iconClassName={iconClassName}
+      title={playError ? '播放失败，请再点一次' : undefined}
     />
   )
 })

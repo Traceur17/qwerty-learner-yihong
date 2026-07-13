@@ -27,6 +27,7 @@ import {
 import { IsDesktop, isLegal } from '@/utils'
 import { useSaveChapterRecord } from '@/utils/db'
 import { useMixPanelChapterLogUploader } from '@/utils/mixpanel'
+import { unlockWordAudio } from '@/utils/wordAudioPlayer'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import type React from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -90,6 +91,18 @@ const App: React.FC = () => {
     const wordsReady = state.chapterData.words?.length > 0
     setIsLoading(!wordsReady || audioPreload.isBlocking)
   }, [state.chapterData.words, audioPreload.isBlocking])
+
+  useEffect(() => {
+    const unlock = () => {
+      void unlockWordAudio()
+    }
+    window.addEventListener('pointerdown', unlock, { once: true })
+    window.addEventListener('keydown', unlock, { once: true })
+    return () => {
+      window.removeEventListener('pointerdown', unlock)
+      window.removeEventListener('keydown', unlock)
+    }
+  }, [])
 
   useEffect(() => {
     if (!state.isTyping) {
@@ -193,14 +206,17 @@ const App: React.FC = () => {
                   {audioPreload.isBlocking && audioPreload.progress.total > 0 && (
                     <div className="flex w-64 flex-col items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                       <p>
-                        加载音频 {audioPreload.progress.loaded}/{audioPreload.progress.total}
+                        缓存音频 {audioPreload.progress.loaded}/{audioPreload.progress.total}
                         {audioPreload.progress.loadedBytes > 0 ? `（${formatPreloadBytes(audioPreload.progress.loadedBytes)}）` : ''}
+                        {audioPreload.progress.failed > 0 ? ` · 失败 ${audioPreload.progress.failed}` : ''}
                       </p>
                       <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                         <div
                           className="h-full rounded-full bg-indigo-400 transition-all duration-200"
                           style={{
-                            width: `${Math.round((audioPreload.progress.loaded / audioPreload.progress.total) * 100)}%`,
+                            width: `${Math.round(
+                              ((audioPreload.progress.loaded + audioPreload.progress.failed) / audioPreload.progress.total) * 100,
+                            )}%`,
                           }}
                         />
                       </div>
@@ -211,6 +227,11 @@ const App: React.FC = () => {
                 !state.isFinished && (
                   <>
                     <WordPanel />
+                    {audioPreload.failedCount > 0 && (
+                      <p className="absolute bottom-8 text-xs text-amber-600 dark:text-amber-400">
+                        有 {audioPreload.failedCount} 条音频未能就绪，点击时可能无声
+                      </p>
+                    )}
                     {audioPreload.backgroundLabel && (
                       <p className="absolute bottom-2 text-xs text-gray-400 dark:text-gray-500">{audioPreload.backgroundLabel}</p>
                     )}
