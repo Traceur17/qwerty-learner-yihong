@@ -60,6 +60,12 @@ segmentation:
     '5-01':
       silence:
         minIntroSec: 40
+    # Test 12 中文介绍约 18s；默认 rhythm/minIntroSec=12 会误把 13.4s 处片段当成首词
+    '5-12':
+      silence:
+        contentStartSec: 18
+        minIntroSec: 18
+        introMaxSec: 18
   fixed:
     skipIntroSec: 10
     intervalSec: 5
