@@ -1,4 +1,4 @@
-import { AUDIO_ASSET_EPOCH, getAppBuildId, withCacheBust } from '@/utils/cacheBust'
+import { AUDIO_ASSET_EPOCH, AUDIO_ASSET_EPOCH_BY_PREFIX, getAppBuildId, getAudioAssetEpochForUrl, withCacheBust } from '@/utils/cacheBust'
 import { describe, expect, it } from 'vitest'
 
 describe('cacheBust', () => {
@@ -13,15 +13,15 @@ describe('cacheBust', () => {
     expect(busted.startsWith('/dicts/wang-c5-biscuit.json?')).toBe(true)
   })
 
-  it('uses audio epoch only for audio urls (not build hash)', () => {
-    const busted = withCacheBust('/audio/wang-c3-audio/unit3-01/001.mp3')
-    expect(busted).toContain(`av=${AUDIO_ASSET_EPOCH}`)
+  it('uses per-dict audio epoch for known prefixes', () => {
+    const busted = withCacheBust('/audio/wang-c5-audio/unit5-01/001.mp3')
+    expect(busted).toContain(`av=${AUDIO_ASSET_EPOCH_BY_PREFIX['/audio/wang-c5-audio/']}`)
     expect(busted).not.toMatch(/[?&]v=/)
+    expect(getAudioAssetEpochForUrl('/audio/wang-c3-audio/x.mp3')).toBe(AUDIO_ASSET_EPOCH_BY_PREFIX['/audio/wang-c3-audio/'])
   })
 
-  it('uses ampersand when audio url already has query', () => {
+  it('falls back to default epoch for unknown audio paths', () => {
     const busted = withCacheBust('/audio/foo.mp3?foo=1')
-    expect(busted).toContain('foo=1')
     expect(busted).toContain(`&av=${AUDIO_ASSET_EPOCH}`)
     expect(busted).not.toMatch(/[?&]v=/)
   })

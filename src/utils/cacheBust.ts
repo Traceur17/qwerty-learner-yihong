@@ -4,13 +4,29 @@ export function getAppBuildId(): string {
 }
 
 /**
- * 自定义音频资源世代号（与 git hash 解耦）。
- *
- * 何时递增：重切 / 替换 `public/audio/**` 后，需要用户强制拉新 MP3 时。
- * 平时只发功能代码、不改音频：不要改这个值，以便浏览器继续复用音频缓存。
- * 练习记录等 IndexedDB 数据不受影响。
+ * 默认音频世代号（未单独配置前缀时使用）。
+ * 重切某本词典音频时：优先改 AUDIO_ASSET_EPOCH_BY_PREFIX 里对应前缀，避免其它词典缓存失效。
  */
-export const AUDIO_ASSET_EPOCH = '20260713-c11-ch1-c5-ch10'
+export const AUDIO_ASSET_EPOCH = '20260713-default'
+
+/**
+ * 按音频目录前缀覆盖世代号。只改被重切的词典即可。
+ * key 匹配 publicUrl 后的路径片段，例如 `/audio/wang-c5-audio/`。
+ */
+export const AUDIO_ASSET_EPOCH_BY_PREFIX: Record<string, string> = {
+  '/audio/wang-c3-audio/': '20260713-c3',
+  '/audio/wang-c4-audio/': '20260713-c4',
+  '/audio/wang-c5-audio/': '20260713-c5-ch10-recut',
+  '/audio/wang-c11-audio/': '20260713-c11',
+}
+
+/** 解析某音频 URL 应使用的 av 世代号 */
+export function getAudioAssetEpochForUrl(url: string): string {
+  for (const [prefix, epoch] of Object.entries(AUDIO_ASSET_EPOCH_BY_PREFIX)) {
+    if (url.includes(prefix)) return epoch
+  }
+  return AUDIO_ASSET_EPOCH
+}
 
 /** 为同源静态资源 URL 追加版本查询参数 */
 export function withCacheBust(url: string): string {
@@ -21,7 +37,8 @@ export function withCacheBust(url: string): string {
   const sep = url.includes('?') ? '&' : '?'
 
   if (isAudio) {
-    return `${url}${sep}av=${encodeURIComponent(AUDIO_ASSET_EPOCH)}`
+    const epoch = getAudioAssetEpochForUrl(url)
+    return `${url}${sep}av=${encodeURIComponent(epoch)}`
   }
 
   const buildId = getAppBuildId()

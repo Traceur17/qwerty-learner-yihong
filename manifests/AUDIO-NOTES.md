@@ -1,7 +1,7 @@
 # 饼干专属词库 · 音频裁切备注
 
 > 记录各章中文介绍起点、单元覆盖参数，以及词序/词表特殊调整。  
-> 改介绍时长或词表后：改对应 `wang-c*-audio.yaml` → 重切该单元 → 必要时递增 `AUDIO_ASSET_EPOCH`。  
+> 改介绍时长或词表后：改对应 `wang-c*-audio.yaml` → 重切该单元 → 必要时递增对应词典的音频世代号。  
 > 最后更新：2026-07-13
 
 源表与原音频在 `manifests/source/`（gitignore，仅本地）。
@@ -15,7 +15,7 @@
 | 裁切垫音         | 前后各约 `paddingMs: 150`                            |
 | 音质             | WAV 中间态 → MP3 `-q:a 0`（HQ）                      |
 | Git              | `*.mp3 binary`（勿当文本提交，否则会剥 CRLF 出电音） |
-| 强制刷新线上音频 | 改 `src/utils/cacheBust.ts` 里的 `AUDIO_ASSET_EPOCH` |
+| 强制刷新线上音频 | 改 `src/utils/cacheBust.ts` 里 `AUDIO_ASSET_EPOCH_BY_PREFIX` 对应前缀（如只重切 C5 就改 `/audio/wang-c5-audio/`）；未知路径才用默认 `AUDIO_ASSET_EPOCH` |
 
 `minIntroSec` / `introMaxSec`：介绍至少跳过到该秒附近再找词组。  
 `contentStartSec`：强制从该秒起切（避免误把介绍里的短语音当首词）。
@@ -95,7 +95,7 @@
 | 9 (`5-09`)  | 139  | 默认 12s                                                      | ~17s       | range of English level → silver cloth  |
 | 10 (`5-10`) | 142  | 默认 12s                                                      | ~14s       | sky dome → the Milky Way               |
 | 11 (`5-11`) | 127  | 默认 12s                                                      | ~16s       | theme garden → yellow fever            |
-| 12 (`5-12`) | 235  | **强制 18s**（`contentStartSec`/`minIntroSec`/`introMaxSec`） | —          | abbreviation → zoo                     |
+| 12 (`5-12`) | 235  | **强制 18s**（`contentStartSec`/`minIntroSec`/`introMaxSec`） | ~19.2s     | abbreviation → zoo                     |
 
 ### C5 介绍特殊原因
 
@@ -110,7 +110,8 @@
 | --- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | 6   | **删除**末词 `lecture theater`（108 → 107）；`excludeWords` + Excel `5.3-6` 已改；并删除对应 MP3                                                |
 | 9   | **删除** `recruiting method`（140 → 139）；**2026-07-13** 已按 HQ 规范整章重切并对齐 139 个音频（此前词表已删词但文件编号未重排，大量路径错位） |
-| 10  | **`spinose plants` 移到 `sports shoes` 之后**                                                                                                   |
+| 10  | **词表**：`spinose plants` 移到 `sports shoes` 之后；**2026-07-13** 已按调整后词表从源音频 HQ 整章重切（142 词，首词约 14.2s）                 |
+| 12  | **2026-07-13** 已按 HQ 规范整章重切（`contentStartSec: 18`，`paddingMs: 150`，WAV→MP3 `-q:a 0`）；235 词 abbreviation → zoo，首词约 19.2s     |
 
 ---
 
@@ -148,4 +149,4 @@ node tools/dict-audio-pipeline/scripts/recut-unit-audio-only.mjs manifests/wang-
 yarn dict-audio build manifests/wang-c11-section4.yaml
 ```
 
-改完 `public/audio/**` 并推送前：确认 `.gitattributes` 含 `*.mp3 binary`，并视需要 bump `AUDIO_ASSET_EPOCH`。
+改完 `public/audio/**` 并推送前：确认 `.gitattributes` 含 `*.mp3 binary`，并视需要 bump `AUDIO_ASSET_EPOCH_BY_PREFIX` 里被改动的词典前缀。
