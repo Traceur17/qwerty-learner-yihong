@@ -6,6 +6,7 @@ import { loadManifest, resolveSegmentationForUnit } from './manifest.mjs'
 import { clipsToSegmentRefs, mergeUnitAudio } from './merge-unit-audio.mjs'
 import { registerDictionaryEntries } from './register-dict.mjs'
 import { createBuildReport, writeBuildReports } from './report.mjs'
+import { applyExcludeWords } from './segment-align.mjs'
 import { findManualCsv } from './strategies/index.mjs'
 import { segmentUnit } from './strategies/index.mjs'
 import { unitMatchesFilter, filterUnitsByChapter } from './unit-id.mjs'
@@ -54,6 +55,7 @@ export async function runBuild(manifestPath, options = {}) {
   for (const unit of unitsToBuild) {
     const manualCsv = findManualCsv(manifest.audio.manualDir, unit.unitId)
     const segmentation = resolveSegmentationForUnit(manifest, unit)
+    unit.rows = applyExcludeWords(unit.rows, segmentation.excludeWords)
     try {
       const segments = await segmentUnit({
         audioPath: unit.audioPath,

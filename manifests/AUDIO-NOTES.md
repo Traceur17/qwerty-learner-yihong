@@ -79,7 +79,7 @@
 
 - Manifest：`wang-c5-audio.yaml`
 - 词库 id：`wang-c5-biscuit`
-- 章节长度：`[114, 111, 114, 105, 100, 108, 130, 144, 139, 142, 127, 235]`（共 1569）
+- 章节长度：`[114, 111, 114, 105, 100, 107, 130, 144, 139, 142, 127, 235]`（共 1568）
 - **默认介绍：12s**
 
 | 章 (unitId) | 词数 | 介绍配置                                                      | 实测首词约 | 首词 → 末词                            |
@@ -89,7 +89,7 @@
 | 3 (`5-03`)  | 114  | 默认 12s                                                      | ~14s       | contact lenses → dial                  |
 | 4 (`5-04`)  | 105  | 默认 12s                                                      | ~14s       | emotion and mood → fourth-year student |
 | 5 (`5-05`)  | 100  | 默认 12s                                                      | ~16s       | free for heating → hothouse effect     |
-| 6 (`5-06`)  | 108  | **强制 13s**（`contentStartSec: 13`）                         | —          | hotel crime → lecture theater          |
+| 6 (`5-06`)  | 107  | **强制 13s**（`contentStartSec: 13`）                         | —          | hotel crime → list of objectives       |
 | 7 (`5-07`)  | 130  | 默认 12s                                                      | ~17s       | living cost → OHPEN                    |
 | 8 (`5-08`)  | 144  | 默认 12s                                                      | ~16s       | on campus → random selection           |
 | 9 (`5-09`)  | 139  | 默认 12s                                                      | ~17s       | range of English level → silver cloth  |
@@ -108,6 +108,7 @@
 
 | 章  | 调整                                                                                                                                            |
 | --- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 6   | **删除**末词 `lecture theater`（108 → 107）；`excludeWords` + Excel `5.3-6` 已改；并删除对应 MP3 |
 | 9   | **删除** `recruiting method`（140 → 139）；**2026-07-13** 已按 HQ 规范整章重切并对齐 139 个音频（此前词表已删词但文件编号未重排，大量路径错位） |
 | 10  | **`spinose plants` 移到 `sports shoes` 之后**                                                                                                   |
 

@@ -66,6 +66,9 @@ segmentation:
         contentStartSec: 13
         minIntroSec: 13
         introMaxSec: 13
+      # 末词 lecture theater 不收入词库（源音频/表里可有，构建时排除）
+      excludeWords:
+        - lecture theater
     # Test 12 中文介绍约 18s；默认 rhythm/minIntroSec=12 会误把 13.4s 处片段当成首词
     '5-12':
       silence:

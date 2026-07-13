@@ -8,6 +8,7 @@ import { mapUnitsToAudio, partitionUnitsByAudio } from '../lib/audio-resolver.mj
 import { cutSegmentsToFiles } from '../lib/cutter.mjs'
 import { readExcelUnits } from '../lib/excel.mjs'
 import { loadManifest, resolveSegmentationForUnit } from '../lib/manifest.mjs'
+import { applyExcludeWords } from '../lib/segment-align.mjs'
 import { findManualCsv, segmentUnit } from '../lib/strategies/index.mjs'
 import { filterUnitsByChapter, unitMatchesFilter } from '../lib/unit-id.mjs'
 
@@ -33,6 +34,7 @@ async function main() {
   for (const unit of ready) {
     const manualCsv = findManualCsv(manifest.audio.manualDir, unit.unitId)
     const segmentation = resolveSegmentationForUnit(manifest, unit)
+    unit.rows = applyExcludeWords(unit.rows, segmentation.excludeWords)
     const segments = await segmentUnit({
       audioPath: unit.audioPath,
       rows: unit.rows,

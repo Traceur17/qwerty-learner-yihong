@@ -50,7 +50,12 @@ export function applySpeechSkips(speechSegments, rows, skips) {
       let rowIdx = -1
       if (rule.afterWord) {
         const needle = String(rule.afterWord).trim().toLowerCase()
-        rowIdx = rows.findIndex((row) => String(row.name ?? '').trim().toLowerCase() === needle)
+        rowIdx = rows.findIndex(
+          (row) =>
+            String(row.name ?? '')
+              .trim()
+              .toLowerCase() === needle,
+        )
       } else if (rule.afterIndex != null) {
         rowIdx = Number(rule.afterIndex) - 1
       }
@@ -63,9 +68,7 @@ export function applySpeechSkips(speechSegments, rows, skips) {
   let speech = [...speechSegments]
   for (const rule of rules) {
     if (rule.rowIdx < 0 || rule.rowIdx >= rows.length) {
-      throw new Error(
-        `speechSkips: cannot resolve afterWord/afterIndex ${JSON.stringify(rule.raw)} in ${rows.length} rows`,
-      )
+      throw new Error(`speechSkips: cannot resolve afterWord/afterIndex ${JSON.stringify(rule.raw)} in ${rows.length} rows`)
     }
     if (rule.rowIdx >= speech.length) {
       throw new Error(`speechSkips: row ${rule.rowIdx + 1} beyond speech length ${speech.length}`)
@@ -80,4 +83,15 @@ export function applySpeechSkips(speechSegments, rows, skips) {
     speech = [...speech.slice(0, dropFrom), ...speech.slice(dropTo)]
   }
   return speech
+}
+
+/**
+ * 构建前从词表排除指定词（大小写不敏感）。
+ * @param {Array<{ name: string }>} rows
+ * @param {string[] | undefined} excludeWords
+ */
+export function applyExcludeWords(rows, excludeWords) {
+  if (!Array.isArray(excludeWords) || excludeWords.length === 0) return rows
+  const blocked = new Set(excludeWords.map((word) => String(word).trim().toLowerCase()).filter(Boolean))
+  return rows.filter((row) => !blocked.has(String(row.name ?? '').trim().toLowerCase()))
 }
