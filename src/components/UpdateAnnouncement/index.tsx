@@ -2,6 +2,7 @@ import { dismissUpdateAnnouncementAtom } from '@/store'
 import noop from '@/utils/noop'
 import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
+import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import IconLayout from '~icons/tabler/layout'
 import IconList from '~icons/tabler/list'
@@ -12,7 +13,7 @@ import IconX from '~icons/tabler/x'
 type UpdateItem = {
   tag: string
   title: string
-  summary: string
+  summary: ReactNode
   details: string[]
   icon: typeof IconList
 }
@@ -42,7 +43,13 @@ const UPDATE_ITEMS: UpdateItem[] = [
   {
     tag: '体验',
     title: '词库加载进缓存',
-    summary: '词库音频首次加载后会保留；之后刷新不再重新拉取，练习节奏更连贯。',
+    summary: (
+      <>
+        词库音频<strong className="font-semibold text-gray-800 dark:text-gray-100">首次加载</strong>
+        后会保留；之后刷新<strong className="font-semibold text-gray-800 dark:text-gray-100">不再重新拉取</strong>
+        ，练习节奏更连贯。
+      </>
+    ),
     details: ['首次进章加载完成后写入本地', '同版本下刷新 / 再进章无需重载', '练习记录不受影响'],
     icon: IconLayout,
   },
