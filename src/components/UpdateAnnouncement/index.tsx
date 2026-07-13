@@ -2,7 +2,7 @@ import { dismissUpdateAnnouncementAtom } from '@/store'
 import noop from '@/utils/noop'
 import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import IconLayout from '~icons/tabler/layout'
 import IconList from '~icons/tabler/list'
 import IconSparkles from '~icons/tabler/sparkles'
@@ -60,6 +60,7 @@ const TAG_COLORS: Record<string, string> = {
 export default function UpdateAnnouncement() {
   const [dismissed, setDismissed] = useAtom(dismissUpdateAnnouncementAtom)
   const [isOpen, setIsOpen] = useState(false)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (dismissed) return
@@ -82,7 +83,7 @@ export default function UpdateAnnouncement() {
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={noop}>
+      <Dialog as="div" className="relative z-50" initialFocus={panelRef} onClose={noop}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -105,13 +106,17 @@ export default function UpdateAnnouncement() {
             leaveFrom="opacity-100 translate-y-0 scale-100"
             leaveTo="opacity-0 translate-y-4 scale-[0.98]"
           >
-            <Dialog.Panel className="my-card flex max-h-[min(88vh,820px)] w-[min(94vw,64rem)] flex-col overflow-hidden rounded-3xl border border-indigo-100 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800">
+            <Dialog.Panel
+              ref={panelRef}
+              tabIndex={-1}
+              className="my-card flex max-h-[min(88vh,820px)] w-[min(94vw,64rem)] flex-col overflow-hidden rounded-3xl border border-indigo-100 bg-white shadow-2xl outline-none dark:border-gray-700 dark:bg-gray-800"
+            >
               {/* Header */}
               <div className="relative shrink-0 border-b border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-violet-50 px-8 py-7 dark:border-gray-700 dark:from-gray-800 dark:via-gray-800 dark:to-indigo-950/40 md:px-10 md:py-8">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="absolute right-5 top-5 rounded-full p-1.5 text-gray-400 transition-colors hover:bg-white/80 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+                  className="absolute right-5 top-5 rounded-full p-1.5 text-gray-400 outline-none transition-colors hover:bg-white/80 hover:text-gray-600 focus:outline-none focus:ring-0 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                   aria-label="关闭"
                 >
                   <IconX className="h-6 w-6" />
