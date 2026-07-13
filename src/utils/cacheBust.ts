@@ -7,17 +7,18 @@ export function getAppBuildId(): string {
  * 默认音频世代号（未单独配置前缀时使用）。
  * 重切某本词典音频时：优先改 AUDIO_ASSET_EPOCH_BY_PREFIX 里对应前缀，避免其它词典缓存失效。
  */
-export const AUDIO_ASSET_EPOCH = '20260713-default'
+export const AUDIO_ASSET_EPOCH = '20260713-full-refresh'
 
 /**
  * 按音频目录前缀覆盖世代号。只改被重切的词典即可。
  * key 匹配 publicUrl 后的路径片段，例如 `/audio/wang-c5-audio/`。
+ * 2026-07-13：统一抬到 full-refresh，强制用户侧全量重拉饼干专属音频。
  */
 export const AUDIO_ASSET_EPOCH_BY_PREFIX: Record<string, string> = {
-  '/audio/wang-c3-audio/': '20260713-c3',
-  '/audio/wang-c4-audio/': '20260713-c4',
-  '/audio/wang-c5-audio/': '20260713-c5-ch12-recut',
-  '/audio/wang-c11-audio/': '20260713-c11',
+  '/audio/wang-c3-audio/': '20260713-full-refresh',
+  '/audio/wang-c4-audio/': '20260713-full-refresh',
+  '/audio/wang-c5-audio/': '20260713-full-refresh',
+  '/audio/wang-c11-audio/': '20260713-full-refresh',
 }
 
 /** 解析某音频 URL 应使用的 av 世代号 */

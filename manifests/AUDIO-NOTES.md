@@ -15,7 +15,7 @@
 | 裁切垫音         | 前后各约 `paddingMs: 150`                                                                                                                               |
 | 音质             | WAV 中间态 → MP3 `-q:a 0`（HQ）                                                                                                                         |
 | Git              | `*.mp3 binary`（勿当文本提交，否则会剥 CRLF 出电音）                                                                                                    |
-| 强制刷新线上音频 | 改 `src/utils/cacheBust.ts` 里 `AUDIO_ASSET_EPOCH_BY_PREFIX` 对应前缀（如只重切 C5 就改 `/audio/wang-c5-audio/`）；未知路径才用默认 `AUDIO_ASSET_EPOCH` |
+| 强制刷新线上音频 | 改 `src/utils/cacheBust.ts` 里对应前缀的 `AUDIO_ASSET_EPOCH_BY_PREFIX`（或默认 `AUDIO_ASSET_EPOCH`）。当前全库统一世代：`20260713-full-refresh`（打开新前端会清旧缓存并重拉） |
 
 `minIntroSec` / `introMaxSec`：介绍至少跳过到该秒附近再找词组。  
 `contentStartSec`：强制从该秒起切（避免误把介绍里的短语音当首词）。
