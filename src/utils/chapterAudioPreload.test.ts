@@ -2,8 +2,11 @@ import type { PronunciationType, Word } from '@/typings'
 import {
   type AudioPreloadProgress,
   areWordAudiosOnDisk,
+  buildBiscuitFollowupDictIds,
+  buildOtherChapterIndexes,
   chapterNeedsAudioPreload,
   ensureChapterMp3OnDisk,
+  isBiscuitDictId,
   resetPreloadedAudioCache,
 } from '@/utils/chapterAudioPreload'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -148,5 +151,40 @@ describe('chapterAudioPreload', () => {
     expect(events).toHaveLength(0)
     expect(fetchMock).toHaveBeenCalledTimes(1)
     expect(areWordAudiosOnDisk(words, 'uk')).toBe(true)
+  })
+
+  it('orders other chapters later-first then earlier', () => {
+    expect(buildOtherChapterIndexes(5, 2)).toEqual([3, 4, 0, 1])
+    expect(buildOtherChapterIndexes(3, 0)).toEqual([1, 2])
+  })
+
+  it('queues biscuit follow-up dicts C3→C4→C5→C11 skipping current', () => {
+    expect(isBiscuitDictId('wang-c5-biscuit')).toBe(true)
+    expect(buildBiscuitFollowupDictIds('wang-c5-biscuit')).toEqual(['wang-c3-biscuit', 'wang-c4-biscuit', 'wang-c11-biscuit'])
+    expect(buildBiscuitFollowupDictIds('cet4')).toEqual([])
+  })
+
+  it('stops ensuring when abort signal fires', async () => {
+    let resolveFetch: ((v: unknown) => void) | undefined
+    const fetchMock = vi.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve
+        }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const words: Word[] = [
+      { name: 'a', trans: [], ukAudio: '/audio/wang-c4-audio/unit4-04/001.mp3' },
+      { name: 'b', trans: [], ukAudio: '/audio/wang-c4-audio/unit4-04/002.mp3' },
+      { name: 'c', trans: [], ukAudio: '/audio/wang-c4-audio/unit4-04/003.mp3' },
+    ]
+    const abort = new AbortController()
+    const pending = ensureChapterMp3OnDisk(words, 'uk', undefined, 1, undefined, abort.signal)
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled())
+    abort.abort()
+    resolveFetch?.({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) })
+    const result = await pending
+    expect(result.aborted).toBe(true)
   })
 })

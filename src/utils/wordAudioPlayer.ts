@@ -172,14 +172,20 @@ export async function ensureMp3OnDisk(
     /** Called once when at least one URL must be fetched from network. */
     onNetworkStart?: (missCount: number) => void
     concurrency?: number
+    signal?: AbortSignal
   } = {},
 ): Promise<EnsureMp3OnDiskResult> {
   const concurrency = options.concurrency ?? 6
+  const signal = options.signal
   const unique = [...new Set(urls.filter(Boolean))]
   const ready: string[] = []
   const failed: string[] = []
 
   if (unique.length === 0) {
+    return { ready, failed, fetched: 0 }
+  }
+
+  if (signal?.aborted) {
     return { ready, failed, fetched: 0 }
   }
 
@@ -195,6 +201,7 @@ export async function ensureMp3OnDisk(
   await Promise.all(
     Array.from({ length: checkConcurrency }, async () => {
       while (checkCursor < pendingCheck.length) {
+        if (signal?.aborted) return
         const url = pendingCheck[checkCursor++]
         try {
           const hit = await matchWordAudio(url)
@@ -210,6 +217,10 @@ export async function ensureMp3OnDisk(
       }
     }),
   )
+
+  if (signal?.aborted) {
+    return { ready, failed, fetched: 0 }
+  }
 
   // Also accept anything already marked during parallel check
   for (const url of unique) {
@@ -232,10 +243,12 @@ export async function ensureMp3OnDisk(
   let cursor = 0
   const workers = Array.from({ length: Math.min(concurrency, misses.length) }, async () => {
     while (cursor < misses.length) {
+      if (signal?.aborted) return
       const indexInMiss = cursor++
       const url = misses[indexInMiss]
       try {
         const buf = await loadMp3Bytes(url)
+        if (signal?.aborted) return
         loadedBytes += buf.byteLength
         loaded += 1
         ready.push(url)

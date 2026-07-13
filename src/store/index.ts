@@ -115,7 +115,7 @@ export const wordDictationConfigAtom = atomForConfig('wordDictationConfig', {
 })
 
 export const listenDictationConfigAtom = atomForConfig<ListenDictationConfig>('listenDictationConfig', {
-  isOpen: false,
+  isOpen: true,
   showPrevWord: false,
   showPhonetic: false,
   showTranslation: false,
