@@ -1,4 +1,4 @@
-import { matchWordAudio, putWordAudio, resetWordAudioCacheHandle, clearWordAudioIdbForTests } from '@/utils/audioDiskCache'
+import { clearWordAudioIdbForTests, matchWordAudio, putWordAudio, resetWordAudioCacheHandle } from '@/utils/audioDiskCache'
 
 /**
  * Shared custom-word audio player.
