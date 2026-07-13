@@ -60,6 +60,12 @@ segmentation:
     '5-01':
       silence:
         minIntroSec: 40
+    '5-06':
+      silence:
+        # 第6章中文介绍约 13s；默认 12s 会偏早，导致整章错位
+        contentStartSec: 13
+        minIntroSec: 13
+        introMaxSec: 13
     # Test 12 中文介绍约 18s；默认 rhythm/minIntroSec=12 会误把 13.4s 处片段当成首词
     '5-12':
       silence:

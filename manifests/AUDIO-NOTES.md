@@ -45,8 +45,8 @@
 
 特殊词表/对齐调整：
 
-| 项 | 说明 |
-|----|------|
+| 项                         | 说明                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------ |
 | 第 9 章 · wing → workforce | `speechSkips: afterWord wing / skipCount 1`（源音频多一段，见 `wang-c3-audio.yaml`） |
 
 ---
@@ -89,7 +89,7 @@
 | 3 (`5-03`)  | 114  | 默认 12s                                                      | ~14s       | contact lenses → dial                  |
 | 4 (`5-04`)  | 105  | 默认 12s                                                      | ~14s       | emotion and mood → fourth-year student |
 | 5 (`5-05`)  | 100  | 默认 12s                                                      | ~16s       | free for heating → hothouse effect     |
-| 6 (`5-06`)  | 108  | 默认 12s                                                      | ~17s       | hotel crime → lecture theater          |
+| 6 (`5-06`)  | 108  | **强制 13s**（`contentStartSec: 13`）                         | —          | hotel crime → lecture theater          |
 | 7 (`5-07`)  | 130  | 默认 12s                                                      | ~17s       | living cost → OHPEN                    |
 | 8 (`5-08`)  | 144  | 默认 12s                                                      | ~16s       | on campus → random selection           |
 | 9 (`5-09`)  | 139  | 默认 12s                                                      | ~17s       | range of English level → silver cloth  |
@@ -99,6 +99,7 @@
 
 ### C5 介绍特殊原因
 
+- **第 6 章**：介绍约 **13s**；默认 12s 偏早，整章会错位，故锁死从 **13s** 起切。
 - **第 12 章**：默认 12s 会把约 **13.4s** 处片段误当首词，故锁死从 **18s** 起切。
 
 ### C5 词表特殊调整
