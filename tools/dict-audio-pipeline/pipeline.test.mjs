@@ -2,7 +2,7 @@ import { resolveAudioByPattern, partitionUnitsByAudio } from './lib/audio-resolv
 import { readExcelUnits } from './lib/excel.mjs'
 import { buildAnchorBoundarySegments } from './lib/ffmpeg.mjs'
 import { loadManifest, resolveSegmentationForUnit } from './lib/manifest.mjs'
-import { alignSpeechSegmentsToRows } from './lib/segment-align.mjs'
+import { alignSpeechSegmentsToRows, applySpeechSkips } from './lib/segment-align.mjs'
 import { phraseSimilarity, normalizePhrase } from './lib/similarity.mjs'
 import { loadManualSegments } from './lib/strategies/index.mjs'
 import { parseSheetUnit, normalizeUnitFilter, parseUnitFilter, unitMatchesFilter, filterUnitsByChapter } from './lib/unit-id.mjs'
@@ -44,6 +44,28 @@ describe('anchor-boundary segments', () => {
     expect(segments).toHaveLength(2)
     expect(segments[0].text).toBe('a')
     expect(segments[1].strategy).toBe('anchor-boundary-partial')
+  })
+})
+
+describe('applySpeechSkips', () => {
+  it('drops spare speech after a named word before continuing alignment', () => {
+    const rows = [{ name: 'previous' }, { name: 'printed' }, { name: 'private' }]
+    const speech = [
+      { start: 1, end: 2 },
+      { start: 3, end: 4 },
+      { start: 5, end: 6 },
+      { start: 7, end: 8 },
+      { start: 9, end: 10 },
+    ]
+    const filtered = applySpeechSkips(speech, rows, [{ afterWord: 'previous', skipCount: 2 }])
+    expect(filtered).toEqual([
+      { start: 1, end: 2 },
+      { start: 7, end: 8 },
+      { start: 9, end: 10 },
+    ])
+    const segments = buildAnchorBoundarySegments(rows, filtered, { endPadSec: 0, tailEndPadSec: 0, startPadSec: 0 })
+    expect(segments.map((s) => s.text)).toEqual(['previous', 'printed', 'private'])
+    expect(segments[1].start).toBe(7)
   })
 })
 

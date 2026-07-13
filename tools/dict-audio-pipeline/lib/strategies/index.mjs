@@ -6,7 +6,7 @@ import {
   findContentStart,
   findContentStartByRhythm,
 } from '../ffmpeg.mjs'
-import { alignSpeechSegmentsToRows } from '../segment-align.mjs'
+import { alignSpeechSegmentsToRows, applySpeechSkips } from '../segment-align.mjs'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -84,6 +84,10 @@ function speechAfterIntro(speechSegments, contentStart) {
   return speechSegments.filter((segment) => segment.start >= contentStart - 0.05)
 }
 
+function speechForRows(afterIntro, rows, segmentation) {
+  return applySpeechSkips(afterIntro, rows, segmentation.speechSkips ?? [])
+}
+
 /**
  * @param {{ audioPath: string, rows: Array<{ name: string }>, segmentation: any }} input
  * @returns {Promise<Segment[]>}
@@ -92,7 +96,7 @@ export async function segmentAnchorBoundary({ audioPath, rows, segmentation }) {
   const silenceOpts = segmentation.silence ?? {}
   const speechSegments = await detectSilenceSegments(audioPath, silenceOpts)
   const contentStart = await resolveContentStart(audioPath, silenceOpts, speechSegments)
-  const afterIntro = speechAfterIntro(speechSegments, contentStart)
+  const afterIntro = speechForRows(speechAfterIntro(speechSegments, contentStart), rows, segmentation)
   const anchorOpts = {
     ...(segmentation.anchor ?? {}),
     allowPartial: segmentation.allowPartial === true,
@@ -109,7 +113,7 @@ export async function segmentCalibratedFixed({ audioPath, rows, segmentation }) 
   const silenceOpts = segmentation.silence ?? {}
   const speechSegments = await detectSilenceSegments(audioPath, silenceOpts)
   const contentStart = await resolveContentStart(audioPath, silenceOpts, speechSegments)
-  const afterIntro = speechAfterIntro(speechSegments, contentStart)
+  const afterIntro = speechForRows(speechAfterIntro(speechSegments, contentStart), rows, segmentation)
 
   if (afterIntro.length < 3) {
     throw new Error(`Calibrated-fixed: too few speech segments (${afterIntro.length}) after content start ${contentStart.toFixed(2)}s`)

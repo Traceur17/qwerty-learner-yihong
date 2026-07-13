@@ -60,8 +60,14 @@ segmentation:
         minIntroSec: 54
     '4-03':
       silence:
+        # 中文介绍截至约 18s，正文从此时起切
+        contentStartSec: 18
         minIntroSec: 18
         introMaxSec: 18
+      # 词表 previous 紧接 printed，但源音频中间多两段朗读，需跳过后再对齐
+      speechSkips:
+        - afterWord: previous
+          skipCount: 2
   fixed:
     skipIntroSec: 10
     intervalSec: 5
