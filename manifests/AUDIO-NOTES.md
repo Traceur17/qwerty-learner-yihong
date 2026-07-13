@@ -111,7 +111,7 @@
 | 6   | **删除**末词 `lecture theater`（108 → 107）；`excludeWords` + Excel `5.3-6` 已改；并删除对应 MP3                                                |
 | 9   | **删除** `recruiting method`（140 → 139）；**2026-07-13** 已按 HQ 规范整章重切并对齐 139 个音频（此前词表已删词但文件编号未重排，大量路径错位） |
 | 10  | **词表**：`spinose plants` 移到 `sports shoes` 之后；**2026-07-13** 已按调整后词表从源音频 HQ 整章重切（142 词，首词约 14.2s）                 |
-| 12  | **2026-07-13** 已按 HQ 规范整章重切（`contentStartSec: 18`，`paddingMs: 150`，WAV→MP3 `-q:a 0`）；235 词 abbreviation → zoo，首词约 19.2s     |
+| 12  | **2026-07-13** 已按 HQ 规范从源音频整章重切（`contentStartSec: 18`，`paddingMs: 150`，WAV→MP3 `-q:a 0`）；235 词 abbreviation → zoo，首词约 19.2s |
 
 ---
 

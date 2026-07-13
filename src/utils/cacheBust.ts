@@ -16,7 +16,7 @@ export const AUDIO_ASSET_EPOCH = '20260713-default'
 export const AUDIO_ASSET_EPOCH_BY_PREFIX: Record<string, string> = {
   '/audio/wang-c3-audio/': '20260713-c3',
   '/audio/wang-c4-audio/': '20260713-c4',
-  '/audio/wang-c5-audio/': '20260713-c5-ch10-recut',
+  '/audio/wang-c5-audio/': '20260713-c5-ch12-recut',
   '/audio/wang-c11-audio/': '20260713-c11',
 }
 
