@@ -130,16 +130,12 @@ describe('wordAudioPlayer', () => {
 
   it('does not mark failed urls as ready', async () => {
     installMockAudioContext()
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        arrayBuffer: async () => new ArrayBuffer(4),
-      })
-      .mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-      })
+    const fetchMock = vi.fn().mockImplementation(async (url: string) => {
+      if (String(url).includes('bad')) {
+        return { ok: false, status: 404 }
+      }
+      return { ok: true, arrayBuffer: async () => new ArrayBuffer(4) }
+    })
     vi.stubGlobal('fetch', fetchMock)
 
     const result = await preloadUrls(['/ok.mp3', '/bad.mp3'], { concurrency: 1 })
@@ -147,6 +143,25 @@ describe('wordAudioPlayer', () => {
     expect(result.failed).toEqual(['/bad.mp3'])
     expect(isWordAudioReady('/ok.mp3')).toBe(true)
     expect(isWordAudioReady('/bad.mp3')).toBe(false)
+  })
+
+  it('retries network fetch before marking failed', async () => {
+    installMockAudioContext()
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 503 })
+      .mockResolvedValueOnce({ ok: false, status: 503 })
+      .mockResolvedValueOnce({
+        ok: true,
+        arrayBuffer: async () => new ArrayBuffer(4),
+      })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await ensureMp3OnDisk(['/flaky.mp3'], { concurrency: 1 })
+    expect(result.failed).toEqual([])
+    expect(result.ready).toContain('/flaky.mp3')
+    expect(isWordAudioOnDisk('/flaky.mp3')).toBe(true)
+    expect(fetchMock).toHaveBeenCalledTimes(3)
   })
 
   it('retries play once on start failure then reports error', async () => {

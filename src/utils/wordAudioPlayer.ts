@@ -123,6 +123,12 @@ export async function unlockWordAudio(): Promise<void> {
   }
 }
 
+const NETWORK_FETCH_RETRIES = 2
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 async function loadMp3Bytes(url: string): Promise<ArrayBuffer> {
   const cachedResponse = await matchWordAudio(url)
   if (cachedResponse) {
@@ -139,18 +145,29 @@ async function loadMp3Bytes(url: string): Promise<ArrayBuffer> {
     return bytes
   }
 
-  const response = await fetch(url, { cache: 'no-cache' })
-  if (!response.ok) throw new Error(`preload failed: ${response.status}`)
-  const arrayBuffer = await response.arrayBuffer()
-  await putWordAudio(
-    url,
-    new Response(arrayBuffer.slice(0), {
-      status: 200,
-      headers: { 'Content-Type': 'audio/mpeg' },
-    }),
-  )
-  diskReadyUrls.add(url)
-  return arrayBuffer
+  let lastError: unknown
+  for (let attempt = 0; attempt <= NETWORK_FETCH_RETRIES; attempt++) {
+    try {
+      const response = await fetch(url, { cache: 'no-cache' })
+      if (!response.ok) throw new Error(`preload failed: ${response.status}`)
+      const arrayBuffer = await response.arrayBuffer()
+      await putWordAudio(
+        url,
+        new Response(arrayBuffer.slice(0), {
+          status: 200,
+          headers: { 'Content-Type': 'audio/mpeg' },
+        }),
+      )
+      diskReadyUrls.add(url)
+      return arrayBuffer
+    } catch (error) {
+      lastError = error
+      if (attempt < NETWORK_FETCH_RETRIES) {
+        await delay(150 * (attempt + 1))
+      }
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error(String(lastError))
 }
 
 export type EnsureMp3OnDiskResult = {

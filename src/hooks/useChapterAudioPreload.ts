@@ -27,9 +27,12 @@ export type ChapterAudioPreloadState = {
   failedCount: number
   /** 后台正在从网络拉取后续章 / 其它饼干词库 MP3 时的提示 */
   backgroundLabel: string | null
+  /** 后台下载进度（有网络拉取时才有 total>0） */
+  backgroundProgress: AudioPreloadProgress | null
 }
 
 const idleProgress: AudioPreloadProgress = { loaded: 0, total: 0, loadedBytes: 0, failed: 0 }
+const FAIL_TIP_MS = 5000
 
 function wordsForChapter(dict: Dictionary, fullWordList: Word[], chapter: number): Word[] {
   const { start, end } = getChapterRange(dict, chapter)
@@ -39,7 +42,7 @@ function wordsForChapter(dict: Dictionary, fullWordList: Word[], chapter: number
 /**
  * 进章：磁盘已缓存则立刻可练；仅缺文件时阻塞并显示「缓存音频」。
  * 饼干词库：本章 → 本库其它章 → C3→C4→C5→C11；切章中止后台并优先新章。
- * 底部保留 backgroundLabel 小字。
+ * 底部保留 backgroundLabel 小字 + 淡进度条。
  */
 export function useChapterAudioPreload(
   dictInfo: Dictionary,
@@ -54,6 +57,13 @@ export function useChapterAudioPreload(
   const [progress, setProgress] = useState<AudioPreloadProgress>(idleProgress)
   const [failedCount, setFailedCount] = useState(0)
   const [backgroundLabel, setBackgroundLabel] = useState<string | null>(null)
+  const [backgroundProgress, setBackgroundProgress] = useState<AudioPreloadProgress | null>(null)
+
+  useEffect(() => {
+    if (failedCount <= 0) return
+    const timer = window.setTimeout(() => setFailedCount(0), FAIL_TIP_MS)
+    return () => window.clearTimeout(timer)
+  }, [failedCount])
 
   useEffect(() => {
     const abort = new AbortController()
@@ -65,6 +75,7 @@ export function useChapterAudioPreload(
         setProgress(idleProgress)
         setFailedCount(0)
         setBackgroundLabel(null)
+        setBackgroundProgress(null)
         return
       }
 
@@ -72,6 +83,7 @@ export function useChapterAudioPreload(
       setProgress(idleProgress)
       setIsBlocking(false)
       setBackgroundLabel(null)
+      setBackgroundProgress(null)
 
       if (areWordAudiosOnDisk(chapterWords, pronunciation)) {
         if (!signal.aborted) activateChapterAudio(chapterWords, pronunciation)
@@ -101,6 +113,29 @@ export function useChapterAudioPreload(
 
       if (signal.aborted || !fullWordList || fullWordList.length === 0) return
 
+      const runBackgroundEnsure = async (words: Word[], label: string) => {
+        if (areWordAudiosOnDisk(words, pronunciation)) return { aborted: false }
+        if (!signal.aborted) {
+          setBackgroundLabel(label)
+          setBackgroundProgress(idleProgress)
+        }
+        return ensureChapterMp3OnDisk(
+          words,
+          pronunciation,
+          (p) => {
+            if (!signal.aborted) setBackgroundProgress(p)
+          },
+          BACKGROUND_AUDIO_CONCURRENCY,
+          (missCount) => {
+            if (!signal.aborted) {
+              setBackgroundLabel(label)
+              setBackgroundProgress({ loaded: 0, total: missCount, loadedBytes: 0, failed: 0 })
+            }
+          },
+          signal,
+        )
+      }
+
       // —— 本词库其它章（先后续、再更早）——
       const otherIndexes = buildOtherChapterIndexes(dictInfo.chapterCount, currentChapter)
       const otherWords: Word[] = []
@@ -108,22 +143,14 @@ export function useChapterAudioPreload(
         otherWords.push(...wordsForChapter(dictInfo, fullWordList, chapter))
       }
 
-      if (otherWords.length > 0 && !areWordAudiosOnDisk(otherWords, pronunciation)) {
-        const { aborted } = await ensureChapterMp3OnDisk(
-          otherWords,
-          pronunciation,
-          undefined,
-          BACKGROUND_AUDIO_CONCURRENCY,
-          () => {
-            if (!signal.aborted) setBackgroundLabel('后台缓存后续章节音频…')
-          },
-          signal,
-        )
+      if (otherWords.length > 0) {
+        const { aborted } = await runBackgroundEnsure(otherWords, '后台缓存后续章节音频…')
         if (aborted || signal.aborted) return
       }
 
       if (signal.aborted) return
       setBackgroundLabel(null)
+      setBackgroundProgress(null)
 
       // —— 其它饼干词库：C3→C4→C5→C11 ——
       if (!isBiscuitDictId(dictInfo.id)) return
@@ -144,21 +171,18 @@ export function useChapterAudioPreload(
         if (areWordAudiosOnDisk(followWords, pronunciation)) continue
 
         const label = `后台缓存 ${biscuitDictShortLabel(followId)} 词库音频…`
-        const { aborted } = await ensureChapterMp3OnDisk(
-          followWords,
-          pronunciation,
-          undefined,
-          BACKGROUND_AUDIO_CONCURRENCY,
-          () => {
-            if (!signal.aborted) setBackgroundLabel(label)
-          },
-          signal,
-        )
+        const { aborted } = await runBackgroundEnsure(followWords, label)
         if (aborted || signal.aborted) return
-        if (!signal.aborted) setBackgroundLabel(null)
+        if (!signal.aborted) {
+          setBackgroundLabel(null)
+          setBackgroundProgress(null)
+        }
       }
 
-      if (!signal.aborted) setBackgroundLabel(null)
+      if (!signal.aborted) {
+        setBackgroundLabel(null)
+        setBackgroundProgress(null)
+      }
     }
 
     void run()
@@ -169,7 +193,7 @@ export function useChapterAudioPreload(
     }
   }, [chapterWords, currentChapter, dictInfo, fullWordList, pronunciation])
 
-  return { isBlocking, progress, failedCount, backgroundLabel }
+  return { isBlocking, progress, failedCount, backgroundLabel, backgroundProgress }
 }
 
 export { formatPreloadBytes }

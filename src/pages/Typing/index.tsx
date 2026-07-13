@@ -228,12 +228,48 @@ const App: React.FC = () => {
                   <>
                     <WordPanel />
                     {audioPreload.failedCount > 0 && (
-                      <p className="absolute bottom-8 text-xs text-amber-600 dark:text-amber-400">
+                      <p className="absolute bottom-10 text-xs text-amber-600 dark:text-amber-400">
                         有 {audioPreload.failedCount} 条音频未能就绪，点击时可能无声
                       </p>
                     )}
                     {audioPreload.backgroundLabel && (
-                      <p className="absolute bottom-2 text-xs text-gray-400 dark:text-gray-500">{audioPreload.backgroundLabel}</p>
+                      <Tooltip
+                        content={audioPreload.backgroundLabel}
+                        placement="top"
+                        className="!absolute bottom-2 left-1/2 z-10 -translate-x-1/2"
+                      >
+                        <div
+                          className="h-1.5 w-48 cursor-default overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
+                          role="progressbar"
+                          aria-label={audioPreload.backgroundLabel}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={
+                            audioPreload.backgroundProgress && audioPreload.backgroundProgress.total > 0
+                              ? Math.round(
+                                  ((audioPreload.backgroundProgress.loaded + audioPreload.backgroundProgress.failed) /
+                                    audioPreload.backgroundProgress.total) *
+                                    100,
+                                )
+                              : 0
+                          }
+                        >
+                          <div
+                            className="h-full rounded-full bg-gray-400 transition-all duration-300 ease-out dark:bg-gray-500"
+                            style={{
+                              width: `${
+                                audioPreload.backgroundProgress && audioPreload.backgroundProgress.total > 0
+                                  ? Math.round(
+                                      ((audioPreload.backgroundProgress.loaded + audioPreload.backgroundProgress.failed) /
+                                        audioPreload.backgroundProgress.total) *
+                                        100,
+                                    )
+                                  : 0
+                              }%`,
+                            }}
+                          />
+                        </div>
+                      </Tooltip>
                     )}
                   </>
                 )
