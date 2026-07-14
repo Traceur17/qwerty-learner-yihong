@@ -9,7 +9,7 @@ type BiscuitIconProps = {
 const BiscuitIcon: React.FC<BiscuitIconProps> = ({ className, title = 'Empress Biscuit' }) => {
   return (
     <img
-      src={publicUrl('/favicon-biscuit.png')}
+      src={publicUrl('/favicon-biscuit-transparent.png')}
       alt={title}
       className={className}
       width={64}

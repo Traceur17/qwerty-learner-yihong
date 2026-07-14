@@ -8,6 +8,7 @@ import styles from './index.module.css'
 import Tooltip from '@/components/Tooltip'
 import {
   currentChapterAtom,
+  currentDictIdAtom,
   currentDictInfoAtom,
   infoPanelStateAtom,
   isReviewModeAtom,
@@ -17,9 +18,10 @@ import {
 } from '@/store'
 import type { InfoPanelType } from '@/typings'
 import { recordOpenInfoPanelAction } from '@/utils'
+import { fetchChapterErrorWordData, startChapterErrorReview } from '@/utils/chapterErrorReview'
 import { Transition } from '@headlessui/react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { useCallback, useContext, useEffect, useMemo } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
 import IexportWords from '~icons/icon-park-outline/excel'
@@ -35,6 +37,7 @@ const ResultScreen = () => {
 
   const setWordDictationConfig = useSetAtom(wordDictationConfigAtom)
   const currentDictInfo = useAtomValue(currentDictInfoAtom)
+  const setCurrentDictId = useSetAtom(currentDictIdAtom)
   const [currentChapter, setCurrentChapter] = useAtom(currentChapterAtom)
   const setInfoPanelState = useSetAtom(infoPanelStateAtom)
   const randomConfig = useAtomValue(randomConfigAtom)
@@ -42,11 +45,30 @@ const ResultScreen = () => {
 
   const setReviewModeInfo = useSetAtom(reviewModeInfoAtom)
   const isReviewMode = useAtomValue(isReviewModeAtom)
+  const [chapterErrorCount, setChapterErrorCount] = useState(0)
+  const [isStartingChapterErrors, setIsStartingChapterErrors] = useState(false)
 
   useEffect(() => {
     // tick a zero timer to calc the stats
     dispatch({ type: TypingStateActionType.TICK_TIMER, addTime: 0 })
   }, [dispatch])
+
+  useEffect(() => {
+    if (isReviewMode) {
+      setChapterErrorCount(0)
+      return
+    }
+
+    let cancelled = false
+    void (async () => {
+      const errorData = await fetchChapterErrorWordData(currentDictInfo, currentChapter, state.chapterData.words)
+      if (!cancelled) setChapterErrorCount(errorData.length)
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentChapter, currentDictInfo, isReviewMode, state.chapterData.words])
 
   const exportWords = useCallback(() => {
     const { words, userInputLogs } = state.chapterData
@@ -128,14 +150,48 @@ const ResultScreen = () => {
     dispatch({ type: TypingStateActionType.REPEAT_CHAPTER, shouldShuffle: randomConfig.isOpen })
   }, [isReviewMode, setWordDictationConfig, dispatch, randomConfig.isOpen])
 
-  const dictationButtonHandler = useCallback(async () => {
-    if (isReviewMode) {
-      return
-    }
+  const practiceChapterErrorsHandler = useCallback(async () => {
+    if (isReviewMode || isStartingChapterErrors || chapterErrorCount === 0) return
 
-    setWordDictationConfig((old) => ({ ...old, isOpen: true, openBy: 'auto' }))
-    dispatch({ type: TypingStateActionType.REPEAT_CHAPTER, shouldShuffle: randomConfig.isOpen })
-  }, [isReviewMode, setWordDictationConfig, dispatch, randomConfig.isOpen])
+    setIsStartingChapterErrors(true)
+    try {
+      const errorData = await fetchChapterErrorWordData(currentDictInfo, currentChapter, state.chapterData.words)
+      if (errorData.length === 0) {
+        setChapterErrorCount(0)
+        return
+      }
+
+      await startChapterErrorReview({
+        dict: currentDictInfo,
+        chapter: currentChapter,
+        errorData,
+        chapterErrorReturn: {
+          chapter: currentChapter,
+          dictId: currentDictInfo.id,
+          index: 0,
+          words: state.chapterData.words,
+          isTyping: false,
+          isTransVisible: state.isTransVisible,
+        },
+        setReviewModeInfo,
+        setCurrentDictId,
+        setCurrentChapter,
+      })
+    } finally {
+      setIsStartingChapterErrors(false)
+    }
+  }, [
+    chapterErrorCount,
+    currentChapter,
+    currentDictInfo,
+    isReviewMode,
+    isStartingChapterErrors,
+    setCurrentChapter,
+    setCurrentDictId,
+    setReviewModeInfo,
+    state.chapterData.words,
+    state.isTransVisible,
+  ])
 
   const nextButtonHandler = useCallback(() => {
     if (isReviewMode) {
@@ -185,14 +241,6 @@ const ResultScreen = () => {
       // 火狐浏览器的阻止事件无效，会导致按空格键后 再次输入正确的第一个字母会报错
       e.stopPropagation()
       repeatButtonHandler()
-    },
-    { preventDefault: true },
-  )
-
-  useHotkeys(
-    'shift+enter',
-    () => {
-      dictationButtonHandler()
     },
     { preventDefault: true },
   )
@@ -290,14 +338,15 @@ const ResultScreen = () => {
             <div className="mt-10 flex w-full justify-center gap-5 px-5 text-xl">
               {!isReviewMode && (
                 <>
-                  <Tooltip content="快捷键：shift + enter">
+                  <Tooltip content={chapterErrorCount === 0 ? '本章暂无错词' : `练习本章累计 ${chapterErrorCount} 个错词`}>
                     <button
-                      className="my-btn-primary h-12 border-2 border-solid border-gray-300 bg-white text-base text-gray-700 dark:border-gray-700 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-700"
+                      className="my-btn-primary h-12 bg-rose-500 text-base font-bold text-white hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-rose-600 dark:hover:bg-rose-500"
                       type="button"
-                      onClick={dictationButtonHandler}
-                      title="默写本章节"
+                      onClick={practiceChapterErrorsHandler}
+                      disabled={chapterErrorCount === 0 || isStartingChapterErrors}
+                      title={chapterErrorCount === 0 ? '本章暂无错词' : '再练本章错词'}
                     >
-                      默写本章节
+                      {isStartingChapterErrors ? '启动中...' : '再练本章错词'}
                     </button>
                   </Tooltip>
                   <Tooltip content="快捷键：space">

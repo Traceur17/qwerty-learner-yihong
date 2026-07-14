@@ -41,10 +41,13 @@ function Root() {
   }, [])
 
   useEffect(() => {
-    const href = publicUrl(`/favicon-biscuit.png?v=${getAppBuildId()}`)
+    const href = publicUrl(`/favicon-biscuit-transparent.png?v=${getAppBuildId()}`)
     document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']").forEach((link) => {
       link.href = href
       link.type = 'image/png'
+    })
+    document.querySelectorAll<HTMLLinkElement>("link[rel='apple-touch-icon']").forEach((link) => {
+      link.href = publicUrl(`/apple-touch-icon.png?v=${getAppBuildId()}`)
     })
   }, [])
 
