@@ -5,26 +5,29 @@ describe('getStreakLevel', () => {
   it('returns null below the first threshold', () => {
     expect(getStreakLevel(0)).toBeNull()
     expect(getStreakLevel(1)).toBeNull()
-    expect(getStreakLevel(2)).toBeNull()
+    expect(getStreakLevel(3)).toBeNull()
+    expect(getStreakLevel(5)).toBeNull()
   })
 
-  it('maps 3 / 4 / 5 to nice / great / amazing', () => {
-    expect(getStreakLevel(3)).toBe('nice')
-    expect(getStreakLevel(4)).toBe('great')
-    expect(getStreakLevel(5)).toBe('amazing')
+  it('maps 6 / 9 / 12 to nice / great / amazing', () => {
+    expect(getStreakLevel(6)).toBe('nice')
+    expect(getStreakLevel(9)).toBe('great')
+    expect(getStreakLevel(12)).toBe('amazing')
   })
 
-  it('is silent between repeats', () => {
-    expect(getStreakLevel(6)).toBeNull()
+  it('is silent between thresholds and repeats', () => {
     expect(getStreakLevel(7)).toBeNull()
-    expect(getStreakLevel(9)).toBeNull()
+    expect(getStreakLevel(8)).toBeNull()
+    expect(getStreakLevel(10)).toBeNull()
     expect(getStreakLevel(11)).toBeNull()
+    expect(getStreakLevel(13)).toBeNull()
+    expect(getStreakLevel(17)).toBeNull()
   })
 
-  it('repeats amazing every +5 after 5', () => {
-    expect(getStreakLevel(10)).toBe('amazing')
-    expect(getStreakLevel(15)).toBe('amazing')
-    expect(getStreakLevel(20)).toBe('amazing')
+  it('repeats amazing every +6 after 12', () => {
+    expect(getStreakLevel(18)).toBe('amazing')
+    expect(getStreakLevel(24)).toBe('amazing')
+    expect(getStreakLevel(30)).toBe('amazing')
   })
 })
 

@@ -10,15 +10,15 @@ export const TALENT_LEVEL_META: Record<TalentLevel, { label: string; image: stri
   amazing: { label: '了不起的天分', image: talentAmazingImg },
 }
 
-const AMAZING_STREAK = 5
-const AMAZING_REPEAT_INTERVAL = 5
+const AMAZING_STREAK = 12
+const AMAZING_REPEAT_INTERVAL = 6
 
 /**
- * 连对阶梯：3 → nice、4 → great、5 → amazing，之后每 +5（10、15…）重复 amazing。
+ * 连对阶梯：6 → nice、9 → great、12 → amazing，之后每 +6（18、24…）重复 amazing。
  */
 export function getStreakLevel(streak: number): TalentLevel | null {
-  if (streak === 3) return 'nice'
-  if (streak === 4) return 'great'
+  if (streak === 6) return 'nice'
+  if (streak === 9) return 'great'
   if (streak === AMAZING_STREAK) return 'amazing'
   if (streak > AMAZING_STREAK && (streak - AMAZING_STREAK) % AMAZING_REPEAT_INTERVAL === 0) return 'amazing'
   return null
