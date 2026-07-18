@@ -13,10 +13,10 @@ import {
 import type { Word } from '@/typings'
 import { getWrongAnswerHistoriesForDict, recordWrongAnswer } from '@/utils/db/wrongAnswerHistory'
 import { wrongSeverityDots } from '@/utils/db/wrongAnswerHistoryHelpers'
-import { formatTranslation, diffPhrase } from '@/utils/dictationDiff'
+import { diffPhrase, formatTranslation } from '@/utils/dictationDiff'
 import { playChapterWord, stopChapterWordAudio } from '@/utils/playChapterWord'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { type KeyboardEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import IconPin from '~icons/tabler/pin'
 import IconPinned from '~icons/tabler/pinned'
 

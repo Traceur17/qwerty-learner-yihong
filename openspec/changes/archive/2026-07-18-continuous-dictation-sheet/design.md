@@ -2,7 +2,7 @@
 
 现有听写（`DictationWord`）是一词一判：播词 → 输入 → Enter 判对错 → 反馈后前进。音频为 `public/audio/**` 词级 MP3，经 `usePronunciationSound` / `wordAudioPlayer` 播放，倍速已由 `pronunciationConfigAtom.rate` 控制。
 
-本 change 增加并列的「连播卷面」模式，面向雅思机考听写肌肉：连续音频、编号答题格、不即时判分、按需对账。长章（100～400 词）必须靠播放行高亮防止作答与音频错位。
+本 change 增加并列的「连播卷面」模式，面向雅思机考听写肌肉：连续音频、编号答题格、不即时判分、按需对账。长章（100 ～ 400 词）必须靠播放行高亮防止作答与音频错位。
 
 ## Goals / Non-Goals
 
@@ -69,20 +69,20 @@
 
 ## Risks / Trade-offs
 
-- [长表 400 行 DOM] → 先测；必要时虚拟化作答列  
-- [连播与全局发音键冲突] → 卷面激活时禁用一词重播逻辑或映射到「重播当前播放行」  
-- [Tab 落入工具栏] → 答题区隔离 tabIndex / roving tabindex  
-- [错史 schema 迁移] → Dexie version bump + 温和默认 `[]`  
-- [与一词一判模式切换中途] → 切换时重置卷面 session，避免脏状态  
+- [长表 400 行 DOM] → 先测；必要时虚拟化作答列
+- [连播与全局发音键冲突] → 卷面激活时禁用一词重播逻辑或映射到「重播当前播放行」
+- [Tab 落入工具栏] → 答题区隔离 tabIndex / roving tabindex
+- [错史 schema 迁移] → Dexie version bump + 温和默认 `[]`
+- [与一词一判模式切换中途] → 切换时重置卷面 session，避免脏状态
 
 ## Migration Plan
 
-1. 增加配置默认 `sheetMode: false`、`gapMs: 1200`  
-2. Dexie 升级可选字段/新表  
-3. 功能开关灰度：仅听写开启时可进卷面  
-4. 回滚：关开关即回 `DictationWord`；错史字段可保留无害  
+1. 增加配置默认 `sheetMode: false`、`gapMs: 1200`
+2. Dexie 升级可选字段/新表
+3. 功能开关灰度：仅听写开启时可进卷面
+4. 回滚：关开关即回 `DictationWord`；错史字段可保留无害
 
 ## Open Questions
 
-- 「完成本章」是否必须写入既有 `ResultScreen` 流程 — 首版可弱化为仅对账 + 错史，章节结算后续补  
-- 点未播题号：当前决定是起播（会推进 `playIndex`），与「焦点≤playIndex」一致  
+- 「完成本章」是否必须写入既有 `ResultScreen` 流程 — 首版可弱化为仅对账 + 错史，章节结算后续补
+- 点未播题号：当前决定是起播（会推进 `playIndex`），与「焦点 ≤playIndex」一致
