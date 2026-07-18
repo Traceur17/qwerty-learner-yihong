@@ -1,5 +1,6 @@
 import { TypingContext, TypingStateActionType } from '../../store'
 import ShareButton from '../ShareButton'
+import TalentStamp from '../TalentStamp'
 import { AuthorButton } from './AuthorButton'
 import ConclusionBar from './ConclusionBar'
 import RemarkRing from './RemarkRing'
@@ -12,6 +13,7 @@ import {
   currentDictInfoAtom,
   infoPanelStateAtom,
   isReviewModeAtom,
+  listenDictationConfigAtom,
   randomConfigAtom,
   reviewModeInfoAtom,
   wordDictationConfigAtom,
@@ -19,6 +21,7 @@ import {
 import type { InfoPanelType } from '@/typings'
 import { recordOpenInfoPanelAction } from '@/utils'
 import { fetchChapterErrorWordData, startChapterErrorReview } from '@/utils/chapterErrorReview'
+import { getAccuracyLevel } from '@/utils/talentCelebration'
 import { Transition } from '@headlessui/react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
@@ -36,6 +39,7 @@ const ResultScreen = () => {
   const { state, dispatch } = useContext(TypingContext)!
 
   const setWordDictationConfig = useSetAtom(wordDictationConfigAtom)
+  const listenDictationConfig = useAtomValue(listenDictationConfigAtom)
   const currentDictInfo = useAtomValue(currentDictInfoAtom)
   const setCurrentDictId = useSetAtom(currentDictIdAtom)
   const [currentChapter, setCurrentChapter] = useAtom(currentChapterAtom)
@@ -114,6 +118,12 @@ const ResultScreen = () => {
     const correctCount = chapterLength - wrongWords.length
     return Math.floor((correctCount / chapterLength) * 100)
   }, [state.chapterData.words.length, wrongWords.length])
+
+  const talentLevel = useMemo(() => {
+    if (!listenDictationConfig.isOpen || !listenDictationConfig.talentCelebration) return null
+    const total = state.chapterData.words.length
+    return getAccuracyLevel(total - wrongWords.length, total)
+  }, [listenDictationConfig.isOpen, listenDictationConfig.talentCelebration, state.chapterData.words.length, wrongWords.length])
 
   const mistakeLevel = useMemo(() => {
     if (correctRate >= 85) {
@@ -273,6 +283,11 @@ const ResultScreen = () => {
             <button className="absolute right-7 top-5" onClick={exitButtonHandler}>
               <IconX className="text-gray-400" />
             </button>
+            {talentLevel && (
+              <div className="pointer-events-none absolute left-8 top-4 z-30 md:left-12">
+                <TalentStamp level={talentLevel} className="w-44 md:w-56" />
+              </div>
+            )}
             <div className="mt-10 flex flex-row gap-2 overflow-hidden">
               <div className="flex flex-shrink-0 flex-grow-0 flex-col gap-3 px-4 sm:px-1 md:px-2 lg:px-4">
                 <RemarkRing remark={`${state.timerData.accuracy}%`} caption="正确率" percentage={state.timerData.accuracy} />

@@ -82,7 +82,7 @@ export default function ListenDictationSwitcher() {
     enableWord()
   }
 
-  const onToggleDisplayOption = (key: 'showPrevWord' | 'showPhonetic' | 'showTranslation' | 'sheetMode') => {
+  const onToggleDisplayOption = (key: 'showPrevWord' | 'showPhonetic' | 'showTranslation' | 'sheetMode' | 'talentCelebration') => {
     setListenDictationConfig((old) => ({ ...old, [key]: !old[key] }))
   }
 
@@ -226,6 +226,11 @@ export default function ListenDictationSwitcher() {
                       />
                     </>
                   )}
+                  <DisplayOptionSwitch
+                    label="展示我的天分"
+                    checked={listenDictationConfig.talentCelebration}
+                    onChange={() => onToggleDisplayOption('talentCelebration')}
+                  />
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {listenDictationConfig.sheetMode

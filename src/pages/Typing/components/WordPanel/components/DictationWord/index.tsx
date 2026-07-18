@@ -22,7 +22,15 @@ function hasPhonetic(word: Word): boolean {
   return Boolean((word.ukphone && word.ukphone.length > 1) || (word.usphone && word.usphone.length > 1))
 }
 
-export default function DictationWord({ word, onFinish }: { word: Word; onFinish: () => void }) {
+export default function DictationWord({
+  word,
+  onFinish,
+  onResult,
+}: {
+  word: Word
+  onFinish: () => void
+  onResult?: (isCorrect: boolean) => void
+}) {
   const { state, dispatch } = useContext(TypingContext)!
   const [inputWord, setInputWord] = useState('')
   const [isLocked, setIsLocked] = useState(false)
@@ -98,6 +106,7 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
     const isCorrect = isAnswerCorrect(inputWord)
 
     dispatch({ type: TypingStateActionType.SET_IS_SAVING_RECORD, payload: true })
+    onResult?.(isCorrect)
 
     if (isCorrect) {
       setFeedback('correct')
@@ -121,7 +130,19 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
         letterMistake: {},
       })
     }
-  }, [dispatch, inputWord, isAnswerCorrect, isLocked, onFinish, playBeepSound, playHintSound, saveWordRecord, state.isTyping, word.name])
+  }, [
+    dispatch,
+    inputWord,
+    isAnswerCorrect,
+    isLocked,
+    onFinish,
+    onResult,
+    playBeepSound,
+    playHintSound,
+    saveWordRecord,
+    state.isTyping,
+    word.name,
+  ])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement | HTMLDivElement>) => {

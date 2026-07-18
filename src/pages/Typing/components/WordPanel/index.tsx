@@ -5,10 +5,13 @@ import Progress from '../Progress'
 import ContinuousDictationSheet from './components/ContinuousDictationSheet'
 import DictationWord from './components/DictationWord'
 import Phonetic from './components/Phonetic'
+import TalentBadgeOverlay from './components/TalentBadgeOverlay'
 import Translation from './components/Translation'
 import WordComponent from './components/Word'
 import { usePrefetchPronunciationSound } from '@/hooks/usePronunciation'
 import {
+  currentChapterAtom,
+  currentDictIdAtom,
   isReviewModeAtom,
   isShowPrevAndNextWordAtom,
   listenDictationConfigAtom,
@@ -17,8 +20,10 @@ import {
   reviewModeInfoAtom,
 } from '@/store'
 import type { Word } from '@/typings'
+import type { TalentLevel } from '@/utils/talentCelebration'
+import { getStreakLevel, preloadTalentImages } from '@/utils/talentCelebration'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 export default function WordPanel() {
@@ -35,6 +40,40 @@ export default function WordPanel() {
 
   const setReviewModeInfo = useSetAtom(reviewModeInfoAtom)
   const isReviewMode = useAtomValue(isReviewModeAtom)
+  const currentChapter = useAtomValue(currentChapterAtom)
+  const currentDictId = useAtomValue(currentDictIdAtom)
+
+  // 展示我的天分：连对计数（跨词存活）与当前弹出的徽章
+  const streakRef = useRef(0)
+  const badgeSeqRef = useRef(0)
+  const [talentBadge, setTalentBadge] = useState<{ level: TalentLevel; seq: number } | null>(null)
+  const isTalentEnabled = listenDictationConfig.isOpen && listenDictationConfig.talentCelebration
+
+  useEffect(() => {
+    if (isTalentEnabled) preloadTalentImages()
+  }, [isTalentEnabled])
+
+  useEffect(() => {
+    // 换章 / 换词典 / 进出错词复习 / 切换听写开关时归零
+    streakRef.current = 0
+  }, [currentChapter, currentDictId, isReviewMode, listenDictationConfig.isOpen])
+
+  const onDictationResult = useCallback(
+    (isCorrect: boolean) => {
+      if (!isCorrect) {
+        streakRef.current = 0
+        return
+      }
+      streakRef.current += 1
+      if (!isTalentEnabled) return
+      const level = getStreakLevel(streakRef.current)
+      if (level) {
+        badgeSeqRef.current += 1
+        setTalentBadge({ level, seq: badgeSeqRef.current })
+      }
+    },
+    [isTalentEnabled],
+  )
 
   const prevIndex = useMemo(() => {
     const newIndex = state.chapterData.index - 1
@@ -205,7 +244,7 @@ export default function WordPanel() {
               <div className="relative">
                 {listenDictationConfig.isOpen ? (
                   <>
-                    <DictationWord word={currentWord} onFinish={onFinish} key={wordComponentKey} />
+                    <DictationWord word={currentWord} onFinish={onFinish} onResult={onDictationResult} key={wordComponentKey} />
                     {listenDictationConfig.showPhonetic && <Phonetic word={currentWord} />}
                     {listenDictationConfig.showTranslation && <Translation trans={currentWord.trans.join('；')} showTrans={true} />}
                   </>
@@ -227,6 +266,7 @@ export default function WordPanel() {
         )}
       </div>
       {!isSheetMode && <Progress className={`mb-10 mt-auto ${state.isTyping ? 'opacity-100' : 'opacity-0'}`} />}
+      {talentBadge && <TalentBadgeOverlay key={talentBadge.seq} level={talentBadge.level} onDone={() => setTalentBadge(null)} />}
     </div>
   )
 }

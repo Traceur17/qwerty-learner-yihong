@@ -1,0 +1,46 @@
+.badge {
+  animation: badge-slam-shake 3s ease-out both;
+  will-change: transform, opacity;
+  filter: brightness(1.12) saturate(1.15) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.38)) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.25));
+}
+
+/* 游戏标识感：从右上砸入（~0.15s）→ 抖动衰减（~0.65s）→ 静止停留（~1.8s）→ 淡出（~0.3s），整体保持倾斜 */
+@keyframes badge-slam-shake {
+  0% {
+    transform: translate(22vw, -14vh) rotate(20deg) scale(1.5);
+    opacity: 0;
+  }
+  5% {
+    transform: translate(0, 0) rotate(-8deg) scale(1);
+    opacity: 1;
+  }
+  8% {
+    transform: rotate(-2deg) scale(1.03);
+  }
+  11% {
+    transform: rotate(-13deg) scale(0.98);
+  }
+  14.5% {
+    transform: rotate(-4deg) scale(1.01);
+  }
+  17.5% {
+    transform: rotate(-11deg);
+  }
+  21% {
+    transform: rotate(-6deg);
+  }
+  24% {
+    transform: rotate(-9.5deg);
+  }
+  27% {
+    transform: rotate(-8deg);
+  }
+  90% {
+    transform: rotate(-8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-8deg) scale(1.04);
+    opacity: 0;
+  }
+}

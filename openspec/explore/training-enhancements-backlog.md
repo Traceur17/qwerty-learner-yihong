@@ -92,21 +92,16 @@ OpenSpec change：`openspec/changes/continuous-dictation-sheet`（已实现）
 
 ---
 
-## 新需求 · 三连对庆祝（2026-07-10）
+## 展示我的天分 · talent-celebration（2026-07-18 已实现）
 
-**触发**：连续 **3 题答对**（听写/打字模式待定，默认听写优先）。
+原「三连对庆祝」需求，扩展为四级天分徽章体系后落地。OpenSpec change：`openspec/changes/talent-celebration`。
 
-**表现**：全屏或居中 overlay 提示：
+**最终方案**：
 
-> **了不起的天分！**
-
-**视觉风格**：**洛克王国**（卡通奇幻、明亮饱和、徽章/对话框感、可选轻粒子，非 Qwerty 默认 indigo 极简风）。
-
-**注意**：
-
-- 计数器在答错时归零
-- 不与「错误 diff 需 Enter」流程冲突（庆祝可在进入下一词前短暂弹出）
-- 可配置开关 / 仅听写模式
+- **连对阶梯**（仅逐词听写）：连对 3 →「还不错的天分」、4 →「相当好的天分」、5 →「了不起的天分」（+confetti），之后每 +5 重复「了不起」；答错静默归零
+- **结算盖章**：正确率 ≥80%「了不起」/ ≥70%「相当好」/ ≥60%「还不错」/ <60% 不盖章；仅生效于章节结算页
+- **开关**：听写设置「展示我的天分」，默认开；打字模式与连播卷面均不触发
+- 「一般般的天分」素材封存未用（`manifests/天分/`）
 
 ---
 
@@ -133,7 +128,7 @@ OpenSpec change：`openspec/changes/continuous-dictation-sheet`（已实现）
 3. `random-draw-mode` — 随机抽词（含可选跨章词池）
 4. ~~`chapter-merged-audio`~~ — ❌ 弃案
 5. （可选）`dictation-word-metrics` — 词级错型分类 / 词级 WPM
-6. （可选）`triple-correct-celebration` — 「了不起的天分！」
+6. ~~`triple-correct-celebration`~~ — ✅ 已作为 `talent-celebration`（展示我的天分）实现
 
 ---
 

@@ -122,6 +122,7 @@ export const listenDictationConfigAtom = atomForConfig<ListenDictationConfig>('l
   showTranslation: false,
   sheetMode: false,
   gapMs: 1200,
+  talentCelebration: true,
 })
 
 /** 连播卷面当前播放题索引；普通模式不用，侧栏定位可读 */

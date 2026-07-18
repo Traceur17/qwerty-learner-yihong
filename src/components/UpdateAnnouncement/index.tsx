@@ -1,3 +1,4 @@
+import talentAmazingImg from '@/assets/talent/talent-amazing.webp'
 import { dismissUpdateAnnouncementAtom } from '@/store'
 import noop from '@/utils/noop'
 import { Dialog, Transition } from '@headlessui/react'
@@ -6,10 +7,8 @@ import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import IconEyeSlash from '~icons/heroicons/eye-slash-solid'
 import IconHeadphones from '~icons/tabler/headphones'
-import IconLayout from '~icons/tabler/layout'
-import IconList from '~icons/tabler/list'
 import IconPlayerPlay from '~icons/tabler/player-play'
-import IconTarget from '~icons/tabler/target'
+import IconSparkles from '~icons/tabler/sparkles'
 import IconX from '~icons/tabler/x'
 
 type UpdateItem = {
@@ -18,7 +17,7 @@ type UpdateItem = {
   summary: ReactNode
   figure?: ReactNode
   details: string[]
-  icon: typeof IconList
+  icon: typeof IconPlayerPlay
 }
 
 /** 连播卷面入口示意：工具栏耳机图标 → 弹框里打开「连播卷面」 */
@@ -45,6 +44,38 @@ function SheetModeEntryFigure() {
   )
 }
 
+/** 「了不起的天分」徽章预览 + 开关入口示意：工具栏耳机图标 → 弹框里的「展示我的天分」开关 */
+function TalentBadgeFigure() {
+  return (
+    <div className="mt-3 flex flex-col gap-3">
+      <div className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-amber-300 bg-white/70 px-4 py-4 dark:border-amber-700 dark:bg-gray-900/40">
+        <img src={talentAmazingImg} alt="了不起的天分" draggable={false} className="w-56 max-w-full -rotate-3 select-none drop-shadow-lg" />
+        <p className="text-xs text-gray-500 dark:text-gray-400">练得好的时刻，它会突然砸进屏幕。至于怎么让它出现——自己去发现</p>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-indigo-200 bg-white/70 px-4 py-3 dark:border-indigo-800 dark:bg-gray-900/40">
+        <div className="flex overflow-hidden rounded-md border border-gray-200 shadow-sm dark:border-gray-600">
+          <span className="flex items-center justify-center bg-indigo-500 p-1.5 text-white">
+            <IconHeadphones className="h-4 w-4" />
+          </span>
+          <span className="flex items-center justify-center bg-white p-1.5 text-gray-400 dark:bg-gray-800">
+            <IconEyeSlash className="h-4 w-4" />
+          </span>
+        </div>
+        <span className="text-gray-400">→</span>
+        <div className="flex items-center gap-3 rounded-lg bg-white px-3 py-1.5 shadow-sm ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-600">
+          <span className="text-xs text-gray-600 dark:text-gray-300">展示我的天分</span>
+          <span className="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-indigo-500">
+            <span className="absolute right-0.5 h-3 w-3 rounded-full bg-white" />
+          </span>
+        </div>
+        <p className="w-full text-xs text-gray-500 dark:text-gray-400 sm:w-auto sm:flex-1">
+          工具栏点耳机图标，「展示我的天分」开关随时可关
+        </p>
+      </div>
+    </div>
+  )
+}
+
 const UPDATE_ITEMS: UpdateItem[] = [
   {
     tag: '听写',
@@ -61,24 +92,11 @@ const UPDATE_ITEMS: UpdateItem[] = [
   },
   {
     tag: '听写',
-    title: '听写 / 默写合并开关',
-    summary: '工具栏的耳机（听写）与眼睛（默写）合并为二选一开关，选中后可继续在弹框里配置，原有设置都会保留。',
-    details: ['快捷键：Alt + C 开关听写，Alt + V 开关默写', '两种模式互斥，切换互不干扰', '弹框不再一点就消失，可安心调整配置'],
-    icon: IconTarget,
-  },
-  {
-    tag: '听写',
-    title: '更直观的纠错对照',
-    summary: '答错时上下两行对照：你的输入里多写的划删除线，正确行里标出你漏写和写错的部分，一眼看清该怎么改。',
-    details: ['多写 → 你的输入行划删除线', '漏写 / 写错 → 在正确行高亮标出', '原始听写与连播卷面统一使用这套对照'],
-    icon: IconList,
-  },
-  {
-    tag: '体验',
-    title: '界面更清爽',
-    summary: '连播卷面的控制按钮收进底部吸底栏，计时居中展示；全站隐藏页脚链接，练习区域更大。',
-    details: ['播放 / 暂停、对答案固定在底栏，随时可点', '打开侧栏、设置或窗口失焦会自动暂停连播', '首次进入连播卷面有步骤引导'],
-    icon: IconLayout,
+    title: '展示我的天分',
+    summary: '给认真练习的你一点即时的喝彩：听写表现出色时，会有天分徽章弹出为你庆祝，章节结算也可能被盖上一枚天分印章。',
+    figure: <TalentBadgeFigure />,
+    details: ['目的只有一个：让每一次进步都被看见，练习更有游戏感', '默认开启，仅听写模式生效，不打扰打字练习'],
+    icon: IconSparkles,
   },
 ]
 
@@ -164,10 +182,9 @@ export default function UpdateAnnouncement() {
                     <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
                       小圆饼干，你好！这次更新带来了
                       <strong className="font-medium text-gray-800 dark:text-gray-100">连播卷面模式</strong>
-                      ——像考试一样连续听写、统一对答案；还合并了
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">听写 / 默写开关</strong>，并把
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">纠错对照</strong>
-                      做得更直观。
+                      ——像考试一样连续听写、统一对答案；还有
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">展示我的天分</strong>
+                      ——练得好的时刻，值得被大声宣布。
                     </p>
                   </div>
                   <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-18</p>

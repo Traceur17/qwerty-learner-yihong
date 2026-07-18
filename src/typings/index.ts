@@ -66,4 +66,6 @@ export type ListenDictationConfig = {
   sheetMode: boolean
   /** 词音频结束后到下一词的间隔（毫秒） */
   gapMs: number
+  /** 展示我的天分：连对徽章 + 结算盖章 */
+  talentCelebration: boolean
 }
