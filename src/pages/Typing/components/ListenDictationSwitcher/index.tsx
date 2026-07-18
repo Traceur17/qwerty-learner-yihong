@@ -224,13 +224,13 @@ export default function ListenDictationSwitcher() {
                         checked={listenDictationConfig.showTranslation}
                         onChange={() => onToggleDisplayOption('showTranslation')}
                       />
+                      <DisplayOptionSwitch
+                        label="展示我的天分"
+                        checked={listenDictationConfig.talentCelebration}
+                        onChange={() => onToggleDisplayOption('talentCelebration')}
+                      />
                     </>
                   )}
-                  <DisplayOptionSwitch
-                    label="展示我的天分"
-                    checked={listenDictationConfig.talentCelebration}
-                    onChange={() => onToggleDisplayOption('talentCelebration')}
-                  />
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {listenDictationConfig.sheetMode
