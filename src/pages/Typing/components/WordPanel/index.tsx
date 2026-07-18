@@ -2,6 +2,7 @@ import { TypingContext, TypingStateActionType } from '../../store'
 import type { TypingState } from '../../store/type'
 import PrevAndNextWord from '../PrevAndNextWord'
 import Progress from '../Progress'
+import ContinuousDictationSheet from './components/ContinuousDictationSheet'
 import DictationWord from './components/DictationWord'
 import Phonetic from './components/Phonetic'
 import Translation from './components/Translation'
@@ -139,13 +140,15 @@ export default function WordPanel() {
     setIsHoveringTranslation(checked)
   }, [])
 
+  const isSheetMode = listenDictationConfig.isOpen && listenDictationConfig.sheetMode
+
   useHotkeys(
     'tab',
     () => {
       handleShowTranslation(true)
     },
-    { enableOnFormTags: true, preventDefault: true },
-    [],
+    { enableOnFormTags: true, preventDefault: true, enabled: !isSheetMode },
+    [isSheetMode],
   )
 
   useHotkeys(
@@ -153,63 +156,77 @@ export default function WordPanel() {
     () => {
       handleShowTranslation(false)
     },
-    { enableOnFormTags: true, keyup: true, preventDefault: true },
-    [],
+    { enableOnFormTags: true, keyup: true, preventDefault: true, enabled: !isSheetMode },
+    [isSheetMode],
   )
 
   const shouldShowTranslation = useMemo(() => {
     return isShowTranslation || state.isTransVisible
   }, [isShowTranslation, state.isTransVisible])
 
+  const chapterWords = state.chapterData.words
+
   return (
     <div className="container flex h-full min-h-0 w-full flex-col items-center justify-center">
-      <div className="flex h-16 w-full max-w-5xl shrink-0 grow-0 items-center justify-between px-2 pt-6 md:h-20 md:px-6 md:pt-8 xl:px-10">
-        {state.isTyping && listenDictationConfig.isOpen && listenDictationConfig.showPrevWord && (
-          <PrevAndNextWord type="prev" showTrans={listenDictationConfig.showTranslation} />
-        )}
-        {!listenDictationConfig.isOpen && isShowPrevAndNextWord && state.isTyping && (
-          <>
-            <PrevAndNextWord type="prev" />
-            <PrevAndNextWord type="next" />
-          </>
-        )}
-      </div>
-      <div className="flex min-h-0 w-full max-w-5xl flex-1 flex-col items-center justify-center px-2 md:px-6 xl:px-10">
-        {currentWord && (
-          <div className="relative flex w-full justify-center">
-            {!state.isTyping && (
-              <div className="absolute flex h-full w-full justify-center">
-                <div className="z-10 flex w-full items-center backdrop-blur-sm">
-                  <p className="w-full select-none text-center text-xl text-gray-600 dark:text-gray-50">
-                    按任意键{state.timerData.time ? '继续' : '开始'}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div className="relative">
-              {listenDictationConfig.isOpen ? (
-                <>
-                  <DictationWord word={currentWord} onFinish={onFinish} key={wordComponentKey} />
-                  {listenDictationConfig.showPhonetic && <Phonetic word={currentWord} />}
-                  {listenDictationConfig.showTranslation && <Translation trans={currentWord.trans.join('；')} showTrans={true} />}
-                </>
-              ) : (
-                <>
-                  <WordComponent word={currentWord} onFinish={onFinish} key={wordComponentKey} />
-                  {phoneticConfig.isOpen && <Phonetic word={currentWord} />}
-                  <Translation
-                    trans={currentWord.trans.join('；')}
-                    showTrans={shouldShowTranslation}
-                    onMouseEnter={() => handleShowTranslation(true)}
-                    onMouseLeave={() => handleShowTranslation(false)}
-                  />
-                </>
-              )}
-            </div>
+      {!isSheetMode && (
+        <div className="flex h-16 w-full max-w-5xl shrink-0 grow-0 items-center justify-between px-2 pt-6 md:h-20 md:px-6 md:pt-8 xl:px-10">
+          {state.isTyping && listenDictationConfig.isOpen && listenDictationConfig.showPrevWord && (
+            <PrevAndNextWord type="prev" showTrans={listenDictationConfig.showTranslation} />
+          )}
+          {!listenDictationConfig.isOpen && isShowPrevAndNextWord && state.isTyping && (
+            <>
+              <PrevAndNextWord type="prev" />
+              <PrevAndNextWord type="next" />
+            </>
+          )}
+        </div>
+      )}
+      <div
+        className={`flex min-h-0 w-full max-w-5xl flex-1 flex-col items-center px-2 md:px-6 xl:px-10 ${
+          isSheetMode ? 'justify-stretch pt-4' : 'justify-center'
+        }`}
+      >
+        {isSheetMode ? (
+          <div className="relative flex h-full min-h-0 w-full flex-1 justify-center">
+            <ContinuousDictationSheet words={chapterWords} />
           </div>
+        ) : (
+          currentWord && (
+            <div className="relative flex w-full justify-center">
+              {!state.isTyping && (
+                <div className="absolute flex h-full w-full justify-center">
+                  <div className="z-10 flex w-full items-center backdrop-blur-sm">
+                    <p className="w-full select-none text-center text-xl text-gray-600 dark:text-gray-50">
+                      按任意键{state.timerData.time ? '继续' : '开始'}
+                    </p>
+                  </div>
+                </div>
+              )}
+              <div className="relative">
+                {listenDictationConfig.isOpen ? (
+                  <>
+                    <DictationWord word={currentWord} onFinish={onFinish} key={wordComponentKey} />
+                    {listenDictationConfig.showPhonetic && <Phonetic word={currentWord} />}
+                    {listenDictationConfig.showTranslation && <Translation trans={currentWord.trans.join('；')} showTrans={true} />}
+                  </>
+                ) : (
+                  <>
+                    <WordComponent word={currentWord} onFinish={onFinish} key={wordComponentKey} />
+                    {phoneticConfig.isOpen && <Phonetic word={currentWord} />}
+                    <Translation
+                      trans={currentWord.trans.join('；')}
+                      showTrans={shouldShowTranslation}
+                      onMouseEnter={() => handleShowTranslation(true)}
+                      onMouseLeave={() => handleShowTranslation(false)}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          )
         )}
       </div>
-      <Progress className={`mb-10 mt-auto ${state.isTyping ? 'opacity-100' : 'opacity-0'}`} />
+      {!isSheetMode && <Progress className={`mb-10 mt-auto ${state.isTyping ? 'opacity-100' : 'opacity-0'}`} />}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { useLayoutEffect, useState } from 'react'
-import type { RefObject } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import { createPortal } from 'react-dom'
 
 type Placement = 'top' | 'bottom' | 'bottom-end' | 'left' | 'right'
@@ -9,7 +9,7 @@ type GuideBubbleProps = {
   targetRef: RefObject<HTMLElement | null>
   open: boolean
   anchorKey: string
-  content: string
+  content: ReactNode
   placement?: Placement
   stepLabel?: string
   isLast?: boolean
@@ -193,7 +193,7 @@ export default function GuideBubble({
       >
         <span className={`pointer-events-none absolute h-0 w-0 ${getArrowClass(layout.arrowPlacement)}`} />
         {stepLabel && <p className="mb-1 text-xs font-medium text-indigo-100">{stepLabel}</p>}
-        <p className="text-sm leading-relaxed">{content}</p>
+        <div className="text-sm leading-relaxed">{content}</div>
         <div className="mt-3 flex flex-wrap items-center justify-end gap-1.5">
           <button type="button" className="rounded px-1.5 py-0.5 text-xs text-indigo-100 hover:text-white" onClick={onDismissPermanently}>
             不再提示

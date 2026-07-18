@@ -1,3 +1,5 @@
+import type { WordAudioRef, WordAudioSegment } from '@/utils/wordAudio'
+
 export * from './resource'
 
 export type PronunciationType = 'us' | 'uk' | 'romaji' | 'zh' | 'ja' | 'de' | 'hapin' | 'kk' | 'id'
@@ -19,7 +21,7 @@ export const PRONUNCIATION_PHONETIC_MAP: Pronunciation2PhoneticMap = {
   id: 'id',
 }
 
-export type { WordAudioRef, WordAudioSegment } from '@/utils/wordAudio'
+export type { WordAudioRef, WordAudioSegment }
 
 export type Word = {
   name: string
@@ -60,4 +62,8 @@ export type ListenDictationConfig = {
   showPrevWord: boolean
   showPhonetic: boolean
   showTranslation: boolean
+  /** 连播卷面模式（与一词一判听写互斥于 UI 呈现） */
+  sheetMode: boolean
+  /** 词音频结束后到下一词的间隔（毫秒） */
+  gapMs: number
 }

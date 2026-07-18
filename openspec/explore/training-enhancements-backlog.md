@@ -72,6 +72,16 @@
 
 ---
 
+## 连播卷面听写 · continuous-dictation-sheet（2026-07-14）
+
+OpenSpec change：`openspec/changes/continuous-dictation-sheet`（已实现）
+
+- 听写开关内开启 **连播卷面**；编号表 + 作答；点题号起播；间隔可配
+- 默认识别列隐藏；「对答案」揭晓英文/释义/错史（仅已播题）
+- 错史近 3 次；展示末次全文+diff+`×N`；点击展开
+
+---
+
 ## Phase 4 · 长期熟悉度（低优先级）
 
 - [ ] 章节熟悉度卡片（练习次数、错词率、连续全对）

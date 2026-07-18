@@ -20,6 +20,7 @@ import {
   currentDictIdAtom,
   currentDictInfoAtom,
   isReviewModeAtom,
+  listenDictationConfigAtom,
   randomConfigAtom,
   reviewModeInfoAtom,
   typingResumeAtom,
@@ -43,6 +44,7 @@ const App: React.FC = () => {
 
   const [currentDictId, setCurrentDictId] = useAtom(currentDictIdAtom)
   const randomConfig = useAtomValue(randomConfigAtom)
+  const listenDictationConfig = useAtomValue(listenDictationConfigAtom)
   const chapterLogUploader = useMixPanelChapterLogUploader(state)
   const saveChapterRecord = useSaveChapterRecord()
 
@@ -104,8 +106,11 @@ const App: React.FC = () => {
     }
   }, [])
 
+  // 卷面模式无「按任意键继续」遮罩，计时随播放走，不由任意键触发
+  const isSheetMode = listenDictationConfig.isOpen && listenDictationConfig.sheetMode
+
   useEffect(() => {
-    if (!state.isTyping) {
+    if (!state.isTyping && !isSheetMode) {
       const onKeyDown = (e: KeyboardEvent) => {
         if (!isLoading && e.key !== 'Enter' && (isLegal(e.key) || e.key === ' ') && !e.altKey && !e.ctrlKey && !e.metaKey) {
           e.preventDefault()
@@ -116,7 +121,7 @@ const App: React.FC = () => {
 
       return () => window.removeEventListener('keydown', onKeyDown)
     }
-  }, [state.isTyping, isLoading, dispatch])
+  }, [state.isTyping, isLoading, dispatch, isSheetMode])
 
   useEffect(() => {
     if (!typingResume) return
@@ -194,7 +199,11 @@ const App: React.FC = () => {
             </button>
           </Tooltip>
         </Header>
-        <div className="mx-auto flex h-full min-h-0 w-full max-w-[1600px] flex-1 flex-col px-4 pb-5 xl:px-8">
+        <div
+          className={`mx-auto flex h-full min-h-0 w-full max-w-[1600px] flex-1 flex-col px-4 xl:px-8 ${
+            listenDictationConfig.isOpen && listenDictationConfig.sheetMode ? 'pb-1' : 'pb-5'
+          }`}
+        >
           <div className="relative flex min-h-0 w-full flex-1 flex-col items-center">
             <div className="flex min-h-0 w-full flex-1 items-center justify-center">
               {isLoading ? (
@@ -275,7 +284,7 @@ const App: React.FC = () => {
                 )
               )}
             </div>
-            <Speed />
+            {!(listenDictationConfig.isOpen && listenDictationConfig.sheetMode) && <Speed />}
           </div>
         </div>
       </Layout>

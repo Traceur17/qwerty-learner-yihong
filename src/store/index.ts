@@ -2,6 +2,7 @@ import atomForConfig from './atomForConfig'
 import { reviewInfoAtom } from './reviewInfoAtom'
 import {
   DISMISS_CHAPTER_ERROR_BOOK_GUIDE_KEY,
+  DISMISS_CONTINUOUS_SHEET_GUIDE_KEY,
   DISMISS_START_CARD_DATE_KEY,
   DISMISS_UPDATE_ANNOUNCEMENT_KEY,
   defaultFontSizeConfig,
@@ -119,11 +120,21 @@ export const listenDictationConfigAtom = atomForConfig<ListenDictationConfig>('l
   showPrevWord: false,
   showPhonetic: false,
   showTranslation: false,
+  sheetMode: false,
+  gapMs: 1200,
 })
+
+/** 连播卷面当前播放题索引；普通模式不用，侧栏定位可读 */
+export const continuousSheetPlayIndexAtom = atom(0)
+
+/** 侧栏「从 xx 开始」向连播卷面发起的起播请求；ts 用于同索引重复触发 */
+export const continuousSheetJumpRequestAtom = atom<{ index: number; ts: number } | null>(null)
 
 export const dismissStartCardDateAtom = atomWithStorage<Date | null>(DISMISS_START_CARD_DATE_KEY, null)
 
 export const dismissChapterErrorBookGuideAtom = atomWithStorage<boolean>(DISMISS_CHAPTER_ERROR_BOOK_GUIDE_KEY, false)
+
+export const dismissContinuousSheetGuideAtom = atomWithStorage<boolean>(DISMISS_CONTINUOUS_SHEET_GUIDE_KEY, false)
 
 export const dismissUpdateAnnouncementAtom = atomWithStorage<boolean>(DISMISS_UPDATE_ANNOUNCEMENT_KEY, false)
 

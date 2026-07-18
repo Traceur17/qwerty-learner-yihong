@@ -3,16 +3,24 @@ import WordCard from './WordCard'
 import Drawer from '@/components/Drawer'
 import Tooltip from '@/components/Tooltip'
 import { Button } from '@/components/ui/button'
-import { currentChapterAtom, currentDictInfoAtom, isReviewModeAtom } from '@/store'
+import {
+  continuousSheetJumpRequestAtom,
+  continuousSheetPlayIndexAtom,
+  currentChapterAtom,
+  currentDictInfoAtom,
+  isReviewModeAtom,
+  listenDictationConfigAtom,
+} from '@/store'
 import range from '@/utils/range'
 import { stopSegmentPlayback } from '@/utils/segmentAudioPlayer'
 import { stopWordAudio } from '@/utils/wordAudioPlayer'
 import { Dialog, Listbox, Transition } from '@headlessui/react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
-import { useAtom, useAtomValue } from 'jotai'
-import { Fragment, useCallback, useContext, useEffect, useState } from 'react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import IconCheck from '~icons/tabler/check'
 import IconChevronDown from '~icons/tabler/chevron-down'
+import IconCurrentLocation from '~icons/tabler/current-location'
 import ListIcon from '~icons/tabler/list'
 import IconX from '~icons/tabler/x'
 
@@ -25,8 +33,18 @@ export default function WordList() {
   const currentDictInfo = useAtomValue(currentDictInfoAtom)
   const [currentChapter, setCurrentChapter] = useAtom(currentChapterAtom)
   const isReviewMode = useAtomValue(isReviewModeAtom)
+  const listenDictationConfig = useAtomValue(listenDictationConfigAtom)
+  const sheetPlayIndex = useAtomValue(continuousSheetPlayIndexAtom)
+  const setSheetJumpRequest = useSetAtom(continuousSheetJumpRequestAtom)
   const currentLanguage = currentDictInfo.language
   const chapterCount = currentDictInfo.chapterCount
+  const viewportRef = useRef<HTMLDivElement>(null)
+
+  const isSheetMode = listenDictationConfig.isOpen && listenDictationConfig.sheetMode
+  const activeIndex = useMemo(() => {
+    if (isSheetMode) return sheetPlayIndex
+    return state.chapterData.index
+  }, [isSheetMode, sheetPlayIndex, state.chapterData.index])
 
   useEffect(() => {
     setSelectedIndex(null)
@@ -39,6 +57,7 @@ export default function WordList() {
 
   function openModal() {
     setIsOpen(true)
+    // 卷面模式下 isTyping=false 会联动暂停连播，方便在抽屉里点选
     dispatch({ type: TypingStateActionType.SET_IS_TYPING, payload: false })
   }
 
@@ -57,14 +76,31 @@ export default function WordList() {
   const handleStartFromSelected = useCallback(() => {
     if (selectedIndex === null) return
 
-    // 停掉侧栏预听；跳词后保持暂停，显示「按任意键继续」，勿立刻 isTyping+自动播
+    // 停掉侧栏预听
     stopWordAudio()
     stopSegmentPlayback()
-    dispatch({ type: TypingStateActionType.SKIP_2_WORD_INDEX, newIndex: selectedIndex })
-    dispatch({ type: TypingStateActionType.SET_IS_TYPING, payload: false })
+    if (isSheetMode) {
+      // 卷面模式：通知卷面从该题起播
+      setSheetJumpRequest({ index: selectedIndex, ts: Date.now() })
+    } else {
+      // 跳词后保持暂停，显示「按任意键继续」，勿立刻 isTyping+自动播
+      dispatch({ type: TypingStateActionType.SKIP_2_WORD_INDEX, newIndex: selectedIndex })
+      dispatch({ type: TypingStateActionType.SET_IS_TYPING, payload: false })
+    }
     setIsOpen(false)
     setSelectedIndex(null)
-  }, [dispatch, selectedIndex])
+  }, [dispatch, isSheetMode, selectedIndex, setSheetJumpRequest])
+
+  const scrollToCurrentWord = useCallback(() => {
+    const el = document.getElementById(`word-list-item-${activeIndex}`)
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  }, [activeIndex])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const timer = window.setTimeout(() => scrollToCurrentWord(), 80)
+    return () => window.clearTimeout(timer)
+  }, [isOpen, scrollToCurrentWord])
 
   const selectedWord = selectedIndex !== null ? state.chapterData.words[selectedIndex] : undefined
   const selectedWordLabel = selectedWord && ['romaji', 'hapin'].includes(currentLanguage) ? selectedWord.notation : selectedWord?.name
@@ -127,34 +163,57 @@ export default function WordList() {
           </div>
           <IconX onClick={closeModal} className="shrink-0 cursor-pointer" />
         </Dialog.Title>
-        <ScrollArea.Root className="flex-1 overflow-hidden">
-          <ScrollArea.Viewport className="h-full w-full px-3">
-            <div className="flex w-full flex-col gap-1 pb-3 pr-2">
-              {state.chapterData.words?.map((word, index) => {
-                return (
-                  <WordCard
-                    word={word}
-                    index={index}
-                    key={`${word.name}_${index}`}
-                    isActive={state.chapterData.index === index}
-                    isSelected={selectedIndex === index}
-                    onSelect={handleSelectWord}
-                  />
-                )
-              })}
-            </div>
-          </ScrollArea.Viewport>
-          <ScrollArea.Scrollbar
-            className="flex w-3 touch-none select-none bg-gray-100/80 p-0.5 transition-colors hover:bg-gray-200/90 dark:bg-gray-800/80 dark:hover:bg-gray-700/90"
-            orientation="vertical"
-          >
-            <ScrollArea.Thumb className="relative min-h-[3rem] flex-1 rounded-full bg-indigo-400/80 hover:bg-indigo-500 dark:bg-indigo-500/80 dark:hover:bg-indigo-400" />
-          </ScrollArea.Scrollbar>
-        </ScrollArea.Root>
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+          <ScrollArea.Root className="flex-1 overflow-hidden">
+            <ScrollArea.Viewport ref={viewportRef} className="h-full w-full px-3">
+              <div className="flex w-full flex-col gap-1 pb-3 pr-2">
+                {state.chapterData.words?.map((word, index) => {
+                  return (
+                    <div key={`${word.name}_${index}`} id={`word-list-item-${index}`}>
+                      <WordCard
+                        word={word}
+                        index={index}
+                        isActive={activeIndex === index}
+                        isSelected={selectedIndex === index}
+                        onSelect={handleSelectWord}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+            </ScrollArea.Viewport>
+            <ScrollArea.Scrollbar
+              className="flex w-3 touch-none select-none bg-gray-100/80 p-0.5 transition-colors hover:bg-gray-200/90 dark:bg-gray-800/80 dark:hover:bg-gray-700/90"
+              orientation="vertical"
+            >
+              <ScrollArea.Thumb className="relative min-h-[3rem] flex-1 rounded-full bg-indigo-400/80 hover:bg-indigo-500 dark:bg-indigo-500/80 dark:hover:bg-indigo-400" />
+            </ScrollArea.Scrollbar>
+          </ScrollArea.Root>
+
+          <Tooltip content="定位到当前词" placement="left">
+            <button
+              type="button"
+              onClick={scrollToCurrentWord}
+              className="absolute bottom-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg hover:bg-indigo-600 focus:outline-none dark:bg-indigo-600 dark:hover:bg-indigo-500"
+              aria-label="定位到当前词"
+            >
+              <IconCurrentLocation className="h-5 w-5" />
+            </button>
+          </Tooltip>
+        </div>
         {selectedIndex !== null && (
           <div className="border-t border-gray-200 p-4 dark:border-gray-700">
-            <Button type="button" className="w-full" disabled={selectedIndex === state.chapterData.index} onClick={handleStartFromSelected}>
-              {selectedIndex === state.chapterData.index ? '已是当前词' : `从「${selectedWordLabel}」开始练习`}
+            <Button
+              type="button"
+              className="w-full"
+              disabled={!isSheetMode && selectedIndex === activeIndex}
+              onClick={handleStartFromSelected}
+            >
+              {isSheetMode
+                ? `从「${selectedWordLabel}」起播`
+                : selectedIndex === activeIndex
+                ? '已是当前词'
+                : `从「${selectedWordLabel}」开始练习`}
             </Button>
           </div>
         )}

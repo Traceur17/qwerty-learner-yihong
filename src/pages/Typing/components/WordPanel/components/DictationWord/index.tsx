@@ -134,6 +134,8 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
       if (e.key === 'Enter') {
         e.preventDefault()
         e.stopPropagation()
+        // 暂停「按任意键继续」时 Enter 不结束纠错，也不往下传
+        if (!state.isTyping) return
         if (feedback === 'wrong' && isLocked) {
           handleContinueAfterWrong()
         } else {
@@ -141,7 +143,7 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
         }
       }
     },
-    [feedback, handleContinueAfterWrong, handleSubmit, isLocked],
+    [feedback, handleContinueAfterWrong, handleSubmit, isLocked, state.isTyping],
   )
 
   useHotkeys(
@@ -157,13 +159,16 @@ export default function DictationWord({ word, onFinish }: { word: Word; onFinish
 
   useHotkeys(
     'enter',
-    () => {
+    (e) => {
+      e.preventDefault()
+      // 与全局暂停一致：Enter 不恢复/不跳过，吞掉避免传到其他快捷键
+      if (!state.isTyping) return
       if (feedback === 'wrong' && isLocked) {
         handleContinueAfterWrong()
       }
     },
     { enableOnFormTags: true, preventDefault: true },
-    [feedback, handleContinueAfterWrong, isLocked],
+    [feedback, handleContinueAfterWrong, isLocked, state.isTyping],
   )
 
   return (

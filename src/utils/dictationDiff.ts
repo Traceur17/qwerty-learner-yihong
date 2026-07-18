@@ -20,23 +20,80 @@ function tokensEqual(a: string, b: string, ignoreCase: boolean): boolean {
   return normalizeToken(a, ignoreCase) === normalizeToken(b, ignoreCase)
 }
 
+function levenshtein(a: string, b: string): number {
+  const m = a.length
+  const n = b.length
+  if (m === 0) return n
+  if (n === 0) return m
+  const prev = Array.from({ length: n + 1 }, (_, j) => j)
+  const curr = Array(n + 1).fill(0)
+  for (let i = 1; i <= m; i++) {
+    curr[0] = i
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1
+      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost)
+    }
+    for (let j = 0; j <= n; j++) prev[j] = curr[j]
+  }
+  return prev[n]
+}
+
+/** 0～1，用于词对齐：避免「option」被对到「course」而不是「optional」 */
+export function tokenSimilarity(a: string, b: string, ignoreCase: boolean): number {
+  const x = normalizeToken(a, ignoreCase)
+  const y = normalizeToken(b, ignoreCase)
+  if (x === y) return 1
+  if (!x.length || !y.length) return 0
+  if (x.startsWith(y) || y.startsWith(x)) {
+    return Math.min(x.length, y.length) / Math.max(x.length, y.length)
+  }
+  const dist = levenshtein(x, y)
+  return Math.max(0, 1 - dist / Math.max(x.length, y.length))
+}
+
 type WordOp =
   | { kind: 'match'; user: string; correct: string }
   | { kind: 'missing'; correct: string }
   | { kind: 'extra'; user: string }
   | { kind: 'replace'; user: string; correct: string }
 
+const GAP_PENALTY = 0.45
+const REPLACE_MIN_SIM = 0.35
+
+/**
+ * Needleman–Wunsch 风格对齐：相似度配对优先于任意对角 replace，
+ * 这样「option」会对「optional」，漏掉的「course」记为 missing。
+ */
 function alignWords(userTokens: string[], correctTokens: string[], ignoreCase: boolean): WordOp[] {
   const m = userTokens.length
   const n = correctTokens.length
-  const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0))
+  const score: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0))
+  const ptr: Array<Array<'diag' | 'up' | 'left' | 'none'>> = Array.from({ length: m + 1 }, () => Array(n + 1).fill('none'))
+
+  for (let i = 1; i <= m; i++) {
+    score[i][0] = -GAP_PENALTY * i
+    ptr[i][0] = 'up'
+  }
+  for (let j = 1; j <= n; j++) {
+    score[0][j] = -GAP_PENALTY * j
+    ptr[0][j] = 'left'
+  }
 
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
-      if (tokensEqual(userTokens[i - 1], correctTokens[j - 1], ignoreCase)) {
-        dp[i][j] = dp[i - 1][j - 1] + 1
+      const sim = tokenSimilarity(userTokens[i - 1], correctTokens[j - 1], ignoreCase)
+      const diag = score[i - 1][j - 1] + (sim >= REPLACE_MIN_SIM ? sim : sim - 1)
+      const up = score[i - 1][j] - GAP_PENALTY
+      const left = score[i][j - 1] - GAP_PENALTY
+      if (diag >= up && diag >= left) {
+        score[i][j] = diag
+        ptr[i][j] = 'diag'
+      } else if (up >= left) {
+        score[i][j] = up
+        ptr[i][j] = 'up'
       } else {
-        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1])
+        score[i][j] = left
+        ptr[i][j] = 'left'
       }
     }
   }
@@ -44,22 +101,30 @@ function alignWords(userTokens: string[], correctTokens: string[], ignoreCase: b
   const ops: WordOp[] = []
   let i = m
   let j = n
-
   while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && tokensEqual(userTokens[i - 1], correctTokens[j - 1], ignoreCase)) {
-      ops.unshift({ kind: 'match', user: userTokens[i - 1], correct: correctTokens[j - 1] })
+    const p = ptr[i][j]
+    if (p === 'diag' && i > 0 && j > 0) {
+      const user = userTokens[i - 1]
+      const correct = correctTokens[j - 1]
+      if (tokensEqual(user, correct, ignoreCase)) {
+        ops.unshift({ kind: 'match', user, correct })
+      } else if (tokenSimilarity(user, correct, ignoreCase) >= REPLACE_MIN_SIM) {
+        ops.unshift({ kind: 'replace', user, correct })
+      } else {
+        // 相似度过低：拆成 extra + missing，避免乱配对
+        ops.unshift({ kind: 'extra', user })
+        ops.unshift({ kind: 'missing', correct })
+      }
       i--
       j--
-    } else if (i > 0 && j > 0 && dp[i - 1][j - 1] >= dp[i - 1][j] && dp[i - 1][j - 1] >= dp[i][j - 1]) {
-      ops.unshift({ kind: 'replace', user: userTokens[i - 1], correct: correctTokens[j - 1] })
-      i--
-      j--
-    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
-      ops.unshift({ kind: 'missing', correct: correctTokens[j - 1] })
-      j--
-    } else if (i > 0) {
+    } else if (p === 'up' || (i > 0 && j === 0)) {
       ops.unshift({ kind: 'extra', user: userTokens[i - 1] })
       i--
+    } else if (p === 'left' || (j > 0 && i === 0)) {
+      ops.unshift({ kind: 'missing', correct: correctTokens[j - 1] })
+      j--
+    } else {
+      break
     }
   }
 
@@ -165,11 +230,12 @@ export function diffPhrase(userInput: string, correctAnswer: string, ignoreCase 
         break
       }
       case 'missing': {
-        pushWord(userLine, 'missing', op.correct, addSpace)
-        pushWord(correctLine, 'match', op.correct, addSpace)
+        // 漏写只标在正确行；不往用户行塞「假词+删除线」（删除线语义是「多写该删」）
+        pushWord(correctLine, 'missing', op.correct, addSpace)
         break
       }
       case 'extra': {
+        // 多写只出现在用户行，样式侧用删除线表示修订删除
         pushWord(userLine, 'extra', op.user, addSpace)
         break
       }

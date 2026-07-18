@@ -1,4 +1,4 @@
-import GuideBubble from './GuideBubble'
+import GuideBubble from '@/components/GuideBubble'
 import { dismissChapterErrorBookGuideAtom } from '@/store'
 import { useAtom } from 'jotai'
 import { type RefObject, useCallback, useState } from 'react'

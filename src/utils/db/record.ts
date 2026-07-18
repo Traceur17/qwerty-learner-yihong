@@ -170,6 +170,15 @@ export interface IRevisionWordRecord {
   errorCount: number
 }
 
+/** 连播卷面对账错答历史（每词最多 3 条） */
+export interface IWrongAnswerHistory {
+  id?: number
+  dict: string
+  word: string
+  wrongAnswers: string[]
+  updatedAt: number
+}
+
 export class RevisionWordRecord implements IRevisionWordRecord {
   word: string
   timeStamp: number

@@ -4,9 +4,11 @@ import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
+import IconEyeSlash from '~icons/heroicons/eye-slash-solid'
+import IconHeadphones from '~icons/tabler/headphones'
 import IconLayout from '~icons/tabler/layout'
 import IconList from '~icons/tabler/list'
-import IconSparkles from '~icons/tabler/sparkles'
+import IconPlayerPlay from '~icons/tabler/player-play'
 import IconTarget from '~icons/tabler/target'
 import IconX from '~icons/tabler/x'
 
@@ -14,43 +16,68 @@ type UpdateItem = {
   tag: string
   title: string
   summary: ReactNode
+  figure?: ReactNode
   details: string[]
   icon: typeof IconList
 }
 
+/** 连播卷面入口示意：工具栏耳机图标 → 弹框里打开「连播卷面」 */
+function SheetModeEntryFigure() {
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-indigo-200 bg-white/70 px-4 py-3 dark:border-indigo-800 dark:bg-gray-900/40">
+      <div className="flex overflow-hidden rounded-md border border-gray-200 shadow-sm dark:border-gray-600">
+        <span className="flex items-center justify-center bg-indigo-500 p-1.5 text-white">
+          <IconHeadphones className="h-4 w-4" />
+        </span>
+        <span className="flex items-center justify-center bg-white p-1.5 text-gray-400 dark:bg-gray-800">
+          <IconEyeSlash className="h-4 w-4" />
+        </span>
+      </div>
+      <span className="text-gray-400">→</span>
+      <div className="flex items-center gap-3 rounded-lg bg-white px-3 py-1.5 shadow-sm ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-600">
+        <span className="text-xs text-gray-600 dark:text-gray-300">连播卷面</span>
+        <span className="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-indigo-500">
+          <span className="absolute right-0.5 h-3 w-3 rounded-full bg-white" />
+        </span>
+      </div>
+      <p className="w-full text-xs text-gray-500 dark:text-gray-400 sm:w-auto sm:flex-1">工具栏点耳机图标，打开「连播卷面」开关即进入</p>
+    </div>
+  )
+}
+
 const UPDATE_ITEMS: UpdateItem[] = [
   {
-    tag: '词库',
-    title: '饼干专属词本核对',
-    summary: '进一步核对并校验 C3–C11（饼干专属）词本，词条与发音对齐更准确。',
-    details: ['覆盖王陆 C3 / C4 / C5 / C11 饼干专属词库', '章节发音与词序对齐更准确', '建议强制刷新后再练习'],
-    icon: IconSparkles,
+    tag: '听写',
+    title: '全新连播卷面模式',
+    summary: '单词连续播报，像考试答题卡一样边听边写，写完统一对答案，还能看到每个词的历史错答。',
+    figure: <SheetModeEntryFigure />,
+    details: [
+      '题号即遥控：点当前题暂停 / 继续，点其他题从那题起播，Esc 随时暂停',
+      '对答案后：对的行显示 ✓ 与释义，错的行给出修订对照',
+      '错题右侧圆点标记错史，悬停查看历史错答，空格钉住',
+      '侧栏单词表可「从 xx 起播」，连播间隔可精确到 0.1 秒',
+    ],
+    icon: IconPlayerPlay,
   },
   {
     tag: '听写',
-    title: '对错反馈展示音标',
-    summary: '听写提交后，正确或错误反馈里除释义外也会显示音标，方便对照发音。',
-    details: ['工具栏开启听写模式（Ctrl + Shift + D）', '答对 / 答错反馈均可看到音标', '音标跟随设置中的英式 / 美式偏好'],
+    title: '听写 / 默写合并开关',
+    summary: '工具栏的耳机（听写）与眼睛（默写）合并为二选一开关，选中后可继续在弹框里配置，原有设置都会保留。',
+    details: ['快捷键：Alt + C 开关听写，Alt + V 开关默写', '两种模式互斥，切换互不干扰', '弹框不再一点就消失，可安心调整配置'],
     icon: IconTarget,
   },
   {
-    tag: '练习',
-    title: '音频播放更稳定',
-    summary: '点词听读与自动播放更可靠，连点多个词也能正常接着播。',
-    details: ['减少偶发无声', '侧栏连点可连续出声', '播放失败时图标会提示，可再点一次'],
+    tag: '听写',
+    title: '更直观的纠错对照',
+    summary: '答错时上下两行对照：你的输入里多写的划删除线，正确行里标出你漏写和写错的部分，一眼看清该怎么改。',
+    details: ['多写 → 你的输入行划删除线', '漏写 / 写错 → 在正确行高亮标出', '原始听写与连播卷面统一使用这套对照'],
     icon: IconList,
   },
   {
     tag: '体验',
-    title: '词库加载进缓存',
-    summary: (
-      <>
-        词库音频<strong className="font-semibold text-gray-800 dark:text-gray-100">首次加载</strong>
-        后会保留；之后刷新<strong className="font-semibold text-gray-800 dark:text-gray-100">不再重新拉取</strong>
-        ，练习节奏更连贯。
-      </>
-    ),
-    details: ['首次进章加载完成后写入本地', '同版本下刷新 / 再进章无需重载', '练习记录不受影响'],
+    title: '界面更清爽',
+    summary: '连播卷面的控制按钮收进底部吸底栏，计时居中展示；全站隐藏页脚链接，练习区域更大。',
+    details: ['播放 / 暂停、对答案固定在底栏，随时可点', '打开侧栏、设置或窗口失焦会自动暂停连播', '首次进入连播卷面有步骤引导'],
     icon: IconLayout,
   },
 ]
@@ -135,14 +162,15 @@ export default function UpdateAnnouncement() {
                       致 小圆饼干
                     </Dialog.Title>
                     <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
-                      小圆饼干，你好！这次更新主要为你
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">核对了饼干专属词本</strong>，并改进了
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">听写音标反馈</strong>与
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">听发音与加载体验</strong>
-                      ，练起来会更稳、更清楚。
+                      小圆饼干，你好！这次更新带来了
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">连播卷面模式</strong>
+                      ——像考试一样连续听写、统一对答案；还合并了
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">听写 / 默写开关</strong>，并把
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">纠错对照</strong>
+                      做得更直观。
                     </p>
                   </div>
-                  <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-13</p>
+                  <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-18</p>
                 </div>
               </div>
 
@@ -169,6 +197,7 @@ export default function UpdateAnnouncement() {
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-50">{item.title}</h3>
                           </div>
                           <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{item.summary}</p>
+                          {item.figure}
                           <ul className="mt-3 space-y-1.5">
                             {item.details.map((detail) => (
                               <li key={detail} className="flex gap-2 text-sm leading-snug text-gray-500 dark:text-gray-400">
