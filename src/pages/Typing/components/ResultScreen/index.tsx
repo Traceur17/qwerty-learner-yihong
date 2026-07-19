@@ -1,25 +1,19 @@
 import { TypingContext, TypingStateActionType } from '../../store'
-import ShareButton from '../ShareButton'
 import TalentStamp from '../TalentStamp'
-import { AuthorButton } from './AuthorButton'
 import ConclusionBar from './ConclusionBar'
 import RemarkRing from './RemarkRing'
 import WordChip from './WordChip'
-import styles from './index.module.css'
 import Tooltip from '@/components/Tooltip'
 import {
   currentChapterAtom,
   currentDictIdAtom,
   currentDictInfoAtom,
-  infoPanelStateAtom,
   isReviewModeAtom,
   listenDictationConfigAtom,
   randomConfigAtom,
   reviewModeInfoAtom,
   wordDictationConfigAtom,
 } from '@/store'
-import type { InfoPanelType } from '@/typings'
-import { recordOpenInfoPanelAction } from '@/utils'
 import { fetchChapterErrorWordData, startChapterErrorReview } from '@/utils/chapterErrorReview'
 import { getAccuracyLevel } from '@/utils/talentCelebration'
 import { Transition } from '@headlessui/react'
@@ -27,11 +21,6 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
-import IexportWords from '~icons/icon-park-outline/excel'
-import IconCoffee from '~icons/mdi/coffee'
-import IconXiaoHongShu from '~icons/my-icons/xiaohongshu'
-import IconGithub from '~icons/simple-icons/github'
-import IconWechat from '~icons/simple-icons/wechat'
 import IconX from '~icons/tabler/x'
 
 const ResultScreen = () => {
@@ -43,7 +32,6 @@ const ResultScreen = () => {
   const currentDictInfo = useAtomValue(currentDictInfoAtom)
   const setCurrentDictId = useSetAtom(currentDictIdAtom)
   const [currentChapter, setCurrentChapter] = useAtom(currentChapterAtom)
-  const setInfoPanelState = useSetAtom(infoPanelStateAtom)
   const randomConfig = useAtomValue(randomConfigAtom)
   const navigate = useNavigate()
 
@@ -74,34 +62,6 @@ const ResultScreen = () => {
     }
   }, [currentChapter, currentDictInfo, isReviewMode, state.chapterData.words])
 
-  const exportWords = useCallback(() => {
-    const { words, userInputLogs } = state.chapterData
-    const exportData = userInputLogs.map((log) => {
-      const word = words[log.index]
-      const wordName = word.name
-      return {
-        ...word,
-        trans: word.trans.join(';'),
-        correctCount: log.correctCount,
-        wrongCount: log.wrongCount,
-        wrongLetters: Object.entries(log.LetterMistakes)
-          .map(([key, mistakes]) => `${wordName[Number(key)]}:${mistakes.length}`)
-          .join(';'),
-      }
-    })
-
-    import('xlsx')
-      .then(({ utils, writeFileXLSX }) => {
-        const ws = utils.json_to_sheet(exportData)
-        const wb = utils.book_new()
-        utils.book_append_sheet(wb, ws, 'Data')
-        writeFileXLSX(wb, `${currentDictInfo.name}第${currentChapter + 1}章.xlsx`)
-      })
-      .catch(() => {
-        console.log('写入 xlsx 模块导入失败')
-      })
-  }, [currentChapter, currentDictInfo.name, state.chapterData])
-
   const wrongWords = useMemo(() => {
     return state.chapterData.userInputLogs
       .filter((log) => log.wrongCount > 0)
@@ -122,8 +82,15 @@ const ResultScreen = () => {
   const talentLevel = useMemo(() => {
     if (!listenDictationConfig.isOpen || !listenDictationConfig.talentCelebration) return null
     const total = state.chapterData.words.length
-    return getAccuracyLevel(total - wrongWords.length, total)
-  }, [listenDictationConfig.isOpen, listenDictationConfig.talentCelebration, state.chapterData.words.length, wrongWords.length])
+    // 只统计"实际答对"的词：未作答（断点续练遗留、跳词）不计为答对
+    const answeredCorrect = state.chapterData.userInputLogs.filter((log) => log.correctCount > 0 && log.wrongCount === 0).length
+    return getAccuracyLevel(answeredCorrect, total)
+  }, [
+    listenDictationConfig.isOpen,
+    listenDictationConfig.talentCelebration,
+    state.chapterData.words.length,
+    state.chapterData.userInputLogs,
+  ])
 
   const mistakeLevel = useMemo(() => {
     if (correctRate >= 85) {
@@ -255,14 +222,6 @@ const ResultScreen = () => {
     { preventDefault: true },
   )
 
-  const handleOpenInfoPanel = useCallback(
-    (modalType: InfoPanelType) => {
-      recordOpenInfoPanelAction(modalType, 'resultScreen')
-      setInfoPanelState((state) => ({ ...state, [modalType]: true }))
-    },
-    [setInfoPanelState],
-  )
-
   return (
     <div className="fixed inset-0 z-30 overflow-y-auto">
       <div className="absolute inset-0 bg-gray-300 opacity-80 dark:bg-gray-600"></div>
@@ -303,51 +262,6 @@ const ResultScreen = () => {
                 <div className="align-center flex w-full flex-row justify-start rounded-b-xl bg-indigo-200 px-4 dark:bg-indigo-400">
                   <ConclusionBar mistakeLevel={mistakeLevel} mistakeCount={wrongWords.length} />
                 </div>
-              </div>
-              <div className="ml-2 flex flex-col items-center justify-end gap-3 text-xl">
-                <AuthorButton />
-                {!isReviewMode && (
-                  <>
-                    <ShareButton />
-                    <IexportWords fontSize={18} className="cursor-pointer text-gray-500" onClick={exportWords}></IexportWords>
-                  </>
-                )}
-                <IconXiaoHongShu
-                  fontSize={15}
-                  className="cursor-pointer text-gray-500 hover:text-red-500 focus:outline-none"
-                  onClick={(e) => {
-                    handleOpenInfoPanel('redBook')
-                    e.currentTarget.blur()
-                  }}
-                />
-
-                <button
-                  onClick={(e) => {
-                    handleOpenInfoPanel('donate')
-                    e.currentTarget.blur()
-                  }}
-                  className="cursor-pointer"
-                  type="button"
-                  title="捐赠我们的项目"
-                >
-                  <IconCoffee fontSize={17} className={`text-gray-500 hover:text-amber-500  focus:outline-none ${styles.imgShake}`} />
-                </button>
-
-                <button
-                  onClick={(e) => {
-                    handleOpenInfoPanel('community')
-                    e.currentTarget.blur()
-                  }}
-                  className="cursor-pointer text-gray-500 dark:text-gray-400"
-                  type="button"
-                  title="加入我们的社区"
-                >
-                  <IconWechat fontSize={16} className="text-gray-500 hover:text-green-500 focus:outline-none" />
-                </button>
-
-                <a href="https://github.com/Kaiyiwing/qwerty-learner" target="_blank" rel="noreferrer" className="leading-[0px]">
-                  <IconGithub fontSize={16} className="text-gray-500 hover:text-green-800 focus:outline-none" />
-                </a>
               </div>
             </div>
             <div className="mt-10 flex w-full justify-center gap-5 px-5 text-xl">

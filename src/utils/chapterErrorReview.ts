@@ -3,6 +3,7 @@ import type { TypingResumeSnapshot } from '@/store/errorBookFilterAtom'
 import type { TReviewInfoAtomData } from '@/store/reviewInfoAtom'
 import type { Dictionary, Word } from '@/typings'
 import { db } from '@/utils/db'
+import { errorWordKey, getMasteredKeys } from '@/utils/db/errorWordStatus'
 import type { WordRecord } from '@/utils/db/record'
 import { generateNewWordReviewRecord } from '@/utils/db/review-record'
 
@@ -13,7 +14,7 @@ export async function fetchChapterErrorWordData(dict: Dictionary, chapter: numbe
     .filter((record) => record.wrongCount > 0)
     .toArray()
 
-  const groupRecords: { word: string; records: WordRecord[] }[] = []
+  let groupRecords: { word: string; records: WordRecord[] }[] = []
 
   records.forEach((record) => {
     const typed = record as WordRecord
@@ -24,6 +25,10 @@ export async function fetchChapterErrorWordData(dict: Dictionary, chapter: numbe
     }
     group.records.push(typed)
   })
+
+  // 最新错题口径：最新一条记录（含错词复习、卷面）已答对的词不再算错题
+  const masteredKeys = await getMasteredKeys(groupRecords.map((g) => ({ dict: dict.id, word: g.word })))
+  groupRecords = groupRecords.filter((g) => !masteredKeys.has(errorWordKey(dict.id, g.word)))
 
   const result: TErrorWordData[] = []
 

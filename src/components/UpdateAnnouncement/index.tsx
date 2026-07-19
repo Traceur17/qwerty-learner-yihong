@@ -1,14 +1,10 @@
-import talentAmazingImg from '@/assets/talent/talent-amazing.webp'
 import { dismissUpdateAnnouncementAtom } from '@/store'
 import noop from '@/utils/noop'
 import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import IconEyeSlash from '~icons/heroicons/eye-slash-solid'
-import IconHeadphones from '~icons/tabler/headphones'
-import IconPlayerPlay from '~icons/tabler/player-play'
-import IconSparkles from '~icons/tabler/sparkles'
+import IconBook from '~icons/tabler/book'
 import IconX from '~icons/tabler/x'
 
 type UpdateItem = {
@@ -17,86 +13,38 @@ type UpdateItem = {
   summary: ReactNode
   figure?: ReactNode
   details: string[]
-  icon: typeof IconPlayerPlay
+  icon: typeof IconBook
 }
 
-/** 连播卷面入口示意：工具栏耳机图标 → 弹框里打开「连播卷面」 */
-function SheetModeEntryFigure() {
+/** 错题本视图切换示意：最新错题 / 全部错题 */
+function ErrorBookViewFigure() {
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-indigo-200 bg-white/70 px-4 py-3 dark:border-indigo-800 dark:bg-gray-900/40">
-      <div className="flex overflow-hidden rounded-md border border-gray-200 shadow-sm dark:border-gray-600">
-        <span className="flex items-center justify-center bg-indigo-500 p-1.5 text-white">
-          <IconHeadphones className="h-4 w-4" />
-        </span>
-        <span className="flex items-center justify-center bg-white p-1.5 text-gray-400 dark:bg-gray-800">
-          <IconEyeSlash className="h-4 w-4" />
-        </span>
+    <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-rose-200 bg-white/70 px-4 py-3 dark:border-rose-800 dark:bg-gray-900/40">
+      <div className="flex items-center gap-1 rounded-lg bg-white p-1 shadow-sm ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-600">
+        <span className="rounded-md bg-indigo-500 px-2.5 py-1 text-xs text-white">最新错题 (5)</span>
+        <span className="rounded-md px-2.5 py-1 text-xs text-gray-500 dark:text-gray-300">全部错题 (12)</span>
       </div>
-      <span className="text-gray-400">→</span>
-      <div className="flex items-center gap-3 rounded-lg bg-white px-3 py-1.5 shadow-sm ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-600">
-        <span className="text-xs text-gray-600 dark:text-gray-300">连播卷面</span>
-        <span className="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-indigo-500">
-          <span className="absolute right-0.5 h-3 w-3 rounded-full bg-white" />
-        </span>
-      </div>
-      <p className="w-full text-xs text-gray-500 dark:text-gray-400 sm:w-auto sm:flex-1">工具栏点耳机图标，打开「连播卷面」开关即进入</p>
-    </div>
-  )
-}
-
-/** 「了不起的天分」徽章预览 + 开关入口示意：工具栏耳机图标 → 弹框里的「展示我的天分」开关 */
-function TalentBadgeFigure() {
-  return (
-    <div className="mt-3 flex flex-col gap-3">
-      <div className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-amber-300 bg-white/70 px-4 py-4 dark:border-amber-700 dark:bg-gray-900/40">
-        <img src={talentAmazingImg} alt="了不起的天分" draggable={false} className="w-56 max-w-full -rotate-3 select-none drop-shadow-lg" />
-        <p className="text-xs text-gray-500 dark:text-gray-400">练得好的时刻，它会突然砸进屏幕。至于怎么让它出现——自己去发现</p>
-      </div>
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-indigo-200 bg-white/70 px-4 py-3 dark:border-indigo-800 dark:bg-gray-900/40">
-        <div className="flex overflow-hidden rounded-md border border-gray-200 shadow-sm dark:border-gray-600">
-          <span className="flex items-center justify-center bg-indigo-500 p-1.5 text-white">
-            <IconHeadphones className="h-4 w-4" />
-          </span>
-          <span className="flex items-center justify-center bg-white p-1.5 text-gray-400 dark:bg-gray-800">
-            <IconEyeSlash className="h-4 w-4" />
-          </span>
-        </div>
-        <span className="text-gray-400">→</span>
-        <div className="flex items-center gap-3 rounded-lg bg-white px-3 py-1.5 shadow-sm ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-600">
-          <span className="text-xs text-gray-600 dark:text-gray-300">展示我的天分</span>
-          <span className="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-indigo-500">
-            <span className="absolute right-0.5 h-3 w-3 rounded-full bg-white" />
-          </span>
-        </div>
-        <p className="w-full text-xs text-gray-500 dark:text-gray-400 sm:w-auto sm:flex-1">
-          工具栏点耳机图标，「展示我的天分」开关随时可关
-        </p>
-      </div>
+      <p className="w-full text-xs text-gray-500 dark:text-gray-400 sm:w-auto sm:flex-1">
+        错题本顶部新增切换：默认只看还没搞定的词，切「全部错题」回顾完整历史
+      </p>
     </div>
   )
 }
 
 const UPDATE_ITEMS: UpdateItem[] = [
   {
-    tag: '听写',
-    title: '全新连播卷面模式',
-    summary: '单词连续播报，像考试答题卡一样边听边写，写完统一对答案，还能看到每个词的历史错答。',
-    figure: <SheetModeEntryFigure />,
+    tag: '错题',
+    title: '错题本变聪明了：练对自动清',
+    summary:
+      '错题不再只进不出：一个词只要最近一次练对了，就自动移出「最新错题」；之后哪天又写错，它会自己回来。你只需要专注练，错题本自己保持干净。',
+    figure: <ErrorBookViewFigure />,
     details: [
-      '题号即遥控：点当前题暂停 / 继续，点其他题从那题起播，Esc 随时暂停',
-      '对答案后：对的行显示 ✓ 与释义，错的行给出修订对照',
-      '错题右侧圆点标记错史，悬停查看历史错答，空格钉住',
-      '侧栏单词表可「从 xx 起播」，连播间隔可精确到 0.1 秒',
+      '「全部错题」保留完整历史与累计错误次数，按次数排序，勾选高频词随时回炉',
+      '连播卷面「对答案」的对错同样计入：错的进错题本，对的算掌握',
+      '结算页「练习错题」的数量同步变化，清完就是 0',
+      '删除记录等操作照旧，历史错误次数永远保留',
     ],
-    icon: IconPlayerPlay,
-  },
-  {
-    tag: '听写',
-    title: '展示我的天分',
-    summary: '给认真练习的你一点即时的喝彩：听写表现出色时，会有天分徽章弹出为你庆祝，章节结算也可能被盖上一枚天分印章。',
-    figure: <TalentBadgeFigure />,
-    details: ['目的只有一个：让每一次进步都被看见，练习更有游戏感', '默认开启，仅听写模式生效，不打扰打字练习'],
-    icon: IconSparkles,
+    icon: IconBook,
   },
 ]
 
@@ -180,20 +128,18 @@ export default function UpdateAnnouncement() {
                       致 小圆饼干
                     </Dialog.Title>
                     <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
-                      小圆饼干，你好！这次更新带来了
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">连播卷面模式</strong>
-                      ——像考试一样连续听写、统一对答案；还有
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">展示我的天分</strong>
-                      ——练得好的时刻，值得被大声宣布。
+                      小圆饼干，你好！这次更新让
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">错题本</strong>
+                      学会了自己收拾：练对的词自动移出，再错的自动回来——你只管练，它负责只留下真正难缠的词。
                     </p>
                   </div>
-                  <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-18</p>
+                  <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-19</p>
                 </div>
               </div>
 
               {/* Content */}
               <div className="customized-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-6 md:px-10 md:py-7">
-                <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-x-6 lg:gap-y-5">
+                <div className={`grid grid-cols-1 gap-5 lg:gap-x-6 lg:gap-y-5 ${UPDATE_ITEMS.length > 1 ? 'lg:grid-cols-2' : ''}`}>
                   {UPDATE_ITEMS.map((item) => {
                     const Icon = item.icon
                     return (

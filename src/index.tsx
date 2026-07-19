@@ -14,7 +14,7 @@ import 'animate.css'
 import { useAtomValue } from 'jotai'
 import mixpanel from 'mixpanel-browser'
 import process from 'process'
-import React, { Suspense, lazy, useEffect, useState } from 'react'
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import 'react-app-polyfill/stable'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
@@ -52,14 +52,19 @@ function Root() {
   }, [])
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600)
+  const wasMobileRef = useRef(isMobile)
 
   useEffect(() => {
     const handleResize = () => {
-      const isMobile = window.innerWidth <= 600
-      if (!isMobile) {
-        window.location.href = '/'
+      const nextIsMobile = window.innerWidth <= 600
+      // 仅在"移动布局 → 桌面布局"切换时整页回首页；全屏等普通 resize 不跳转。
+      // 注意带上部署子路径（GitHub Pages），否则会跳到域名根导致 404
+      if (wasMobileRef.current && !nextIsMobile) {
+        window.location.href = publicUrl('/')
+        return
       }
-      setIsMobile(isMobile)
+      wasMobileRef.current = nextIsMobile
+      setIsMobile(nextIsMobile)
     }
 
     window.addEventListener('resize', handleResize)

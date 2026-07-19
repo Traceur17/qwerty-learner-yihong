@@ -1,7 +1,7 @@
 import { getAccuracyLevel, getStreakLevel } from './talentCelebration'
 import { describe, expect, it } from 'vitest'
 
-describe('getStreakLevel', () => {
+describe('getStreakLevel (normal mode)', () => {
   it('returns null below the first threshold', () => {
     expect(getStreakLevel(0)).toBeNull()
     expect(getStreakLevel(1)).toBeNull()
@@ -28,6 +28,29 @@ describe('getStreakLevel', () => {
     expect(getStreakLevel(18)).toBe('amazing')
     expect(getStreakLevel(24)).toBe('amazing')
     expect(getStreakLevel(30)).toBe('amazing')
+  })
+})
+
+describe('getStreakLevel (review mode)', () => {
+  it('returns null below the first threshold', () => {
+    expect(getStreakLevel(0, 'review')).toBeNull()
+    expect(getStreakLevel(1, 'review')).toBeNull()
+    expect(getStreakLevel(2, 'review')).toBeNull()
+  })
+
+  it('maps 3 / 4 / 5 to nice / great / amazing', () => {
+    expect(getStreakLevel(3, 'review')).toBe('nice')
+    expect(getStreakLevel(4, 'review')).toBe('great')
+    expect(getStreakLevel(5, 'review')).toBe('amazing')
+  })
+
+  it('repeats amazing every +3 after 5 and stays silent in between', () => {
+    expect(getStreakLevel(6, 'review')).toBeNull()
+    expect(getStreakLevel(7, 'review')).toBeNull()
+    expect(getStreakLevel(8, 'review')).toBe('amazing')
+    expect(getStreakLevel(9, 'review')).toBeNull()
+    expect(getStreakLevel(11, 'review')).toBe('amazing')
+    expect(getStreakLevel(14, 'review')).toBe('amazing')
   })
 })
 

@@ -66,13 +66,13 @@ export default function WordPanel() {
       }
       streakRef.current += 1
       if (!isTalentEnabled) return
-      const level = getStreakLevel(streakRef.current)
+      const level = getStreakLevel(streakRef.current, isReviewMode ? 'review' : 'normal')
       if (level) {
         badgeSeqRef.current += 1
         setTalentBadge({ level, seq: badgeSeqRef.current })
       }
     },
-    [isTalentEnabled],
+    [isTalentEnabled, isReviewMode],
   )
 
   const prevIndex = useMemo(() => {

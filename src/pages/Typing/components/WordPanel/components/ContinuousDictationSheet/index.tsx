@@ -11,6 +11,7 @@ import {
   phoneticConfigAtom,
 } from '@/store'
 import type { Word } from '@/typings'
+import { useSaveWordRecord } from '@/utils/db'
 import { getWrongAnswerHistoriesForDict, recordWrongAnswer } from '@/utils/db/wrongAnswerHistory'
 import { wrongSeverityDots } from '@/utils/db/wrongAnswerHistoryHelpers'
 import { diffPhrase, formatTranslation } from '@/utils/dictationDiff'
@@ -147,6 +148,10 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
   const [histories, setHistories] = useState<Record<string, string[]>>({})
   const [pinnedHistoryIndex, setPinnedHistoryIndex] = useState<number | null>(null)
 
+  const saveWordRecord = useSaveWordRecord()
+  // 重复判分去重：只为判定发生变化的行写入新记录
+  const lastWrittenGradesRef = useRef<Map<number, GradeMark>>(new Map())
+
   const rowRefs = useRef<Array<HTMLDivElement | null>>([])
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
   const guideNumberRef = useRef<HTMLButtonElement | null>(null)
@@ -175,6 +180,7 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
     setGrades(words.map(() => 'ungraded'))
     setSheetPlayIndex(0)
     setPinnedHistoryIndex(null)
+    lastWrittenGradesRef.current = new Map()
     ignoreEndRef.current = true
     stopChapterWordAudio()
     if (gapTimerRef.current) window.clearTimeout(gapTimerRef.current)
@@ -402,7 +408,21 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
       historyUpdates[words[i].name] = updated
     }
     setHistories(historyUpdates)
-  }, [answers, dictId, handlePause, histories, isIgnoreCase, maxPlayedIndex, words])
+
+    // 判分结果写入练习记录（进入错题与统计体系）；同一行判定未变化时不重复写
+    for (let i = 0; i <= playedThrough; i++) {
+      const grade = nextGrades[i]
+      if (grade === 'ungraded') continue
+      if (lastWrittenGradesRef.current.get(i) === grade) continue
+      lastWrittenGradesRef.current.set(i, grade)
+      await saveWordRecord({
+        word: words[i].name,
+        wrongCount: grade === 'wrong' ? 1 : 0,
+        letterTimeArray: [],
+        letterMistake: {},
+      })
+    }
+  }, [answers, dictId, handlePause, histories, isIgnoreCase, maxPlayedIndex, saveWordRecord, words])
 
   const gapLabel = useMemo(() => `${(gapMs / 1000).toFixed(1)}s`, [gapMs])
   const timeLabel = useMemo(() => {

@@ -10,17 +10,20 @@ export const TALENT_LEVEL_META: Record<TalentLevel, { label: string; image: stri
   amazing: { label: '了不起的天分', image: talentAmazingImg },
 }
 
-const AMAZING_STREAK = 12
-const AMAZING_REPEAT_INTERVAL = 6
+export type StreakMode = 'normal' | 'review'
 
-/**
- * 连对阶梯：6 → nice、9 → great、12 → amazing，之后每 +6（18、24…）重复 amazing。
- */
-export function getStreakLevel(streak: number): TalentLevel | null {
-  if (streak === 6) return 'nice'
-  if (streak === 9) return 'great'
-  if (streak === AMAZING_STREAK) return 'amazing'
-  if (streak > AMAZING_STREAK && (streak - AMAZING_STREAK) % AMAZING_REPEAT_INTERVAL === 0) return 'amazing'
+/** 连对阶梯配置：正常听写 6/9/12（12 后每 +6）；错词复习轮次短，用 3/4/5（5 后每 +3） */
+const STREAK_THRESHOLDS: Record<StreakMode, { nice: number; great: number; amazing: number; repeatInterval: number }> = {
+  normal: { nice: 6, great: 9, amazing: 12, repeatInterval: 6 },
+  review: { nice: 3, great: 4, amazing: 5, repeatInterval: 3 },
+}
+
+export function getStreakLevel(streak: number, mode: StreakMode = 'normal'): TalentLevel | null {
+  const { nice, great, amazing, repeatInterval } = STREAK_THRESHOLDS[mode]
+  if (streak === nice) return 'nice'
+  if (streak === great) return 'great'
+  if (streak === amazing) return 'amazing'
+  if (streak > amazing && (streak - amazing) % repeatInterval === 0) return 'amazing'
   return null
 }
 

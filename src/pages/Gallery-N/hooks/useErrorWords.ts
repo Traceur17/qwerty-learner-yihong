@@ -1,5 +1,6 @@
 import type { Dictionary, Word } from '@/typings'
 import { db } from '@/utils/db'
+import { errorWordKey, getMasteredKeys } from '@/utils/db/errorWordStatus'
 import type { WordRecord } from '@/utils/db/record'
 import { wordListFetcher } from '@/utils/wordListFetcher'
 import { useEffect, useState } from 'react'
@@ -32,8 +33,8 @@ export default function useErrorWordData(dict: Dictionary, reload: boolean) {
       .above(0)
       .filter((record) => record.dict === dict.id)
       .toArray()
-      .then((records) => {
-        const groupRecords: groupRecord[] = []
+      .then(async (records) => {
+        let groupRecords: groupRecord[] = []
 
         records.forEach((record) => {
           let groupRecord = groupRecords.find((g) => g.word === record.word)
@@ -43,6 +44,10 @@ export default function useErrorWordData(dict: Dictionary, reload: boolean) {
           }
           groupRecord.records.push(record as WordRecord)
         })
+
+        // 最新错题口径：最新一条记录已答对的词不再算错题
+        const masteredKeys = await getMasteredKeys(groupRecords.map((g) => ({ dict: dict.id, word: g.word })))
+        groupRecords = groupRecords.filter((g) => !masteredKeys.has(errorWordKey(dict.id, g.word)))
 
         const res: TErrorWordData[] = []
 

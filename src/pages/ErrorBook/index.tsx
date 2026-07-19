@@ -11,6 +11,7 @@ import { idDictionaryMap } from '@/resources/dictionary'
 import { currentChapterAtom, currentDictIdAtom, errorBookFilterAtom, reviewModeInfoAtom } from '@/store'
 import { groupedRecordsToErrorData, startChapterErrorReview } from '@/utils/chapterErrorReview'
 import { db, useDeleteWordRecord } from '@/utils/db'
+import { errorWordKey, getMasteredKeys } from '@/utils/db/errorWordStatus'
 import type { WordRecord } from '@/utils/db/record'
 import { wordListFetcher } from '@/utils/wordListFetcher'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
@@ -24,10 +25,12 @@ function recordKey(record: groupedWordRecords) {
   return `${record.dict}-${record.word}`
 }
 
+type ErrorBookView = 'latest' | 'all'
+
 export function ErrorBook() {
   const [groupedRecords, setGroupedRecords] = useState<groupedWordRecords[]>([])
+  const [view, setView] = useState<ErrorBookView>('latest')
   const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = useMemo(() => Math.ceil(groupedRecords.length / ITEM_PER_PAGE), [groupedRecords.length])
   const [sortType, setSortType] = useState<ISortType>('asc')
   const navigate = useNavigate()
   const currentRowDetail = useAtomValue(currentRowDetailAtom)
@@ -57,6 +60,15 @@ export function ErrorBook() {
     navigate('/')
   }, [navigate, setErrorBookFilter])
 
+  const latestCount = useMemo(() => groupedRecords.filter((record) => !record.isMastered).length, [groupedRecords])
+
+  const visibleRecords = useMemo(() => {
+    if (view === 'all') return groupedRecords
+    return groupedRecords.filter((record) => !record.isMastered)
+  }, [groupedRecords, view])
+
+  const totalPages = useMemo(() => Math.ceil(visibleRecords.length / ITEM_PER_PAGE), [visibleRecords.length])
+
   const setPage = useCallback(
     (page: number) => {
       if (page < 1 || page > totalPages) return
@@ -74,15 +86,21 @@ export function ErrorBook() {
   )
 
   const sortedRecords = useMemo(() => {
-    if (sortType === 'none') return groupedRecords
-    return [...groupedRecords].sort((a, b) => {
+    if (sortType === 'none') return visibleRecords
+    return [...visibleRecords].sort((a, b) => {
       if (sortType === 'asc') {
         return a.wrongCount - b.wrongCount
       } else {
         return b.wrongCount - a.wrongCount
       }
     })
-  }, [groupedRecords, sortType])
+  }, [visibleRecords, sortType])
+
+  const switchView = useCallback((nextView: ErrorBookView) => {
+    setView(nextView)
+    setCurrentPage(1)
+    setSelectedKeys(new Set())
+  }, [])
 
   const renderRecords = useMemo(() => {
     const start = (currentPage - 1) * ITEM_PER_PAGE
@@ -97,7 +115,7 @@ export function ErrorBook() {
         .equals([errorBookFilter.dictId, errorBookFilter.chapter])
         .filter((record) => record.wrongCount > 0)
         .toArray()
-        .then((records) => {
+        .then(async (records) => {
           const groups: groupedWordRecords[] = []
           records.forEach((record) => {
             let group = groups.find((g) => g.word === record.word)
@@ -107,8 +125,10 @@ export function ErrorBook() {
             }
             group.records.push(record as WordRecord)
           })
+          const masteredKeys = await getMasteredKeys(groups.map((g) => ({ dict: g.dict, word: g.word })))
           groups.forEach((group) => {
             group.wrongCount = group.records.reduce((acc, cur) => acc + cur.wrongCount, 0)
+            group.isMastered = masteredKeys.has(errorWordKey(group.dict, group.word))
           })
           setGroupedRecords(groups)
           setSelectedKeys(new Set())
@@ -120,7 +140,7 @@ export function ErrorBook() {
       .where('wrongCount')
       .above(0)
       .toArray()
-      .then((records) => {
+      .then(async (records) => {
         const groups: groupedWordRecords[] = []
 
         records.forEach((record) => {
@@ -132,11 +152,14 @@ export function ErrorBook() {
           group.records.push(record as WordRecord)
         })
 
+        const masteredKeys = await getMasteredKeys(groups.map((g) => ({ dict: g.dict, word: g.word })))
+
         groups.forEach((group) => {
           group.wrongCount = group.records.reduce((acc, cur) => {
             acc += cur.wrongCount
             return acc
           }, 0)
+          group.isMastered = masteredKeys.has(errorWordKey(group.dict, group.word))
         })
 
         setGroupedRecords(groups)
@@ -156,6 +179,23 @@ export function ErrorBook() {
       return next
     })
   }, [])
+
+  // 表头复选框：全选/取消全选当前页
+  const pageKeys = useMemo(() => renderRecords.map(recordKey), [renderRecords])
+  const isPageAllSelected = pageKeys.length > 0 && pageKeys.every((key) => selectedKeys.has(key))
+  const isPagePartiallySelected = !isPageAllSelected && pageKeys.some((key) => selectedKeys.has(key))
+
+  const togglePageSelect = useCallback(() => {
+    setSelectedKeys((prev) => {
+      const next = new Set(prev)
+      if (pageKeys.length > 0 && pageKeys.every((key) => prev.has(key))) {
+        pageKeys.forEach((key) => next.delete(key))
+      } else {
+        pageKeys.forEach((key) => next.add(key))
+      }
+      return next
+    })
+  }, [pageKeys])
 
   const practiceCount = useMemo(() => {
     if (selectedKeys.size > 0) return selectedKeys.size
@@ -218,11 +258,44 @@ export function ErrorBook() {
 
         <div className="flex w-full flex-1 select-text items-start justify-center overflow-hidden">
           <div className="flex h-full w-5/6 flex-col pt-10">
+            <div className="mb-3 flex items-center gap-1 self-start rounded-lg bg-white p-1 shadow dark:bg-gray-800">
+              <button
+                type="button"
+                className={`rounded-md px-3 py-1 text-sm transition-colors ${
+                  view === 'latest'
+                    ? 'bg-indigo-500 text-white'
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                }`}
+                onClick={() => switchView('latest')}
+              >
+                最新错题 ({latestCount})
+              </button>
+              <button
+                type="button"
+                className={`rounded-md px-3 py-1 text-sm transition-colors ${
+                  view === 'all' ? 'bg-indigo-500 text-white' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                }`}
+                onClick={() => switchView('all')}
+              >
+                全部错题 ({groupedRecords.length})
+              </button>
+            </div>
             <div className="flex w-full items-center justify-between rounded-lg bg-white px-6 py-5 text-lg text-black shadow-lg dark:bg-gray-800 dark:text-white">
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 {isChapterMode && (
-                  <span ref={selectHeaderRef} className="w-8 shrink-0 text-center text-sm text-gray-500">
-                    选
+                  <span ref={selectHeaderRef} className="flex w-8 shrink-0 items-center justify-center">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 cursor-pointer accent-indigo-500"
+                      checked={isPageAllSelected}
+                      ref={(el) => {
+                        if (el) el.indeterminate = isPagePartiallySelected
+                      }}
+                      disabled={pageKeys.length === 0}
+                      onChange={togglePageSelect}
+                      aria-label="全选当前页"
+                      title="全选当前页"
+                    />
                   </span>
                 )}
                 <span className="shrink-0 basis-2/12">单词</span>
@@ -263,6 +336,7 @@ export function ErrorBook() {
                       selected={selectedKeys.has(recordKey(record))}
                       onToggleSelect={() => toggleSelect(recordKey(record))}
                       hideDictColumn={isChapterMode}
+                      mastered={!!record.isMastered}
                     />
                   ))}
                 </div>
