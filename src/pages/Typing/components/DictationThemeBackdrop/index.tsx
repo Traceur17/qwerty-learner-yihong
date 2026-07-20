@@ -1,4 +1,4 @@
-import { getDictationTheme, type DictationThemeId } from '@/utils/dictationThemes'
+import { type DictationThemeId, getDictationTheme } from '@/utils/dictationThemes'
 
 type DictationThemeBackdropProps = {
   themeId?: DictationThemeId
