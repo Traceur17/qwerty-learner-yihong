@@ -34,10 +34,25 @@ const bannedKeys = [
   'PageUp',
   'Clear',
   'Home',
+  // function keys（F5 刷新等，不可当成「按任意键继续」）
+  'F1',
+  'F2',
+  'F3',
+  'F4',
+  'F5',
+  'F6',
+  'F7',
+  'F8',
+  'F9',
+  'F10',
+  'F11',
+  'F12',
 ]
 
 export const isLegal = (key: string): boolean => {
   if (bannedKeys.includes(key)) return false
+  // 兜底：未列出的 Fn 键也不算输入
+  if (/^F\d+$/.test(key)) return false
   return true
 }
 
