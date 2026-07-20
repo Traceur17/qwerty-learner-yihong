@@ -1,5 +1,6 @@
 import Layout from '../../components/Layout'
 import { DictChapterButton } from './components/DictChapterButton'
+import DictationThemeBackdrop from './components/DictationThemeBackdrop'
 import PronunciationSwitcher from './components/PronunciationSwitcher'
 import ResultScreen from './components/ResultScreen'
 import Speed from './components/Speed'
@@ -203,7 +204,8 @@ const App: React.FC = () => {
           }`}
         >
           <div className="relative flex min-h-0 w-full flex-1 flex-col items-center">
-            <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+            {listenDictationConfig.isOpen && <DictationThemeBackdrop />}
+            <div className="relative z-10 flex min-h-0 w-full flex-1 items-center justify-center">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center gap-3">
                   <div
@@ -282,7 +284,11 @@ const App: React.FC = () => {
                 )
               )}
             </div>
-            {!(listenDictationConfig.isOpen && listenDictationConfig.sheetMode) && <Speed />}
+            {!(listenDictationConfig.isOpen && listenDictationConfig.sheetMode) && (
+              <div className="relative z-10 mx-auto w-full max-w-4xl xl:max-w-5xl">
+                <Speed />
+              </div>
+            )}
           </div>
         </div>
       </Layout>
