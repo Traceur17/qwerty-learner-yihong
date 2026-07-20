@@ -36,7 +36,10 @@ const ResultScreen = () => {
   const navigate = useNavigate()
 
   const setReviewModeInfo = useSetAtom(reviewModeInfoAtom)
+  const reviewModeInfo = useAtomValue(reviewModeInfoAtom)
   const isReviewMode = useAtomValue(isReviewModeAtom)
+  const chapterErrorReturn = reviewModeInfo.chapterErrorReturn
+  const isChapterErrorReview = isReviewMode && chapterErrorReturn != null
   const [chapterErrorCount, setChapterErrorCount] = useState(0)
   const [isStartingChapterErrors, setIsStartingChapterErrors] = useState(false)
 
@@ -111,21 +114,54 @@ const ResultScreen = () => {
     return `${minuteString}:${secondString}`
   }, [state.timerData.time])
 
+  const clearAutoWordDictation = useCallback(() => {
+    setWordDictationConfig((old) => {
+      if (old.isOpen && old.openBy === 'auto') {
+        return { ...old, isOpen: false }
+      }
+      return old
+    })
+  }, [setWordDictationConfig])
+
+  const exitChapterErrorReviewTo = useCallback(
+    (mode: 'repeat' | 'next') => {
+      if (!chapterErrorReturn) return
+      const originChapter = chapterErrorReturn.chapter
+      const targetChapter = mode === 'next' ? originChapter + 1 : originChapter
+      if (mode === 'next' && targetChapter >= currentDictInfo.chapterCount) return
+
+      setReviewModeInfo({ isReviewMode: false, reviewRecord: undefined, chapterErrorReturn: undefined })
+      clearAutoWordDictation()
+      setCurrentChapter(targetChapter)
+      if (mode === 'repeat') {
+        dispatch({ type: TypingStateActionType.REPEAT_CHAPTER, shouldShuffle: randomConfig.isOpen })
+      } else {
+        dispatch({ type: TypingStateActionType.NEXT_CHAPTER })
+      }
+    },
+    [
+      chapterErrorReturn,
+      clearAutoWordDictation,
+      currentDictInfo.chapterCount,
+      dispatch,
+      randomConfig.isOpen,
+      setCurrentChapter,
+      setReviewModeInfo,
+    ],
+  )
+
   const repeatButtonHandler = useCallback(async () => {
+    if (isChapterErrorReview) {
+      exitChapterErrorReviewTo('repeat')
+      return
+    }
     if (isReviewMode) {
       return
     }
 
-    setWordDictationConfig((old) => {
-      if (old.isOpen) {
-        if (old.openBy === 'auto') {
-          return { ...old, isOpen: false }
-        }
-      }
-      return old
-    })
+    clearAutoWordDictation()
     dispatch({ type: TypingStateActionType.REPEAT_CHAPTER, shouldShuffle: randomConfig.isOpen })
-  }, [isReviewMode, setWordDictationConfig, dispatch, randomConfig.isOpen])
+  }, [clearAutoWordDictation, dispatch, exitChapterErrorReviewTo, isChapterErrorReview, isReviewMode, randomConfig.isOpen])
 
   const practiceChapterErrorsHandler = useCallback(async () => {
     if (isReviewMode || isStartingChapterErrors || chapterErrorCount === 0) return
@@ -171,32 +207,33 @@ const ResultScreen = () => {
   ])
 
   const nextButtonHandler = useCallback(() => {
+    if (isChapterErrorReview) {
+      exitChapterErrorReviewTo('next')
+      return
+    }
     if (isReviewMode) {
       return
     }
 
-    setWordDictationConfig((old) => {
-      if (old.isOpen) {
-        if (old.openBy === 'auto') {
-          return { ...old, isOpen: false }
-        }
-      }
-      return old
-    })
+    clearAutoWordDictation()
     if (!isLastChapter) {
       setCurrentChapter((old) => old + 1)
       dispatch({ type: TypingStateActionType.NEXT_CHAPTER })
     }
-  }, [dispatch, isLastChapter, isReviewMode, setCurrentChapter, setWordDictationConfig])
+  }, [clearAutoWordDictation, dispatch, exitChapterErrorReviewTo, isChapterErrorReview, isLastChapter, isReviewMode, setCurrentChapter])
 
   const exitButtonHandler = useCallback(() => {
+    if (isChapterErrorReview) {
+      exitChapterErrorReviewTo('repeat')
+      return
+    }
     if (isReviewMode) {
       setCurrentChapter(0)
       setReviewModeInfo((old) => ({ ...old, isReviewMode: false }))
     } else {
       dispatch({ type: TypingStateActionType.REPEAT_CHAPTER, shouldShuffle: false })
     }
-  }, [dispatch, isReviewMode, setCurrentChapter, setReviewModeInfo])
+  }, [dispatch, exitChapterErrorReviewTo, isChapterErrorReview, isReviewMode, setCurrentChapter, setReviewModeInfo])
 
   const onNavigateToGallery = useCallback(() => {
     setCurrentChapter(0)
@@ -303,7 +340,34 @@ const ResultScreen = () => {
                 </Tooltip>
               )}
 
-              {isReviewMode && (
+              {isChapterErrorReview && (
+                <>
+                  <Tooltip content="快捷键：space">
+                    <button
+                      className="my-btn-primary h-12 border-2 border-solid border-gray-300 bg-white text-base text-gray-700 dark:border-gray-700 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-700"
+                      type="button"
+                      onClick={repeatButtonHandler}
+                      title="重复本章节"
+                    >
+                      重复本章节
+                    </button>
+                  </Tooltip>
+                  {!isLastChapter && (
+                    <Tooltip content="快捷键：enter">
+                      <button
+                        className="my-btn-primary h-12 text-base font-bold"
+                        type="button"
+                        onClick={nextButtonHandler}
+                        title="下一章节"
+                      >
+                        下一章节
+                      </button>
+                    </Tooltip>
+                  )}
+                </>
+              )}
+
+              {isReviewMode && !isChapterErrorReview && (
                 <button
                   className="my-btn-primary h-12 text-base font-bold"
                   type="button"

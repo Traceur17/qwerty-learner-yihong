@@ -81,25 +81,33 @@ Clicking a question number SHALL act as a remote control: clicking the current p
 
 ### Requirement: Keyboard navigation within played range
 
-The answer input focus SHALL move with Enter, Tab, and ArrowDown to the next row, and with Shift+Tab and ArrowUp to the previous row. The focused answer index MUST NOT exceed the current play pointer index. Rows beyond the play pointer MUST NOT be focusable.
+The answer input focus SHALL move with Enter, Tab, and ArrowDown to the next row, and with Shift+Tab and ArrowUp to the previous row. ArrowLeft SHALL move to the previous row and ArrowRight to the next row under the same rules. The focused answer index MUST NOT exceed `min(playPointer + 1, lastWordIndex)`. Rows beyond that focus ceiling MUST NOT be focusable.
 
-#### Scenario: Move to next cell
+#### Scenario: Move to next cell within ceiling
 
-- **WHEN** focus is on answer row i and i is less than the play pointer
-- **AND** the user presses Enter, Tab, or ArrowDown
+- **WHEN** focus is on answer row i and i is less than the focus ceiling (`playPointer + 1`, capped at the last word)
+- **AND** the user presses Enter, Tab, ArrowDown, or ArrowRight
 - **THEN** focus moves to answer row i+1
 
-#### Scenario: Block moving past play pointer
+#### Scenario: Allow one row ahead of play pointer
 
-- **WHEN** focus is on the play pointer row
-- **AND** the user presses Enter, Tab, or ArrowDown
-- **THEN** focus remains on the play pointer row
-- **AND** unplayed later rows do not receive focus
+- **WHEN** the play pointer is on row P and P is not the last word
+- **AND** focus is on row P
+- **AND** the user presses Enter, Tab, ArrowDown, or ArrowRight
+- **THEN** focus moves to row P+1
+- **AND** rows after P+1 do not receive focus
+
+#### Scenario: Block moving past focus ceiling
+
+- **WHEN** focus is already on the focus ceiling row
+- **AND** the user presses Enter, Tab, ArrowDown, or ArrowRight
+- **THEN** focus remains on that row
+- **AND** later unplayed rows do not receive focus
 
 #### Scenario: Move to previous cell
 
 - **WHEN** focus is on answer row i (i > 0)
-- **AND** the user presses Shift+Tab or ArrowUp
+- **AND** the user presses Shift+Tab, ArrowUp, or ArrowLeft
 - **THEN** focus moves to answer row i-1
 
 ### Requirement: Grade only played rows on demand
@@ -181,3 +189,20 @@ When the user triggers「对答案」, the system SHALL persist one `wordRecord`
 
 - **WHEN** the user grades after playing only part of the sheet
 - **THEN** rows beyond the play pointer produce no `wordRecord`
+
+### Requirement: Ctrl+Shift+Space toggles playback while typing
+
+In sheet mode, pressing Ctrl+Shift+Space (or Ctrl+Space) SHALL toggle continuous playback: pause when running, resume when paused. The shortcut MUST work whether or not an answer input is focused, and MUST prevent inserting a space character. The play/pause control SHALL show a hover tip for the shortcut. Plain Space (without modifiers) while an answer input is focused SHALL continue to type a space. Plain Space outside inputs and Escape SHALL retain their existing pause/resume or dismiss behaviors.
+
+#### Scenario: Toggle while focused in an answer input
+
+- **WHEN** an answer input is focused and playback is running
+- **AND** the user presses Ctrl+Shift+Space
+- **THEN** playback pauses
+- **AND** no space character is inserted into the input
+
+#### Scenario: Resume with the same shortcut
+
+- **WHEN** playback is paused
+- **AND** the user presses Ctrl+Shift+Space
+- **THEN** playback resumes from the current play pointer

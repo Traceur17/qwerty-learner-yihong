@@ -9,7 +9,7 @@ export const DISMISS_CHAPTER_ERROR_BOOK_GUIDE_KEY = 'dismissChapterErrorBookGuid
 export const DISMISS_CONTINUOUS_SHEET_GUIDE_KEY = 'dismissContinuousSheetGuide'
 
 /** 更新公告版本号；发新公告时递增，已「不再提示」的用户会再次看到 */
-export const UPDATE_ANNOUNCEMENT_ID = '2026-07-19'
+export const UPDATE_ANNOUNCEMENT_ID = '2026-07-20'
 export const DISMISS_UPDATE_ANNOUNCEMENT_KEY = `dismissUpdateAnnouncement_${UPDATE_ANNOUNCEMENT_ID}`
 
 export const DONATE_DATE = 'donateDate'

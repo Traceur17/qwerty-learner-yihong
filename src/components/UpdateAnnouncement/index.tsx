@@ -4,7 +4,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import IconBook from '~icons/tabler/book'
+import IconKeyboard from '~icons/tabler/keyboard'
+import IconRoute from '~icons/tabler/route'
 import IconX from '~icons/tabler/x'
 
 type UpdateItem = {
@@ -13,38 +14,40 @@ type UpdateItem = {
   summary: ReactNode
   figure?: ReactNode
   details: string[]
-  icon: typeof IconBook
+  icon: typeof IconKeyboard
 }
 
-/** 错题本视图切换示意：最新错题 / 全部错题 */
-function ErrorBookViewFigure() {
+/** 连播播放按钮 + 真实 Tooltip 样式示意 */
+function SheetShortcutFigure() {
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-dashed border-rose-200 bg-white/70 px-4 py-3 dark:border-rose-800 dark:bg-gray-900/40">
-      <div className="flex items-center gap-1 rounded-lg bg-white p-1 shadow-sm ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-600">
-        <span className="rounded-md bg-indigo-500 px-2.5 py-1 text-xs text-white">最新错题 (5)</span>
-        <span className="rounded-md px-2.5 py-1 text-xs text-gray-500 dark:text-gray-300">全部错题 (12)</span>
+    <div className="mt-3 flex justify-center rounded-xl border border-dashed border-amber-200 bg-white/70 px-4 py-5 dark:border-amber-800 dark:bg-gray-900/40">
+      <div className="relative inline-flex flex-col items-center pt-9">
+        <div className="pointer-events-none absolute left-1/2 top-0 flex -translate-x-1/2 items-center justify-center">
+          <span className="tooltip">快捷键：Ctrl+Shift+空格</span>
+        </div>
+        <span className="inline-flex whitespace-nowrap rounded-lg border border-amber-400 bg-amber-50 px-4 py-1 text-base font-medium text-amber-800 dark:border-amber-500 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:bg-amber-900/50">
+          ⏸ 暂停
+        </span>
       </div>
-      <p className="w-full text-xs text-gray-500 dark:text-gray-400 sm:w-auto sm:flex-1">
-        错题本顶部新增切换：默认只看还没搞定的词，切「全部错题」回顾完整历史
-      </p>
     </div>
   )
 }
 
 const UPDATE_ITEMS: UpdateItem[] = [
   {
+    tag: '连播',
+    title: '连播卷面快捷键',
+    summary: '输入时也能用快捷键控制播放，切词更顺手。',
+    figure: <SheetShortcutFigure />,
+    details: ['← / →：上一词 / 下一词；最多可提前一格等下一词'],
+    icon: IconKeyboard,
+  },
+  {
     tag: '错题',
-    title: '错题本变聪明了：练对自动清',
-    summary:
-      '错题不再只进不出：一个词只要最近一次练对了，就自动移出「最新错题」；之后哪天又写错，它会自己回来。你只需要专注练，错题本自己保持干净。',
-    figure: <ErrorBookViewFigure />,
-    details: [
-      '「全部错题」保留完整历史与累计错误次数，按次数排序，勾选高频词随时回炉',
-      '连播卷面「对答案」的对错同样计入：错的进错题本，对的算掌握',
-      '结算页「练习错题」的数量同步变化，清完就是 0',
-      '删除记录等操作照旧，历史错误次数永远保留',
-    ],
-    icon: IconBook,
+    title: '错题练习结算后回原章',
+    summary: '从本章进的错词练习，结束后不再被扔回第 1 章。',
+    details: ['结算可「重复本章节」或「下一章节」', '点右上角关闭，等同重新练习原章节'],
+    icon: IconRoute,
   },
 ]
 
@@ -52,6 +55,7 @@ const TAG_COLORS: Record<string, string> = {
   练习: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-200',
   错题: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-200',
   听写: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
+  连播: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
   词库: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200',
   体验: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200',
   界面: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200',
@@ -128,12 +132,13 @@ export default function UpdateAnnouncement() {
                       致 小圆饼干
                     </Dialog.Title>
                     <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
-                      小圆饼干，你好！这次更新让
-                      <strong className="font-medium text-gray-800 dark:text-gray-100">错题本</strong>
-                      学会了自己收拾：练对的词自动移出，再错的自动回来——你只管练，它负责只留下真正难缠的词。
+                      小圆饼干，你好！这次主要是
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">连播快捷键</strong>和
+                      <strong className="font-medium text-gray-800 dark:text-gray-100">错题练习结算后回原章</strong>
+                      ，用起来更顺手一点。
                     </p>
                   </div>
-                  <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-19</p>
+                  <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-20</p>
                 </div>
               </div>
 

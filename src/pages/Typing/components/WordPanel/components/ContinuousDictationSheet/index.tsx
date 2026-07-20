@@ -1,5 +1,6 @@
 import DictationDiff from '../DictationWord/DictationDiff'
 import ContinuousSheetGuide from './ContinuousSheetGuide'
+import Tooltip from '@/components/Tooltip'
 import { TypingContext, TypingStateActionType } from '@/pages/Typing/store'
 import {
   continuousSheetJumpRequestAtom,
@@ -51,7 +52,7 @@ function SeverityDots({
     if (count === 0) return
     if (!hovered && !pinned) return
     const onKeyDown = (e: globalThis.KeyboardEvent) => {
-      if ((e.key === ' ' || e.code === 'Space') && hovered) {
+      if ((e.key === ' ' || e.code === 'Space') && hovered && !e.ctrlKey && !e.metaKey) {
         e.preventDefault()
         e.stopPropagation()
         if (pinned) onUnpin()
@@ -272,7 +273,9 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
 
   const focusRow = useCallback(
     (index: number) => {
-      const clamped = Math.max(0, Math.min(index, playIndexRef.current))
+      // 最多聚焦到「当前播放词 + 1」，便于输完后进下一格等待
+      const maxFocus = Math.min(playIndexRef.current + 1, Math.max(0, wordsRef.current.length - 1))
+      const clamped = Math.max(0, Math.min(index, maxFocus))
       window.requestAnimationFrame(() => {
         inputRefs.current[clamped]?.focus()
         scrollRowToCenter(clamped)
@@ -334,6 +337,16 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
 
   useEffect(() => {
     const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      // Ctrl/Cmd+Space：输入法常占用 Ctrl+Space，同时支持 Ctrl+Shift+Space 作为兜底
+      const isSpace = e.key === ' ' || e.code === 'Space'
+      if (isSpace && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (isRunningRef.current) handlePause()
+        else handlePlay()
+        return
+      }
+
       if (e.key === 'Escape') {
         if (pinnedHistoryIndex !== null) {
           e.preventDefault()
@@ -352,7 +365,7 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
         return
       }
 
-      if (e.key === ' ' || e.code === 'Space') {
+      if (isSpace) {
         const el = e.target
         if (el instanceof HTMLElement) {
           const tag = el.tagName
@@ -363,13 +376,13 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
         else handlePlay()
       }
     }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
+    window.addEventListener('keydown', onKeyDown, true)
+    return () => window.removeEventListener('keydown', onKeyDown, true)
   }, [handleHideReveal, handlePause, handlePlay, pinnedHistoryIndex, revealed])
 
   const onAnswerKeyDown = useCallback(
     (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'ArrowDown') {
+      if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'ArrowDown' || e.key === 'ArrowRight') {
         if (e.key === 'Tab' && e.shiftKey) {
           e.preventDefault()
           focusRow(index - 1)
@@ -379,7 +392,7 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
         focusRow(index + 1)
         return
       }
-      if (e.key === 'ArrowUp') {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
         e.preventDefault()
         focusRow(index - 1)
       }
@@ -437,7 +450,8 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
       <div className="min-h-0 flex-1 space-y-1 overflow-auto px-1 pb-2">
         {words.map((word, index) => {
           const isPlayRow = index === playIndex
-          const canFocus = index <= playIndex
+          const focusCeiling = Math.min(playIndex + 1, words.length - 1)
+          const canFocus = index <= focusCeiling
           const graded = revealed && index <= maxPlayedIndex
           const grade = grades[index]
           const wrongs = histories[word.name] ?? []
@@ -605,18 +619,21 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
         <div className="grid grid-cols-3 items-center">
           <div className="flex items-center gap-3">
             {isRunning ? (
-              <button
-                type="button"
-                className="flex items-center justify-center rounded-lg border border-amber-400 bg-amber-50 px-4 py-1 text-base font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-500 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:bg-amber-900/50"
-                onClick={handlePause}
-                title="Esc"
-              >
-                ⏸ 暂停
-              </button>
+              <Tooltip content="快捷键：Ctrl+Shift+空格" placement="top">
+                <button
+                  type="button"
+                  className="flex items-center justify-center rounded-lg border border-amber-400 bg-amber-50 px-4 py-1 text-base font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-500 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:bg-amber-900/50"
+                  onClick={handlePause}
+                >
+                  ⏸ 暂停
+                </button>
+              </Tooltip>
             ) : (
-              <button type="button" className="my-btn-primary px-4 py-1 text-base" onClick={handlePlay}>
-                ▶ 播放
-              </button>
+              <Tooltip content="快捷键：Ctrl+Shift+空格" placement="top">
+                <button type="button" className="my-btn-primary px-4 py-1 text-base" onClick={handlePlay}>
+                  ▶ 播放
+                </button>
+              </Tooltip>
             )}
             <span className="text-sm text-gray-500 dark:text-gray-400">间隔 {gapLabel}</span>
           </div>

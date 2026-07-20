@@ -21,13 +21,13 @@ const GUIDE_STEPS: GuideStep[] = [
   {
     key: 'number',
     target: 'numberRef',
-    content: '题号就是遥控器：点当前题可暂停 / 继续，点其他题从那题起播。按 Esc 可随时暂停。',
+    content: '题号就是遥控器：点当前题可暂停 / 继续，点其他题从那题起播。Ctrl+Shift+空格 可随时暂停 / 继续（输入时也可用）。',
     placement: 'right',
   },
   {
     key: 'input',
     target: 'inputRef',
-    content: '边听边写，Enter 或 ↑↓ 在输入框之间切换，已播过的题都可以回头补写。',
+    content: '边听边写，Enter / Tab / ↑↓ / ←→ 在输入框之间切换；最多可提前一格等待下一词，已播过的题都可以回头补写。',
     placement: 'bottom',
   },
   {
