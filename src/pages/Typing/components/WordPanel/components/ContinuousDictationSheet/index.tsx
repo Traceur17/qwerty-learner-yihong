@@ -1,12 +1,17 @@
 import DictationDiff from '../DictationWord/DictationDiff'
 import ContinuousSheetGuide from './ContinuousSheetGuide'
+import SheetPassHistoryOverlay from './SheetPassHistoryOverlay'
+import SheetPassProgressDialog from './SheetPassProgressDialog'
 import Tooltip from '@/components/Tooltip'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import InfoBox from '@/pages/Typing/components/Speed/InfoBox'
 import { TypingContext, TypingStateActionType } from '@/pages/Typing/store'
 import {
   continuousSheetJumpRequestAtom,
   continuousSheetPlayIndexAtom,
+  currentChapterAtom,
   currentDictIdAtom,
+  currentDictInfoAtom,
   fontSizeConfigAtom,
   isIgnoreCaseAtom,
   listenDictationConfigAtom,
@@ -14,18 +19,29 @@ import {
 } from '@/store'
 import type { Word } from '@/typings'
 import { useSaveWordRecord } from '@/utils/db'
+import type { ISheetPass, SheetPassGrade } from '@/utils/db/record'
+import {
+  clearSheetPassDraft,
+  getSheetPassDraft,
+  isSheetRoundSealable,
+  listSheetPasses,
+  saveSheetPassDraft,
+  upsertSealedSheetPass,
+} from '@/utils/db/sheetPassHistory'
 import { getWrongAnswerHistoriesForDict, recordWrongAnswer } from '@/utils/db/wrongAnswerHistory'
 import { wrongSeverityDots } from '@/utils/db/wrongAnswerHistoryHelpers'
 import { diffPhrase, formatTranslation } from '@/utils/dictationDiff'
 import { playChapterWord, stopChapterWordAudio } from '@/utils/playChapterWord'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { type KeyboardEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import IconChartLine from '~icons/tabler/chart-line'
 import IconChevronUp from '~icons/tabler/chevron-up'
 import IconClipboardCheck from '~icons/tabler/clipboard-check'
 import IconPin from '~icons/tabler/pin'
 import IconPinned from '~icons/tabler/pinned'
 import IconPlayerPause from '~icons/tabler/player-pause'
 import IconPlayerPlay from '~icons/tabler/player-play'
+import IconRefresh from '~icons/tabler/refresh'
 
 type GradeMark = 'ungraded' | 'correct' | 'wrong'
 
@@ -138,6 +154,8 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
   const fontSizeConfig = useAtomValue(fontSizeConfigAtom)
   const phoneticConfig = useAtomValue(phoneticConfigAtom)
   const dictId = useAtomValue(currentDictIdAtom)
+  const dictInfo = useAtomValue(currentDictInfoAtom)
+  const chapter = useAtomValue(currentChapterAtom)
   const setSheetPlayIndex = useSetAtom(continuousSheetPlayIndexAtom)
   const [jumpRequest, setJumpRequest] = useAtom(continuousSheetJumpRequestAtom)
   const gapMs = listenConfig.gapMs
@@ -153,6 +171,13 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
   const [grades, setGrades] = useState<GradeMark[]>(() => words.map(() => 'ungraded'))
   const [histories, setHistories] = useState<Record<string, string[]>>({})
   const [pinnedHistoryIndex, setPinnedHistoryIndex] = useState<number | null>(null)
+  const [linkedPassId, setLinkedPassId] = useState<number | undefined>(undefined)
+  const [draftReady, setDraftReady] = useState(false)
+  const [sealedPasses, setSealedPasses] = useState<ISheetPass[]>([])
+  const [progressOpen, setProgressOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [focusPassIndex, setFocusPassIndex] = useState<number | undefined>(undefined)
+  const [retryConfirmOpen, setRetryConfirmOpen] = useState(false)
 
   const saveWordRecord = useSaveWordRecord()
   // 重复判分去重：只为判定发生变化的行写入新记录
@@ -168,30 +193,164 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
   const ignoreEndRef = useRef(false)
   const gapTimerRef = useRef<number>(0)
   const wordsRef = useRef(words)
+  const skipNextSealRef = useRef(false)
+  const sessionRef = useRef({
+    dictId,
+    chapter,
+    answers,
+    grades: grades as SheetPassGrade[],
+    playIndex,
+    maxPlayedIndex,
+    revealed,
+    linkedPassId,
+    wordNames: words.map((w) => w.name),
+  })
 
   playIndexRef.current = playIndex
   isRunningRef.current = isRunning
   wordsRef.current = words
 
+  // 仅在 effect 中同步，保证切章 cleanup 仍读到上一章快照
   useEffect(() => {
-    setSheetPlayIndex(playIndex)
-  }, [playIndex, setSheetPlayIndex])
+    sessionRef.current = {
+      dictId,
+      chapter,
+      answers,
+      grades: grades as SheetPassGrade[],
+      playIndex,
+      maxPlayedIndex,
+      revealed,
+      linkedPassId,
+      wordNames: words.map((w) => w.name),
+    }
+  })
 
-  useEffect(() => {
-    setAnswers(words.map(() => ''))
+  const refreshSealedPasses = useCallback(async () => {
+    setSealedPasses(await listSheetPasses(dictId, chapter))
+  }, [chapter, dictId])
+
+  const resetLocalSheet = useCallback(() => {
+    setAnswers(wordsRef.current.map(() => ''))
     setPlayIndex(0)
     setMaxPlayedIndex(0)
     setIsRunning(false)
     setRevealed(false)
-    setGrades(words.map(() => 'ungraded'))
+    setGrades(wordsRef.current.map(() => 'ungraded'))
     setSheetPlayIndex(0)
     setPinnedHistoryIndex(null)
+    setLinkedPassId(undefined)
     lastWrittenGradesRef.current = new Map()
     ignoreEndRef.current = true
     stopChapterWordAudio()
     if (gapTimerRef.current) window.clearTimeout(gapTimerRef.current)
     ignoreEndRef.current = false
-  }, [words, setSheetPlayIndex])
+  }, [setSheetPlayIndex])
+
+  useEffect(() => {
+    setSheetPlayIndex(playIndex)
+  }, [playIndex, setSheetPlayIndex])
+
+  // 打开本章：默认恢复草稿
+  useEffect(() => {
+    let cancelled = false
+    setDraftReady(false)
+    ignoreEndRef.current = true
+    stopChapterWordAudio()
+    if (gapTimerRef.current) window.clearTimeout(gapTimerRef.current)
+
+    void (async () => {
+      const draft = await getSheetPassDraft(dictId, chapter)
+      if (cancelled) return
+      if (draft && draft.answers.length === words.length) {
+        setAnswers(draft.answers)
+        setGrades(draft.grades.map((g) => (g === 'correct' || g === 'wrong' ? g : 'ungraded')))
+        setPlayIndex(Math.min(draft.playIndex, Math.max(0, words.length - 1)))
+        setMaxPlayedIndex(Math.min(draft.maxPlayedIndex, Math.max(0, words.length - 1)))
+        setRevealed(draft.revealed)
+        setLinkedPassId(draft.linkedPassId)
+        setSheetPlayIndex(Math.min(draft.playIndex, Math.max(0, words.length - 1)))
+      } else {
+        setAnswers(words.map(() => ''))
+        setPlayIndex(0)
+        setMaxPlayedIndex(0)
+        setRevealed(false)
+        setGrades(words.map(() => 'ungraded'))
+        setSheetPlayIndex(0)
+        setLinkedPassId(undefined)
+      }
+      setPinnedHistoryIndex(null)
+      lastWrittenGradesRef.current = new Map()
+      setIsRunning(false)
+      ignoreEndRef.current = false
+      setDraftReady(true)
+      await refreshSealedPasses()
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [chapter, dictId, words, setSheetPlayIndex, refreshSealedPasses])
+
+  // 持久化草稿
+  useEffect(() => {
+    if (!draftReady) return
+    const timer = window.setTimeout(() => {
+      void saveSheetPassDraft({
+        dict: dictId,
+        chapter,
+        answers,
+        grades: grades as SheetPassGrade[],
+        playIndex,
+        maxPlayedIndex,
+        revealed,
+        linkedPassId,
+      })
+    }, 300)
+    return () => window.clearTimeout(timer)
+  }, [answers, chapter, dictId, draftReady, grades, linkedPassId, maxPlayedIndex, playIndex, revealed])
+
+  // 切章/卸载：可封存则静默写入
+  useEffect(() => {
+    return () => {
+      if (skipNextSealRef.current) {
+        skipNextSealRef.current = false
+        return
+      }
+      const snap = sessionRef.current
+      if (
+        !isSheetRoundSealable({
+          wordCount: snap.wordNames.length,
+          maxPlayedIndex: snap.maxPlayedIndex,
+          revealed: snap.revealed,
+          grades: snap.grades,
+        })
+      ) {
+        return
+      }
+      void upsertSealedSheetPass({
+        dict: snap.dictId,
+        chapter: snap.chapter,
+        wordNames: snap.wordNames,
+        answers: snap.answers,
+        grades: snap.grades,
+        maxPlayedIndex: snap.maxPlayedIndex,
+        revealed: snap.revealed,
+        linkedPassId: snap.linkedPassId,
+      }).then((id) => {
+        if (id == null) return
+        void saveSheetPassDraft({
+          dict: snap.dictId,
+          chapter: snap.chapter,
+          answers: snap.answers,
+          grades: snap.grades,
+          playIndex: snap.playIndex,
+          maxPlayedIndex: snap.maxPlayedIndex,
+          revealed: snap.revealed,
+          linkedPassId: id,
+        })
+      })
+    }
+  }, [chapter, dictId])
 
   useEffect(() => {
     let cancelled = false
@@ -450,6 +609,68 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
     }
   }, [answers, dictId, handlePause, histories, isIgnoreCase, maxPlayedIndex, saveWordRecord, words])
 
+  const discardAndRetryRound = useCallback(async () => {
+    skipNextSealRef.current = true
+    await clearSheetPassDraft(dictId, chapter)
+    resetLocalSheet()
+  }, [chapter, dictId, resetLocalSheet])
+
+  const handleRetryRound = useCallback(async () => {
+    handlePause()
+    const sealable = isSheetRoundSealable({
+      wordCount: words.length,
+      maxPlayedIndex,
+      revealed,
+      grades: grades as SheetPassGrade[],
+    })
+
+    if (!sealable) {
+      setRetryConfirmOpen(true)
+      return
+    }
+
+    const id = await upsertSealedSheetPass({
+      dict: dictId,
+      chapter,
+      wordNames: words.map((w) => w.name),
+      answers,
+      grades: grades as SheetPassGrade[],
+      maxPlayedIndex,
+      revealed,
+      linkedPassId,
+    })
+    await discardAndRetryRound()
+    if (id != null) await refreshSealedPasses()
+  }, [
+    answers,
+    chapter,
+    dictId,
+    discardAndRetryRound,
+    grades,
+    handlePause,
+    linkedPassId,
+    maxPlayedIndex,
+    refreshSealedPasses,
+    revealed,
+    words,
+  ])
+
+  const confirmRetryRound = useCallback(async () => {
+    setRetryConfirmOpen(false)
+    await discardAndRetryRound()
+  }, [discardAndRetryRound])
+
+  const openProgress = useCallback(() => {
+    void refreshSealedPasses()
+    setProgressOpen(true)
+  }, [refreshSealedPasses])
+
+  const openHistory = useCallback((passIndex?: number) => {
+    setFocusPassIndex(passIndex)
+    setProgressOpen(false)
+    setHistoryOpen(true)
+  }, [])
+
   const gapLabel = useMemo(() => `${(gapMs / 1000).toFixed(1)}s`, [gapMs])
   const timeLabel = useMemo(() => {
     const minutes = Math.floor(state.timerData.time / 60)
@@ -457,18 +678,23 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
   }, [state.timerData.time])
   const accuracyLabel = useMemo(() => {
-    if (!revealed || maxPlayedIndex < 0) return '0%'
-    let correct = 0
-    let total = 0
-    for (let i = 0; i <= maxPlayedIndex; i++) {
-      const grade = grades[i]
-      if (grade === 'ungraded') continue
-      total += 1
-      if (grade === 'correct') correct += 1
+    if (revealed && maxPlayedIndex >= 0) {
+      let correct = 0
+      let total = 0
+      for (let i = 0; i <= maxPlayedIndex; i++) {
+        const grade = grades[i]
+        if (grade === 'ungraded') continue
+        total += 1
+        if (grade === 'correct') correct += 1
+      }
+      if (total === 0) return '0%'
+      return `${Math.round((correct / total) * 100)}%`
     }
-    if (total === 0) return '0%'
-    return `${Math.round((correct / total) * 100)}%`
-  }, [grades, maxPlayedIndex, revealed])
+    const latest = sealedPasses[sealedPasses.length - 1]
+    if (latest) return `${latest.accuracy}%`
+    return '—'
+  }, [grades, maxPlayedIndex, revealed, sealedPasses])
+  const historyTitle = `${dictInfo.name} · 第 ${chapter + 1} 章 · 历史记录`
   const phoneticType = phoneticConfig.type === 'us' ? 'us' : 'uk'
 
   return (
@@ -646,69 +872,139 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
         })}
       </div>
 
-      <div className="my-card mt-2 flex w-full max-w-4xl shrink-0 rounded-xl bg-white/50 px-3 py-6 transition-colors duration-300 dark:bg-gray-800/50 md:px-4 md:py-8 xl:max-w-5xl">
-        <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
-          <Tooltip content="快捷键：Ctrl+Shift+空格" placement="top">
+      <div className="my-card mt-2 flex w-full max-w-4xl shrink-0 rounded-xl bg-white px-3 py-6 transition-colors duration-300 dark:bg-gray-800 md:px-4 md:py-8 xl:max-w-5xl">
+        {/* 操作区：播放 → 对答案 → 再练一遍 */}
+        <div className="flex min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
+            <Tooltip content="快捷键：Ctrl+Shift+空格" placement="top">
+              <button
+                type="button"
+                className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
+                onClick={isRunning ? handlePause : handlePlay}
+                aria-label={isRunning ? '暂停' : '播放'}
+              >
+                {isRunning ? <IconPlayerPause className="h-7 w-7" /> : <IconPlayerPlay className="h-7 w-7" />}
+              </button>
+            </Tooltip>
+            <span className="pt-2 text-xs text-gray-500 transition-colors duration-300 dark:text-gray-400">
+              {isRunning ? '暂停' : '播放'}
+            </span>
+          </div>
+
+          <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
+            {revealed ? (
+              <button
+                type="button"
+                className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
+                onClick={handleHideReveal}
+                title="Esc"
+                aria-label="收起答案"
+              >
+                <IconChevronUp className="h-7 w-7" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                ref={guideGradeRef}
+                className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
+                onClick={() => void handleGrade()}
+                aria-label="对答案"
+              >
+                <IconClipboardCheck className="h-7 w-7" />
+              </button>
+            )}
+            <span className="pt-2 text-xs text-gray-500 transition-colors duration-300 dark:text-gray-400">
+              {revealed ? '收起答案' : '对答案'}
+            </span>
+          </div>
+
+          <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
             <button
               type="button"
               className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
-              onClick={isRunning ? handlePause : handlePlay}
-              aria-label={isRunning ? '暂停' : '播放'}
+              onClick={() => void handleRetryRound()}
+              aria-label="再练一遍"
+              title="再练一遍"
             >
-              {isRunning ? <IconPlayerPause className="h-7 w-7" /> : <IconPlayerPlay className="h-7 w-7" />}
+              <IconRefresh className="h-7 w-7" />
             </button>
-          </Tooltip>
-          <span className="pt-2 text-xs text-gray-500 transition-colors duration-300 dark:text-gray-400">
-            {isRunning ? '暂停' : '播放'}
-          </span>
-        </div>
-
-        <div className="flex min-w-0 flex-1 opacity-50">
-          <InfoBox info={gapLabel} description="间隔" />
-        </div>
-        <div className="flex min-w-0 flex-1 opacity-50">
-          <InfoBox info={timeLabel} description="计时" />
-        </div>
-
-        <div
-          className={`ease-[cubic-bezier(0.22,1,0.36,1)] overflow-hidden transition-[max-width,opacity] duration-700 ${
-            revealed ? '' : 'pointer-events-none'
-          }`}
-          style={{ maxWidth: revealed ? 168 : 0, opacity: revealed ? 1 : 0 }}
-          aria-hidden={!revealed}
-        >
-          <div className="flex w-[168px] opacity-50">
-            <InfoBox info={accuracyLabel} description="正确率" />
+            <span className="pt-2 text-xs text-gray-500 transition-colors duration-300 dark:text-gray-400">再练一遍</span>
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
-          {revealed ? (
-            <button
-              type="button"
-              className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
-              onClick={handleHideReveal}
-              title="Esc"
-              aria-label="收起答案"
-            >
-              <IconChevronUp className="h-7 w-7" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              ref={guideGradeRef}
-              className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
-              onClick={() => void handleGrade()}
-              aria-label="对答案"
-            >
-              <IconClipboardCheck className="h-7 w-7" />
-            </button>
-          )}
-          <span className="pt-2 text-xs text-gray-500 transition-colors duration-300 dark:text-gray-400">
-            {revealed ? '收起答案' : '对答案'}
-          </span>
+        {/* 指标区：间隔 → 计时 → 正确率 */}
+        <div className="flex min-w-0 flex-[1.2]">
+          <div className="flex min-w-0 flex-1 opacity-50">
+            <InfoBox info={gapLabel} description="间隔" />
+          </div>
+          <div className="flex min-w-0 flex-1 opacity-50">
+            <InfoBox info={timeLabel} description="计时" />
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
+            <div className="flex w-4/5 items-end justify-center gap-1 border-b pb-2">
+              <span className="text-center text-xl font-bold text-gray-600 opacity-50 transition-colors duration-300 dark:text-gray-400">
+                {accuracyLabel}
+              </span>
+              <button
+                type="button"
+                className="mb-0.5 inline-flex shrink-0 cursor-pointer items-center justify-center rounded p-0.5 text-indigo-500 transition-colors hover:bg-indigo-50 hover:text-indigo-600 dark:text-indigo-400 dark:hover:bg-indigo-950/50 dark:hover:text-indigo-300"
+                onClick={openProgress}
+                aria-label="查看正确率进步与历史"
+                title="查看历史记录"
+              >
+                <IconChartLine className="h-5 w-5" />
+              </button>
+            </div>
+            <span className="pt-2 text-xs opacity-50 transition-colors duration-300 dark:text-gray-300">正确率</span>
+          </div>
         </div>
       </div>
+
+      <SheetPassProgressDialog
+        open={progressOpen}
+        onOpenChange={setProgressOpen}
+        passes={sealedPasses}
+        title={historyTitle}
+        onViewRecords={openHistory}
+      />
+      <Dialog open={retryConfirmOpen} onOpenChange={setRetryConfirmOpen}>
+        <DialogContent className="max-w-sm gap-4 sm:rounded-xl">
+          <DialogHeader>
+            <DialogTitle>再练一遍</DialogTitle>
+            <DialogDescription>本轮未完成，将清空本轮记录。确定再练一遍？</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <button
+              type="button"
+              className="rounded-md border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+              onClick={() => setRetryConfirmOpen(false)}
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+              onClick={() => void confirmRetryRound()}
+            >
+              确定
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <SheetPassHistoryOverlay
+        open={historyOpen}
+        onOpenChange={(open) => {
+          setHistoryOpen(open)
+          if (!open) setFocusPassIndex(undefined)
+        }}
+        passes={sealedPasses}
+        title={historyTitle}
+        words={words}
+        phoneticType={phoneticType}
+        ignoreCase={isIgnoreCase}
+        focusPassIndex={focusPassIndex}
+        onPlayWord={playChapterWord}
+      />
 
       <ContinuousSheetGuide targets={{ numberRef: guideNumberRef, inputRef: guideInputRef, gradeRef: guideGradeRef }} />
     </div>

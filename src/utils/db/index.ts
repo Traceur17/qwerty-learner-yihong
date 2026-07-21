@@ -1,4 +1,13 @@
-import type { IChapterRecord, IReviewRecord, IRevisionDictRecord, IWordRecord, IWrongAnswerHistory, LetterMistakes } from './record'
+import type {
+  IChapterRecord,
+  IReviewRecord,
+  IRevisionDictRecord,
+  ISheetPass,
+  ISheetPassDraft,
+  IWordRecord,
+  IWrongAnswerHistory,
+  LetterMistakes,
+} from './record'
 import { ChapterRecord, ReviewRecord, WordRecord } from './record'
 import { TypingContext, TypingStateActionType } from '@/pages/Typing/store'
 import type { TypingState } from '@/pages/Typing/store/type'
@@ -13,6 +22,8 @@ class RecordDB extends Dexie {
   chapterRecords!: Table<IChapterRecord, number>
   reviewRecords!: Table<IReviewRecord, number>
   wrongAnswerHistories!: Table<IWrongAnswerHistory, number>
+  sheetPassDrafts!: Table<ISheetPassDraft, number>
+  sheetPasses!: Table<ISheetPass, number>
 
   revisionDictRecords!: Table<IRevisionDictRecord, number>
   revisionWordRecords!: Table<IWordRecord, number>
@@ -37,6 +48,14 @@ class RecordDB extends Dexie {
       chapterRecords: '++id,timeStamp,dict,chapter,time,[dict+chapter]',
       reviewRecords: '++id,dict,createTime,isFinished',
       wrongAnswerHistories: '++id,dict,word,[dict+word]',
+    })
+    this.version(5).stores({
+      wordRecords: '++id,word,timeStamp,dict,chapter,wrongCount,[dict+chapter]',
+      chapterRecords: '++id,timeStamp,dict,chapter,time,[dict+chapter]',
+      reviewRecords: '++id,dict,createTime,isFinished',
+      wrongAnswerHistories: '++id,dict,word,[dict+word]',
+      sheetPassDrafts: '++id,dict,chapter,[dict+chapter],updatedAt',
+      sheetPasses: '++id,dict,chapter,timeStamp,[dict+chapter]',
     })
   }
 }

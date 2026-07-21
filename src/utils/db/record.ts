@@ -179,6 +179,37 @@ export interface IWrongAnswerHistory {
   updatedAt: number
 }
 
+export type SheetPassGrade = 'correct' | 'wrong' | 'ungraded'
+
+/** 连播卷面当前轮草稿（每 dict+chapter 一条） */
+export interface ISheetPassDraft {
+  id?: number
+  dict: string
+  chapter: number
+  answers: string[]
+  grades: SheetPassGrade[]
+  playIndex: number
+  maxPlayedIndex: number
+  revealed: boolean
+  linkedPassId?: number
+  updatedAt: number
+}
+
+/** 连播卷面已封存的完整遍次快照 */
+export interface ISheetPass {
+  id?: number
+  dict: string
+  chapter: number
+  timeStamp: number
+  accuracy: number
+  correctCount: number
+  wrongCount: number
+  totalGraded: number
+  answers: string[]
+  grades: Array<'correct' | 'wrong'>
+  wordNames: string[]
+}
+
 export class RevisionWordRecord implements IRevisionWordRecord {
   word: string
   timeStamp: number

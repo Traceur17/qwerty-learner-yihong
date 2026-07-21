@@ -4,9 +4,78 @@ import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import IconAdjustments from '~icons/tabler/adjustments'
-import IconClipboardCheck from '~icons/tabler/clipboard-check'
+import IconChartLine from '~icons/tabler/chart-line'
 import IconX from '~icons/tabler/x'
+
+function AccuracyEntryFigure() {
+  return (
+    <div className="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white px-3 py-3 dark:border-gray-600 dark:bg-gray-800/80">
+      <div className="flex items-end gap-3 opacity-90">
+        <div className="hidden flex-1 text-center sm:block">
+          <div className="mx-auto w-4/5 border-b border-indigo-300 pb-1.5 text-indigo-500">
+            <span className="text-lg leading-none">▶</span>
+          </div>
+          <div className="pt-1 text-[10px] text-gray-400">播放</div>
+        </div>
+        <div className="hidden flex-1 text-center sm:block">
+          <div className="mx-auto w-4/5 border-b border-indigo-300 pb-1.5 text-indigo-500">
+            <span className="text-base leading-none">☑</span>
+          </div>
+          <div className="pt-1 text-[10px] text-gray-400">对答案</div>
+        </div>
+        <div className="flex-1 text-center opacity-40">
+          <div className="mx-auto w-4/5 border-b border-gray-300 pb-1.5 text-sm font-bold text-gray-500 dark:border-gray-500 dark:text-gray-400">
+            1.5s
+          </div>
+          <div className="pt-1 text-[10px] text-gray-400">间隔</div>
+        </div>
+        <div className="flex-1 text-center opacity-40">
+          <div className="mx-auto w-4/5 border-b border-gray-300 pb-1.5 text-sm font-bold text-gray-500 dark:border-gray-500 dark:text-gray-400">
+            03:20
+          </div>
+          <div className="pt-1 text-[10px] text-gray-400">计时</div>
+        </div>
+        <div className="relative flex-[1.2] text-center">
+          <div className="mx-auto flex w-4/5 items-end justify-center gap-1 border-b border-indigo-400 pb-1.5 dark:border-indigo-400">
+            <span className="text-sm font-bold text-gray-600 dark:text-gray-300">72%</span>
+            <span className="mb-0.5 inline-flex rounded bg-indigo-500 p-0.5 text-white shadow-sm ring-2 ring-indigo-200 dark:ring-indigo-700">
+              <IconChartLine className="h-3.5 w-3.5" />
+            </span>
+          </div>
+          <div className="pt-1 text-[10px] font-medium text-indigo-600 dark:text-indigo-300">正确率</div>
+          <div className="absolute -right-1 top-[-1.35rem] whitespace-nowrap rounded-full bg-indigo-500 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm sm:-right-2">
+            点这里看趋势
+          </div>
+        </div>
+      </div>
+      <svg viewBox="0 0 280 56" className="mt-3 h-14 w-full text-indigo-500" aria-hidden>
+        <polyline
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          points="16,42 70,36 124,28 178,22 234,14"
+        />
+        {[
+          [16, 42],
+          [70, 36],
+          [124, 28],
+          [178, 22],
+          [234, 14],
+        ].map(([x, y]) => (
+          <circle key={`${x}-${y}`} cx={x} cy={y} r="3.5" fill="currentColor" />
+        ))}
+        <text x="16" y="54" fontSize="9" fill="#94a3b8">
+          第1遍
+        </text>
+        <text x="220" y="54" fontSize="9" fill="#94a3b8">
+          第5遍
+        </text>
+      </svg>
+    </div>
+  )
+}
 
 type UpdateItem = {
   tag: string
@@ -14,28 +83,17 @@ type UpdateItem = {
   summary: ReactNode
   figure?: ReactNode
   details: string[]
-  icon: typeof IconClipboardCheck
+  icon: typeof IconChartLine
 }
 
 const UPDATE_ITEMS: UpdateItem[] = [
   {
     tag: '连播',
-    title: '正确率展示',
-    summary: '对答案后，底栏会平滑展开正确率；收起答案时收回。',
-    details: ['正确率 = 已判分行中答对占比', '底栏样式更接近正常听写的指标栏'],
-    icon: IconClipboardCheck,
-  },
-  {
-    tag: '体验',
-    title: 'UI/UX 优化',
-    summary: '连播卷面交互与视觉细节一轮打磨。',
-    details: [
-      '左右快捷键：←→ 只移光标，不再上下切词',
-      '滚动条遮挡：默认半透明，悬停再变实',
-      '点击卡片发音：对答案后点词条可单独听读',
-      '题号加宽；底栏按钮改为主题色图标',
-    ],
-    icon: IconAdjustments,
+    title: '听写历史记录',
+    summary: '连播底栏「正确率」旁的折线图标，可查看正确率趋势，并进入多遍答卷对比。',
+    figure: <AccuracyEntryFigure />,
+    details: ['整章播完并对答案后，才会写入完整历史', '趋势页可继续打开 Excel 式多遍对比表', '历史从本次更新后开始积累'],
+    icon: IconChartLine,
   },
 ]
 
@@ -113,16 +171,15 @@ export default function UpdateAnnouncement() {
                     <IconX className="h-6 w-6" />
                   </button>
 
-                  <div className="flex flex-col gap-2 pr-10 md:flex-row md:items-end md:justify-between">
+                  <div className="flex flex-col gap-2 pr-10 text-left md:flex-row md:items-end md:justify-between">
                     <div>
                       <Dialog.Title className="text-3xl font-bold tracking-wide text-indigo-600 dark:text-indigo-300 md:text-4xl">
                         致 小圆饼干
                       </Dialog.Title>
                       <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
-                        小圆饼干，你好！这次连播模式新增了
-                        <strong className="font-medium text-gray-800 dark:text-gray-100">正确率展示</strong>
-                        ，并做了一轮
-                        <strong className="font-medium text-gray-800 dark:text-gray-100">UI/UX 优化</strong>。
+                        小圆饼干，你好！连播模式新增了
+                        <strong className="font-medium text-gray-800 dark:text-gray-100">听写历史</strong>
+                        ：点正确率旁的折线，就能看趋势和多遍记录。
                       </p>
                     </div>
                     <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-21</p>
@@ -136,7 +193,7 @@ export default function UpdateAnnouncement() {
                       return (
                         <article
                           key={item.title}
-                          className="flex gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-5 dark:border-gray-700 dark:bg-gray-900/40"
+                          className="flex gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-5 text-left dark:border-gray-700 dark:bg-gray-900/40"
                         >
                           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-white shadow-sm">
                             <Icon className="h-6 w-6" />
@@ -166,7 +223,7 @@ export default function UpdateAnnouncement() {
                     })}
                   </div>
 
-                  <p className="mt-6 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/50 px-5 py-4 text-sm leading-relaxed text-indigo-900/80 dark:border-indigo-800 dark:bg-indigo-950/20 dark:text-indigo-100/80">
+                  <p className="mt-6 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/50 px-5 py-4 text-left text-sm leading-relaxed text-indigo-900/80 dark:border-indigo-800 dark:bg-indigo-950/20 dark:text-indigo-100/80">
                     小圆饼干，你的练习记录保存在浏览器本地，同域名更新后不会丢失。用着不顺手的地方，随时告诉我～
                   </p>
                 </div>
