@@ -6,7 +6,7 @@ import { diffPhrase, formatTranslation } from '@/utils/dictationDiff'
 import { cn } from '@/utils/ui'
 import dayjs from 'dayjs'
 import { X } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 
 type Props = {
   open: boolean
