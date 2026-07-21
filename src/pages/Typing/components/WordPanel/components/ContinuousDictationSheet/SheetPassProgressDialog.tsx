@@ -105,7 +105,10 @@ export default function SheetPassProgressDialog({ open, onOpenChange, passes, ti
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl gap-5 sm:rounded-xl">
+      <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="max-w-3xl gap-5 sm:rounded-xl [&>button]:focus:outline-none [&>button]:focus:ring-0 [&>button]:focus:ring-offset-0"
+      >
         <DialogHeader>
           <DialogTitle className="text-lg sm:text-xl">{title}</DialogTitle>
         </DialogHeader>

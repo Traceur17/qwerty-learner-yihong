@@ -9,7 +9,7 @@ import IconX from '~icons/tabler/x'
 
 function AccuracyEntryFigure() {
   return (
-    <div className="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white px-3 py-3 dark:border-gray-600 dark:bg-gray-800/80">
+    <div className="mt-3 rounded-xl border border-gray-200 bg-white px-3 py-3 dark:border-gray-600 dark:bg-gray-800/80">
       <div className="flex items-end gap-3 opacity-90">
         <div className="hidden flex-1 text-center sm:block">
           <div className="mx-auto w-4/5 border-b border-indigo-300 pb-1.5 text-indigo-500">
@@ -35,7 +35,7 @@ function AccuracyEntryFigure() {
           </div>
           <div className="pt-1 text-[10px] text-gray-400">计时</div>
         </div>
-        <div className="relative flex-[1.2] text-center">
+        <div className="flex-[1.2] text-center">
           <div className="mx-auto flex w-4/5 items-end justify-center gap-1 border-b border-indigo-400 pb-1.5 dark:border-indigo-400">
             <span className="text-sm font-bold text-gray-600 dark:text-gray-300">72%</span>
             <span className="mb-0.5 inline-flex rounded bg-indigo-500 p-0.5 text-white shadow-sm ring-2 ring-indigo-200 dark:ring-indigo-700">
@@ -43,12 +43,10 @@ function AccuracyEntryFigure() {
             </span>
           </div>
           <div className="pt-1 text-[10px] font-medium text-indigo-600 dark:text-indigo-300">正确率</div>
-          <div className="absolute -right-1 top-[-1.35rem] whitespace-nowrap rounded-full bg-indigo-500 px-2 py-0.5 text-[10px] font-medium text-white shadow-sm sm:-right-2">
-            点这里看趋势
-          </div>
         </div>
       </div>
-      <svg viewBox="0 0 280 56" className="mt-3 h-14 w-full text-indigo-500" aria-hidden>
+      <p className="mt-2 text-center text-[11px] font-medium text-indigo-600 dark:text-indigo-300">↑ 点折线图标查看正确率趋势</p>
+      <svg viewBox="0 0 280 56" className="mt-2 h-14 w-full text-indigo-500" aria-hidden>
         <polyline
           fill="none"
           stroke="currentColor"
