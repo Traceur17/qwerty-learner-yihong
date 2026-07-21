@@ -27,7 +27,7 @@ const GUIDE_STEPS: GuideStep[] = [
   {
     key: 'input',
     target: 'inputRef',
-    content: '边听边写，Enter / Tab / ↑↓ / ←→ 在输入框之间切换；最多可提前一格等待下一词，已播过的题都可以回头补写。',
+    content: '边听边写，Enter / Tab / ↑↓ 在输入框之间切换；←→ 只移动光标。最多可提前一格等待下一词，已播过的题都可以回头补写。',
     placement: 'bottom',
   },
   {
@@ -35,7 +35,7 @@ const GUIDE_STEPS: GuideStep[] = [
     target: 'gradeRef',
     content: (
       <>
-        <p>写完点「对答案」：对的行显示 ✓ 与释义，错的行给出修订对照。</p>
+        <p>写完点「对答案」：对的行显示 ✓ 与释义，错的行给出修订对照。对答案后点击词条卡片（题号除外）可单独发音。</p>
         <p className="mt-2 flex items-center gap-1.5 text-xs">
           <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-amber-300" />
           <span>写错过</span>

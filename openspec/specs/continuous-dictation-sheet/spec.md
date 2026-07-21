@@ -81,34 +81,41 @@ Clicking a question number SHALL act as a remote control: clicking the current p
 
 ### Requirement: Keyboard navigation within played range
 
-The answer input focus SHALL move with Enter, Tab, and ArrowDown to the next row, and with Shift+Tab and ArrowUp to the previous row. ArrowLeft SHALL move to the previous row and ArrowRight to the next row under the same rules. The focused answer index MUST NOT exceed `min(playPointer + 1, lastWordIndex)`. Rows beyond that focus ceiling MUST NOT be focusable.
+The answer input focus SHALL move with Enter, Tab, and ArrowDown to the next row, and with Shift+Tab and ArrowUp to the previous row. ArrowLeft and ArrowRight MUST move the caret within the focused input and MUST NOT change the focused row. The focused answer index MUST NOT exceed `min(playPointer + 1, lastWordIndex)`. Rows beyond that focus ceiling MUST NOT be focusable.
 
 #### Scenario: Move to next cell within ceiling
 
 - **WHEN** focus is on answer row i and i is less than the focus ceiling (`playPointer + 1`, capped at the last word)
-- **AND** the user presses Enter, Tab, ArrowDown, or ArrowRight
+- **AND** the user presses Enter, Tab, or ArrowDown
 - **THEN** focus moves to answer row i+1
 
 #### Scenario: Allow one row ahead of play pointer
 
 - **WHEN** the play pointer is on row P and P is not the last word
 - **AND** focus is on row P
-- **AND** the user presses Enter, Tab, ArrowDown, or ArrowRight
+- **AND** the user presses Enter, Tab, or ArrowDown
 - **THEN** focus moves to row P+1
 - **AND** rows after P+1 do not receive focus
 
 #### Scenario: Block moving past focus ceiling
 
 - **WHEN** focus is already on the focus ceiling row
-- **AND** the user presses Enter, Tab, ArrowDown, or ArrowRight
+- **AND** the user presses Enter, Tab, or ArrowDown
 - **THEN** focus remains on that row
 - **AND** later unplayed rows do not receive focus
 
 #### Scenario: Move to previous cell
 
 - **WHEN** focus is on answer row i (i > 0)
-- **AND** the user presses Shift+Tab, ArrowUp, or ArrowLeft
+- **AND** the user presses Shift+Tab or ArrowUp
 - **THEN** focus moves to answer row i-1
+
+#### Scenario: Horizontal arrows keep caret in input
+
+- **WHEN** focus is on an answer input
+- **AND** the user presses ArrowLeft or ArrowRight
+- **THEN** the caret moves within that input
+- **AND** focus remains on the same row
 
 ### Requirement: Grade only played rows on demand
 
@@ -126,6 +133,19 @@ The system SHALL provide a control to grade/reveal answers at any time. Grading 
 - **THEN** it shows a clear correct indicator (checkmark) with phonetic and translation
 - **WHEN** a played row is graded incorrect
 - **THEN** it shows a prominent visual diff between the user answer and the correct English, plus phonetic and translation
+
+#### Scenario: Sheet toolbar shows accuracy after grade
+
+- **WHEN** the user activates grade/reveal for at least one played row
+- **THEN** the sheet toolbar SHALL show an accuracy metric equal to correct graded rows / graded rows
+- **AND** the accuracy column SHALL expand with a width/opacity transition rather than appearing instantly
+- **WHEN** the user hides the reveal
+- **THEN** the accuracy column SHALL collapse with the same transition style
+
+#### Scenario: Replay pronunciation from graded card
+
+- **WHEN** answers are revealed and the user clicks a graded row's card area excluding the question-number control
+- **THEN** the system plays that row's word pronunciation once
 
 #### Scenario: Regrade after edits
 

@@ -55,6 +55,58 @@ body,
   background: transparent;
 }
 
+/* 连播卷面：滚动条默认半透明，悬停后变实，避免挡住右下角主题装饰 */
+.sheet-scrollbar {
+  scrollbar-width: auto;
+  scrollbar-color: rgba(100, 100, 100, 0.28) transparent;
+}
+
+.sheet-scrollbar:hover {
+  scrollbar-color: rgba(100, 100, 100, 0.85) transparent;
+}
+
+.sheet-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sheet-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sheet-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: rgba(100, 100, 100, 0.28);
+  transition: background-color 0.15s ease;
+}
+
+.sheet-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.55);
+}
+
+.sheet-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.85);
+}
+
+.dark .sheet-scrollbar {
+  scrollbar-color: rgba(200, 200, 200, 0.28) transparent;
+}
+
+.dark .sheet-scrollbar:hover {
+  scrollbar-color: rgba(200, 200, 200, 0.85) transparent;
+}
+
+.dark .sheet-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(200, 200, 200, 0.28);
+}
+
+.dark .sheet-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(200, 200, 200, 0.55);
+}
+
+.dark .sheet-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 200, 200, 0.85);
+}
+
 @layer components {
   .icon {
     @apply h-5.5 w-5.5 focus:outline-none;

@@ -1,6 +1,7 @@
 import DictationDiff from '../DictationWord/DictationDiff'
 import ContinuousSheetGuide from './ContinuousSheetGuide'
 import Tooltip from '@/components/Tooltip'
+import InfoBox from '@/pages/Typing/components/Speed/InfoBox'
 import { TypingContext, TypingStateActionType } from '@/pages/Typing/store'
 import {
   continuousSheetJumpRequestAtom,
@@ -19,8 +20,12 @@ import { diffPhrase, formatTranslation } from '@/utils/dictationDiff'
 import { playChapterWord, stopChapterWordAudio } from '@/utils/playChapterWord'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { type KeyboardEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import IconChevronUp from '~icons/tabler/chevron-up'
+import IconClipboardCheck from '~icons/tabler/clipboard-check'
 import IconPin from '~icons/tabler/pin'
 import IconPinned from '~icons/tabler/pinned'
+import IconPlayerPause from '~icons/tabler/player-pause'
+import IconPlayerPlay from '~icons/tabler/player-play'
 
 type GradeMark = 'ungraded' | 'correct' | 'wrong'
 
@@ -382,7 +387,7 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
 
   const onAnswerKeyDown = useCallback(
     (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      if (e.key === 'Enter' || e.key === 'Tab' || e.key === 'ArrowDown') {
         if (e.key === 'Tab' && e.shiftKey) {
           e.preventDefault()
           focusRow(index - 1)
@@ -392,12 +397,20 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
         focusRow(index + 1)
         return
       }
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      if (e.key === 'ArrowUp') {
         e.preventDefault()
         focusRow(index - 1)
       }
     },
     [focusRow],
+  )
+
+  const handleReplayWord = useCallback(
+    (index: number) => {
+      if (!revealed || index > maxPlayedIndex) return
+      playChapterWord(words[index])
+    },
+    [maxPlayedIndex, revealed, words],
   )
 
   const handleGrade = useCallback(async () => {
@@ -443,11 +456,24 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
     const seconds = state.timerData.time % 60
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
   }, [state.timerData.time])
+  const accuracyLabel = useMemo(() => {
+    if (!revealed || maxPlayedIndex < 0) return '0%'
+    let correct = 0
+    let total = 0
+    for (let i = 0; i <= maxPlayedIndex; i++) {
+      const grade = grades[i]
+      if (grade === 'ungraded') continue
+      total += 1
+      if (grade === 'correct') correct += 1
+    }
+    if (total === 0) return '0%'
+    return `${Math.round((correct / total) * 100)}%`
+  }, [grades, maxPlayedIndex, revealed])
   const phoneticType = phoneticConfig.type === 'us' ? 'us' : 'uk'
 
   return (
-    <div className="flex h-full min-h-0 w-full max-w-3xl flex-col">
-      <div className="min-h-0 flex-1 space-y-1 overflow-auto px-1 pb-2">
+    <div className="flex h-full min-h-0 w-full flex-col items-center">
+      <div className="sheet-scrollbar min-h-0 w-full max-w-3xl flex-1 space-y-1 overflow-auto px-1 pb-2">
         {words.map((word, index) => {
           const isPlayRow = index === playIndex
           const focusCeiling = Math.min(playIndex + 1, words.length - 1)
@@ -471,7 +497,9 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
               ref={(el) => {
                 rowRefs.current[index] = el
               }}
-              className={`rounded-md px-2 py-2 transition-colors ${
+              onClick={() => handleReplayWord(index)}
+              title={revealed && index <= maxPlayedIndex ? '点击发音' : undefined}
+              className={`rounded-md px-2 py-2 transition-colors ${revealed && index <= maxPlayedIndex ? 'cursor-pointer' : ''} ${
                 isWrong
                   ? 'border border-red-200/90 bg-red-50/90 shadow-sm dark:border-red-900/60 dark:bg-red-950/40'
                   : isCorrect
@@ -485,7 +513,7 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
                 <button
                   type="button"
                   ref={index === 0 ? guideNumberRef : undefined}
-                  className={`w-8 shrink-0 pt-1 text-left font-mono tabular-nums ${
+                  className={`w-16 shrink-0 pt-1 text-left font-mono tabular-nums ${
                     isWrong
                       ? 'font-semibold text-red-500 dark:text-red-400'
                       : isCorrect
@@ -495,7 +523,10 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
                       : 'text-gray-400 dark:text-gray-500'
                   }`}
                   style={{ fontSize: `${bodyFontSize}px` }}
-                  onClick={() => handleNumberClick(index)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleNumberClick(index)
+                  }}
                   title={isPlayRow && isRunning ? '暂停' : isPlayRow ? '继续播放' : '从该题起播'}
                 >
                   {isPlayRow ? `${isRunning ? '⏸' : '▶'}${index + 1}` : index + 1}
@@ -615,51 +646,67 @@ export default function ContinuousDictationSheet({ words }: { words: Word[] }) {
         })}
       </div>
 
-      <div className="sticky bottom-0 z-20 shrink-0 border-t border-gray-200 bg-white/95 px-2 py-3 backdrop-blur dark:border-gray-700 dark:bg-gray-900/95">
-        <div className="grid grid-cols-3 items-center">
-          <div className="flex items-center gap-3">
-            {isRunning ? (
-              <Tooltip content="快捷键：Ctrl+Shift+空格" placement="top">
-                <button
-                  type="button"
-                  className="flex items-center justify-center rounded-lg border border-amber-400 bg-amber-50 px-4 py-1 text-base font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-500 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:bg-amber-900/50"
-                  onClick={handlePause}
-                >
-                  ⏸ 暂停
-                </button>
-              </Tooltip>
-            ) : (
-              <Tooltip content="快捷键：Ctrl+Shift+空格" placement="top">
-                <button type="button" className="my-btn-primary px-4 py-1 text-base" onClick={handlePlay}>
-                  ▶ 播放
-                </button>
-              </Tooltip>
-            )}
-            <span className="text-sm text-gray-500 dark:text-gray-400">间隔 {gapLabel}</span>
-          </div>
+      <div className="my-card mt-2 flex w-full max-w-4xl shrink-0 rounded-xl bg-white/50 px-3 py-6 transition-colors duration-300 dark:bg-gray-800/50 md:px-4 md:py-8 xl:max-w-5xl">
+        <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
+          <Tooltip content="快捷键：Ctrl+Shift+空格" placement="top">
+            <button
+              type="button"
+              className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
+              onClick={isRunning ? handlePause : handlePlay}
+              aria-label={isRunning ? '暂停' : '播放'}
+            >
+              {isRunning ? <IconPlayerPause className="h-7 w-7" /> : <IconPlayerPlay className="h-7 w-7" />}
+            </button>
+          </Tooltip>
+          <span className="pt-2 text-xs text-gray-500 transition-colors duration-300 dark:text-gray-400">
+            {isRunning ? '暂停' : '播放'}
+          </span>
+        </div>
 
-          <div className="text-center">
-            <span className="font-mono text-2xl font-medium tabular-nums text-gray-600 dark:text-gray-300" title="练习时间">
-              {timeLabel}
-            </span>
-          </div>
+        <div className="flex min-w-0 flex-1 opacity-50">
+          <InfoBox info={gapLabel} description="间隔" />
+        </div>
+        <div className="flex min-w-0 flex-1 opacity-50">
+          <InfoBox info={timeLabel} description="计时" />
+        </div>
 
-          <div className="flex justify-end">
-            {revealed ? (
-              <button
-                type="button"
-                className="rounded-lg border border-gray-300 px-4 py-1 text-base text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-                onClick={handleHideReveal}
-                title="Esc"
-              >
-                收起答案
-              </button>
-            ) : (
-              <button type="button" ref={guideGradeRef} className="my-btn-primary px-4 py-1 text-base" onClick={() => void handleGrade()}>
-                对答案
-              </button>
-            )}
+        <div
+          className={`ease-[cubic-bezier(0.22,1,0.36,1)] overflow-hidden transition-[max-width,opacity] duration-700 ${
+            revealed ? '' : 'pointer-events-none'
+          }`}
+          style={{ maxWidth: revealed ? 168 : 0, opacity: revealed ? 1 : 0 }}
+          aria-hidden={!revealed}
+        >
+          <div className="flex w-[168px] opacity-50">
+            <InfoBox info={accuracyLabel} description="正确率" />
           </div>
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
+          {revealed ? (
+            <button
+              type="button"
+              className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
+              onClick={handleHideReveal}
+              title="Esc"
+              aria-label="收起答案"
+            >
+              <IconChevronUp className="h-7 w-7" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              ref={guideGradeRef}
+              className="flex w-4/5 cursor-pointer items-center justify-center rounded-t-md border-b border-indigo-300 pb-2 text-indigo-600 transition-colors duration-200 hover:bg-indigo-50 hover:text-indigo-700 dark:border-indigo-500 dark:text-indigo-400 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-300"
+              onClick={() => void handleGrade()}
+              aria-label="对答案"
+            >
+              <IconClipboardCheck className="h-7 w-7" />
+            </button>
+          )}
+          <span className="pt-2 text-xs text-gray-500 transition-colors duration-300 dark:text-gray-400">
+            {revealed ? '收起答案' : '对答案'}
+          </span>
         </div>
       </div>
 
