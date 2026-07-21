@@ -4,6 +4,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import IconChartLine from '~icons/tabler/chart-line'
 import IconX from '~icons/tabler/x'
 
@@ -109,16 +110,25 @@ export default function UpdateAnnouncement() {
   const [dismissed, setDismissed] = useAtom(dismissUpdateAnnouncementAtom)
   const [isOpen, setIsOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
+  const location = useLocation()
+  const isHome = location.pathname === '/'
+  const hasAutoOpenedRef = useRef(false)
 
+  // 仅在练习首页、且本会话未自动弹过时弹出；离开首页立刻收起，避免盖在错题本上
   useEffect(() => {
-    if (dismissed) return
+    if (dismissed || !isHome) {
+      setIsOpen(false)
+      return
+    }
+    if (hasAutoOpenedRef.current) return
 
     const timer = window.setTimeout(() => {
+      hasAutoOpenedRef.current = true
       setIsOpen(true)
     }, 800)
 
     return () => window.clearTimeout(timer)
-  }, [dismissed])
+  }, [dismissed, isHome])
 
   const handleClose = () => {
     setIsOpen(false)

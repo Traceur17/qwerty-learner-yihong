@@ -15,7 +15,7 @@ import { errorWordKey, getMasteredKeys } from '@/utils/db/errorWordStatus'
 import type { WordRecord } from '@/utils/db/record'
 import { wordListFetcher } from '@/utils/wordListFetcher'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom, useStore } from 'jotai'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -45,6 +45,7 @@ export function ErrorBook() {
   const firstRowRef = useRef<HTMLLIElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
 
+  const store = useStore()
   const errorBookFilter = useAtomValue(errorBookFilterAtom)
   const setErrorBookFilter = useSetAtom(errorBookFilterAtom)
   const setReviewModeInfo = useSetAtom(reviewModeInfoAtom)
@@ -61,8 +62,24 @@ export function ErrorBook() {
       setTypingResume(errorBookFilter.resume)
     }
     setErrorBookFilter(null)
-    navigate('/')
+    // replace 掉 /error-book，避免历史栈残留导致「返回又进错题本」来回跳
+    navigate('/', { replace: true })
   }, [errorBookFilter, navigate, setErrorBookFilter, setTypingResume])
+
+  // 浏览器返回键离开错题本时，同样恢复进入前进度并清掉章节筛选
+  useEffect(() => {
+    const onPopState = () => {
+      const filter = store.get(errorBookFilterAtom)
+      if (filter?.resume) {
+        store.set(typingResumeAtom, filter.resume)
+      }
+      if (filter) {
+        store.set(errorBookFilterAtom, null)
+      }
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [store])
 
   const latestCount = useMemo(() => groupedRecords.filter((record) => !record.isMastered).length, [groupedRecords])
 
@@ -213,7 +230,7 @@ export function ErrorBook() {
         setCurrentChapter,
       })
       setErrorBookFilter(null)
-      navigate('/')
+      navigate('/', { replace: true })
     } finally {
       setIsPracticing(false)
     }

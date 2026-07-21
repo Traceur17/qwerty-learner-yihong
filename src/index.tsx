@@ -91,9 +91,9 @@ function Root() {
             <Route path="/mobile" element={<MobilePage />} />
           </Routes>
         </Suspense>
+        {!isMobile && <UpdateAnnouncement />}
+        <Analytics />
       </BrowserRouter>
-      {!isMobile && <UpdateAnnouncement />}
-      <Analytics />
     </React.StrictMode>
   )
 }
