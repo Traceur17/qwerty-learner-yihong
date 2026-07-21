@@ -7,58 +7,44 @@ import { errorWordKey, getMasteredKeys } from '@/utils/db/errorWordStatus'
 import type { WordRecord } from '@/utils/db/record'
 import { generateNewWordReviewRecord } from '@/utils/db/review-record'
 
-export async function fetchChapterErrorWordData(dict: Dictionary, chapter: number, wordList: Word[]): Promise<TErrorWordData[]> {
-  const records = await db.wordRecords
+/** 本章曾错过的词；错误次数 / 明细与全局错题本一致（该 dict+word 全部错误记录） */
+export async function fetchChapterScopedErrorGroups(
+  dictId: string,
+  chapter: number,
+): Promise<{ word: string; dict: string; records: WordRecord[]; wrongCount: number }[]> {
+  const chapterWrong = await db.wordRecords
     .where('[dict+chapter]')
-    .equals([dict.id, chapter])
+    .equals([dictId, chapter])
     .filter((record) => record.wrongCount > 0)
     .toArray()
 
-  let groupRecords: { word: string; records: WordRecord[] }[] = []
+  const words = [...new Set(chapterWrong.map((record) => record.word))]
+  if (words.length === 0) return []
 
-  records.forEach((record) => {
-    const typed = record as WordRecord
-    let group = groupRecords.find((g) => g.word === typed.word)
-    if (!group) {
-      group = { word: typed.word, records: [] }
-      groupRecords.push(group)
+  const allWrong = (await db.wordRecords
+    .where('word')
+    .anyOf(words)
+    .filter((record) => record.dict === dictId && record.wrongCount > 0)
+    .toArray()) as WordRecord[]
+
+  return words.map((word) => {
+    const records = allWrong.filter((record) => record.word === word)
+    return {
+      word,
+      dict: dictId,
+      records,
+      wrongCount: records.reduce((acc, cur) => acc + cur.wrongCount, 0),
     }
-    group.records.push(typed)
   })
+}
 
-  // 最新错题口径：最新一条记录（含错词复习、卷面）已答对的词不再算错题
-  const masteredKeys = await getMasteredKeys(groupRecords.map((g) => ({ dict: dict.id, word: g.word })))
-  groupRecords = groupRecords.filter((g) => !masteredKeys.has(errorWordKey(dict.id, g.word)))
+export async function fetchChapterErrorWordData(dict: Dictionary, chapter: number, wordList: Word[]): Promise<TErrorWordData[]> {
+  let groups = await fetchChapterScopedErrorGroups(dict.id, chapter)
 
-  const result: TErrorWordData[] = []
+  const masteredKeys = await getMasteredKeys(groups.map((g) => ({ dict: g.dict, word: g.word })))
+  groups = groups.filter((g) => !masteredKeys.has(errorWordKey(g.dict, g.word)))
 
-  groupRecords.forEach((groupRecord) => {
-    const errorLetters = {} as Record<string, number>
-    groupRecord.records.forEach((record) => {
-      for (const index in record.mistakes) {
-        const mistakes = record.mistakes[index]
-        if (mistakes.length > 0) {
-          errorLetters[index] = (errorLetters[index] ?? 0) + mistakes.length
-        }
-      }
-    })
-
-    const word = wordList.find((item) => item.name === groupRecord.word)
-    if (!word) return
-
-    result.push({
-      word: groupRecord.word,
-      originData: word,
-      errorCount: groupRecord.records.reduce((acc, cur) => acc + cur.wrongCount, 0),
-      errorLetters,
-      errorChar: Object.entries(errorLetters)
-        .sort((a, b) => b[1] - a[1])
-        .map(([index]) => groupRecord.word[Number(index)]),
-      latestErrorTime: groupRecord.records.reduce((acc, cur) => Math.max(acc, cur.timeStamp), 0),
-    })
-  })
-
-  return result
+  return groupedRecordsToErrorData(groups, wordList)
 }
 
 type StartChapterErrorReviewParams = {

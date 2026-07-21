@@ -8,8 +8,8 @@ import RowDetail from './RowDetail'
 import { currentRowDetailAtom } from './store'
 import type { groupedWordRecords } from './type'
 import { idDictionaryMap } from '@/resources/dictionary'
-import { currentChapterAtom, currentDictIdAtom, errorBookFilterAtom, reviewModeInfoAtom } from '@/store'
-import { groupedRecordsToErrorData, startChapterErrorReview } from '@/utils/chapterErrorReview'
+import { currentChapterAtom, currentDictIdAtom, errorBookFilterAtom, reviewModeInfoAtom, typingResumeAtom } from '@/store'
+import { fetchChapterScopedErrorGroups, groupedRecordsToErrorData, startChapterErrorReview } from '@/utils/chapterErrorReview'
 import { db, useDeleteWordRecord } from '@/utils/db'
 import { errorWordKey, getMasteredKeys } from '@/utils/db/errorWordStatus'
 import type { WordRecord } from '@/utils/db/record'
@@ -50,15 +50,19 @@ export function ErrorBook() {
   const setReviewModeInfo = useSetAtom(reviewModeInfoAtom)
   const setCurrentDictId = useSetAtom(currentDictIdAtom)
   const setCurrentChapter = useSetAtom(currentChapterAtom)
+  const setTypingResume = useSetAtom(typingResumeAtom)
 
   const isChapterMode = errorBookFilter != null
   const chapterDict = isChapterMode ? idDictionaryMap[errorBookFilter.dictId] : undefined
   const { data: chapterWordList } = useSWR(isChapterMode && chapterDict ? chapterDict.url : null, wordListFetcher)
 
   const onBack = useCallback(() => {
+    if (errorBookFilter?.resume) {
+      setTypingResume(errorBookFilter.resume)
+    }
     setErrorBookFilter(null)
     navigate('/')
-  }, [navigate, setErrorBookFilter])
+  }, [errorBookFilter, navigate, setErrorBookFilter, setTypingResume])
 
   const latestCount = useMemo(() => groupedRecords.filter((record) => !record.isMastered).length, [groupedRecords])
 
@@ -110,29 +114,16 @@ export function ErrorBook() {
 
   useEffect(() => {
     if (isChapterMode && errorBookFilter) {
-      db.wordRecords
-        .where('[dict+chapter]')
-        .equals([errorBookFilter.dictId, errorBookFilter.chapter])
-        .filter((record) => record.wrongCount > 0)
-        .toArray()
-        .then(async (records) => {
-          const groups: groupedWordRecords[] = []
-          records.forEach((record) => {
-            let group = groups.find((g) => g.word === record.word)
-            if (!group) {
-              group = { word: record.word, dict: record.dict, records: [], wrongCount: 0 }
-              groups.push(group)
-            }
-            group.records.push(record as WordRecord)
-          })
-          const masteredKeys = await getMasteredKeys(groups.map((g) => ({ dict: g.dict, word: g.word })))
-          groups.forEach((group) => {
-            group.wrongCount = group.records.reduce((acc, cur) => acc + cur.wrongCount, 0)
-            group.isMastered = masteredKeys.has(errorWordKey(group.dict, group.word))
-          })
-          setGroupedRecords(groups)
-          setSelectedKeys(new Set())
-        })
+      void fetchChapterScopedErrorGroups(errorBookFilter.dictId, errorBookFilter.chapter).then(async (groups) => {
+        const masteredKeys = await getMasteredKeys(groups.map((g) => ({ dict: g.dict, word: g.word })))
+        setGroupedRecords(
+          groups.map((group) => ({
+            ...group,
+            isMastered: masteredKeys.has(errorWordKey(group.dict, group.word)),
+          })),
+        )
+        setSelectedKeys(new Set())
+      })
       return
     }
 

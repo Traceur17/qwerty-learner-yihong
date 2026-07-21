@@ -8,13 +8,20 @@ Allow users to practice error words from the current chapter without leaving the
 
 ### Requirement: Chapter error word query
 
-The system SHALL be able to query distinct error words for a given dictionary and chapter from local practice records. A word SHALL be included when it has at least one `wordRecord` with matching `dict`, matching `chapter` (0-based chapter index), and `wrongCount > 0`, **AND** its latest record across all sources for the same `dict + word` (including review records with `chapter = -1` and continuous sheet records) still has `wrongCount > 0`（「最新错题」口径）. Words whose latest record has `wrongCount = 0`（已掌握）MUST be excluded. Results MUST be deduplicated by word name and resolved to full `Word` objects from the dictionary JSON. Accumulated error counts MUST be preserved and reported from all historical records.
+The system SHALL be able to query distinct error words for a given dictionary and chapter from local practice records. A word SHALL be included when it has at least one `wordRecord` with matching `dict`, matching `chapter` (0-based chapter index), and `wrongCount > 0`, **AND** its latest record across all sources for the same `dict + word` (including review records with `chapter = -1` and continuous sheet records) still has `wrongCount > 0`（「最新错题」口径）. Words whose latest record has `wrongCount = 0`（已掌握）MUST be excluded. Results MUST be deduplicated by word name and resolved to full `Word` objects from the dictionary JSON. For each included word, the reported accumulated error count and error-record detail SHALL use **all** historical `wrongCount > 0` records for that `dict + word`（与全局错题本同词次数一致）, not only records from the current chapter.
 
 #### Scenario: Chapter has error words
 
 - **WHEN** the user has practiced chapter 3 of dictionary `wang-c5-biscuit` and at least one word has `wrongCount > 0` for that chapter and its latest record is still wrong
 - **THEN** the chapter error word query returns those words as `Word` objects
 - **AND** each word appears at most once
+
+#### Scenario: Chapter error count matches global word total
+
+- **WHEN** a word was wrong once in chapter 3 and twice during error review (`chapter = -1`) for the same dictionary
+- **AND** the word still qualifies for the chapter error list
+- **THEN** the chapter error book shows error count 3 for that word
+- **AND** that count matches the global error book count for the same `dict + word`
 
 #### Scenario: Chapter has no error words
 

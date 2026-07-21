@@ -54,9 +54,12 @@ const App: React.FC = () => {
   const setTypingResume = useSetAtom(typingResumeAtom)
 
   useEffect(() => {
-    // 检测用户设备
+    // 检测用户设备（整次浏览会话只提示一次，避免从错题本返回时反复弹原生 alert）
     if (!IsDesktop()) {
-      setTimeout(() => {
+      const key = 'ql-mobile-desktop-hint-shown'
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, '1')
+      window.setTimeout(() => {
         alert(
           ' Qwerty Learner 目的为提高键盘工作者的英语输入效率，目前暂未适配移动端，希望您使用桌面端浏览器访问。如您使用的是 Ipad 等平板电脑设备，可以使用外接键盘使用本软件。',
         )
