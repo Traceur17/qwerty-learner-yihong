@@ -4,8 +4,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
+import IconAdjustments from '~icons/tabler/adjustments'
 import IconClipboardCheck from '~icons/tabler/clipboard-check'
-import IconKeyboard from '~icons/tabler/keyboard'
 import IconX from '~icons/tabler/x'
 
 type UpdateItem = {
@@ -14,23 +14,28 @@ type UpdateItem = {
   summary: ReactNode
   figure?: ReactNode
   details: string[]
-  icon: typeof IconKeyboard
+  icon: typeof IconClipboardCheck
 }
 
 const UPDATE_ITEMS: UpdateItem[] = [
   {
     tag: '连播',
-    title: '底栏更像指标栏',
-    summary: '播放、间隔、计时、对答案排成一排；对答案后正确率会平滑展开。',
-    details: ['主题色图标：播放 / 暂停、对答案 / 收起', '正确率按已判分行计算'],
+    title: '正确率展示',
+    summary: '对答案后，底栏会平滑展开正确率；收起答案时收回。',
+    details: ['正确率 = 已判分行中答对占比', '底栏样式更接近正常听写的指标栏'],
     icon: IconClipboardCheck,
   },
   {
-    tag: '连播',
-    title: '操作小改进',
-    summary: '左右键还光标，对答案后点卡片可听发音。',
-    details: ['←→ 只移光标；Enter / Tab / ↑↓ 切行', '点词条卡片发音（题号除外）', '题号加宽；滚动条半透明、悬停变实'],
-    icon: IconKeyboard,
+    tag: '体验',
+    title: 'UI/UX 优化',
+    summary: '连播卷面交互与视觉细节一轮打磨。',
+    details: [
+      '左右快捷键：←→ 只移光标，不再上下切词',
+      '滚动条遮挡：默认半透明，悬停再变实',
+      '点击卡片发音：对答案后点词条可单独听读',
+      '题号加宽；底栏按钮改为主题色图标',
+    ],
+    icon: IconAdjustments,
   },
 ]
 
@@ -114,10 +119,10 @@ export default function UpdateAnnouncement() {
                         致 小圆饼干
                       </Dialog.Title>
                       <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
-                        小圆饼干，你好！这次主要打磨了
-                        <strong className="font-medium text-gray-800 dark:text-gray-100">连播底栏</strong>和
-                        <strong className="font-medium text-gray-800 dark:text-gray-100">操作体验</strong>
-                        ，对答案后也能看到正确率。
+                        小圆饼干，你好！这次连播模式新增了
+                        <strong className="font-medium text-gray-800 dark:text-gray-100">正确率展示</strong>
+                        ，并做了一轮
+                        <strong className="font-medium text-gray-800 dark:text-gray-100">UI/UX 优化</strong>。
                       </p>
                     </div>
                     <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-21</p>
@@ -149,7 +154,7 @@ export default function UpdateAnnouncement() {
                             {item.figure}
                             <ul className="mt-3 space-y-1.5">
                               {item.details.map((detail) => (
-                                <li key={detail} className="flex gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <li key={detail} className="flex gap-2 text-sm leading-snug text-gray-500 dark:text-gray-400">
                                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-indigo-400" />
                                   <span>{detail}</span>
                                 </li>
@@ -160,19 +165,26 @@ export default function UpdateAnnouncement() {
                       )
                     })}
                   </div>
+
+                  <p className="mt-6 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/50 px-5 py-4 text-sm leading-relaxed text-indigo-900/80 dark:border-indigo-800 dark:bg-indigo-950/20 dark:text-indigo-100/80">
+                    小圆饼干，你的练习记录保存在浏览器本地，同域名更新后不会丢失。用着不顺手的地方，随时告诉我～
+                  </p>
                 </div>
 
-                <div className="flex shrink-0 items-center justify-end gap-3 border-t border-gray-100 px-6 py-4 dark:border-gray-700 md:px-10">
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    className="rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                  >
-                    稍后再看
-                  </button>
-                  <button type="button" onClick={handleDismissPermanently} className="my-btn-primary h-11 px-8 text-sm">
-                    知道了，不再提示
-                  </button>
+                <div className="flex shrink-0 items-center justify-between gap-4 border-t border-gray-100 px-6 py-5 dark:border-gray-700 md:px-10">
+                  <p className="hidden text-sm text-gray-500 dark:text-gray-400 sm:block">点击「不再提示」后，下次发版前不再显示本页</p>
+                  <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      className="rounded-xl px-5 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                    >
+                      知道了
+                    </button>
+                    <button type="button" onClick={handleDismissPermanently} className="my-btn-primary h-11 px-8 text-sm">
+                      不再提示
+                    </button>
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
