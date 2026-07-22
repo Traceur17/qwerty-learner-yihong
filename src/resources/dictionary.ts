@@ -583,6 +583,18 @@ const chinaExam: DictionaryResource[] = [
 
 // 国际考试
 const internationalExam: DictionaryResource[] = [
+  {
+    id: 'collect-biscuit',
+    name: '小饼干罐',
+    description: '练习中收集的生词，保存在本机浏览器',
+    category: '国际考试',
+    tags: ['IELTS', '收集'],
+    url: 'dexie://collect-biscuit',
+    length: 0,
+    language: 'en',
+    languageCategory: 'en',
+    icon: '🍪',
+  },
   // dict-audio-pipeline:wang-c3-biscuit
   {
     id: 'wang-c3-biscuit',

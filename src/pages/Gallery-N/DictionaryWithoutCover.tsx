@@ -4,9 +4,10 @@ import bookCover from '@/assets/book-cover.png'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
-import { currentDictIdAtom } from '@/store'
+import { collectedWordCountAtom, currentDictIdAtom } from '@/store'
 import type { Dictionary } from '@/typings'
-import { resolveChapterCount } from '@/utils'
+import { calcChapterCount, resolveChapterCount } from '@/utils'
+import { COLLECT_BISCUIT_DICT_ID } from '@/utils/db/collectedWords'
 import * as Progress from '@radix-ui/react-progress'
 import { useAtomValue } from 'jotai'
 import { useMemo, useRef } from 'react'
@@ -17,13 +18,23 @@ interface Props {
 
 export default function DictionaryComponent({ dictionary }: Props) {
   const currentDictID = useAtomValue(currentDictIdAtom)
+  const collectedCount = useAtomValue(collectedWordCountAtom)
+
+  const displayDict = useMemo(() => {
+    if (dictionary.id !== COLLECT_BISCUIT_DICT_ID) return dictionary
+    return {
+      ...dictionary,
+      length: collectedCount,
+      chapterCount: Math.max(1, calcChapterCount(collectedCount)),
+    }
+  }, [dictionary, collectedCount])
 
   const divRef = useRef<HTMLDivElement>(null)
   const entry = useIntersectionObserver(divRef, {})
   const isVisible = !!entry?.isIntersecting
-  const dictStats = useDictStats(dictionary.id, isVisible)
-  const chapterCount = useMemo(() => resolveChapterCount(dictionary), [dictionary])
-  const isSelected = currentDictID === dictionary.id
+  const dictStats = useDictStats(displayDict.id, isVisible)
+  const chapterCount = useMemo(() => resolveChapterCount(displayDict), [displayDict])
+  const isSelected = currentDictID === displayDict.id
   const progress = useMemo(
     () => (dictStats ? Math.ceil((dictStats.exercisedChapterCount / chapterCount) * 100) : 0),
     [dictStats, chapterCount],
@@ -46,7 +57,7 @@ export default function DictionaryComponent({ dictionary }: Props) {
                 isSelected ? 'text-white' : 'text-gray-800 group-hover:text-indigo-400 dark:text-gray-200'
               }`}
             >
-              {dictionary.name}
+              {displayDict.name}
             </h1>
             <TooltipProvider>
               <Tooltip delayDuration={400}>
@@ -56,16 +67,16 @@ export default function DictionaryComponent({ dictionary }: Props) {
                       isSelected ? 'text-white' : 'textdelayDuration-gray-600 dark:text-gray-200'
                     } whitespace-nowrap`}
                   >
-                    {dictionary.description}
+                    {displayDict.description}
                   </p>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{`${dictionary.description}`}</p>
+                  <p>{`${displayDict.description}`}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
-            <p className={`mb-0.5 font-bold  ${isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-200'}`}>{dictionary.length} 词</p>
+            <p className={`mb-0.5 font-bold  ${isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-200'}`}>{displayDict.length} 词</p>
             <div className=" flex w-full items-center pt-2">
               {progress > 0 && (
                 <Progress.Root
@@ -85,7 +96,7 @@ export default function DictionaryComponent({ dictionary }: Props) {
         </div>
       </DialogTrigger>
       <DialogContent className="w-[60rem] max-w-none !rounded-[20px]">
-        <DictDetail dictionary={dictionary} />
+        <DictDetail dictionary={displayDict} />
       </DialogContent>
     </Dialog>
   )

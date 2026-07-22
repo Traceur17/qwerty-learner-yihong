@@ -1,77 +1,76 @@
+import BiscuitIcon from '@/components/BiscuitIcon'
 import { dismissUpdateAnnouncementAtom } from '@/store'
 import noop from '@/utils/noop'
 import { Dialog, Transition } from '@headlessui/react'
 import { useAtom } from 'jotai'
-import type { ReactNode } from 'react'
+import type { ComponentType, ReactNode, SVGProps } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import IconChartLine from '~icons/tabler/chart-line'
+import IconCog6Tooth from '~icons/heroicons/cog-6-tooth-solid'
+import IconArrowRight from '~icons/tabler/arrow-narrow-right'
+import IconCheck from '~icons/tabler/check'
+import IconCookie from '~icons/tabler/cookie'
+import IconKey from '~icons/tabler/key'
+import IconPlugConnected from '~icons/tabler/plug-connected'
 import IconX from '~icons/tabler/x'
 
-function AccuracyEntryFigure() {
+type IconComp = ComponentType<SVGProps<SVGSVGElement>>
+
+function StepArrow() {
+  return <IconArrowRight className="mx-0.5 h-4 w-4 shrink-0 text-indigo-300 dark:text-indigo-500 sm:mx-1.5" aria-hidden />
+}
+
+function StepBubble({ children, label }: { children: ReactNode; label: string }) {
   return (
-    <div className="mt-3 rounded-xl border border-gray-200 bg-white px-3 py-3 dark:border-gray-600 dark:bg-gray-800/80">
-      <div className="flex items-end gap-3 opacity-90">
-        <div className="hidden flex-1 text-center sm:block">
-          <div className="mx-auto w-4/5 border-b border-indigo-300 pb-1.5 text-indigo-500">
-            <span className="text-lg leading-none">▶</span>
-          </div>
-          <div className="pt-1 text-[10px] text-gray-400">播放</div>
-        </div>
-        <div className="hidden flex-1 text-center sm:block">
-          <div className="mx-auto w-4/5 border-b border-indigo-300 pb-1.5 text-indigo-500">
-            <span className="text-base leading-none">☑</span>
-          </div>
-          <div className="pt-1 text-[10px] text-gray-400">对答案</div>
-        </div>
-        <div className="flex-1 text-center opacity-40">
-          <div className="mx-auto w-4/5 border-b border-gray-300 pb-1.5 text-sm font-bold text-gray-500 dark:border-gray-500 dark:text-gray-400">
-            1.5s
-          </div>
-          <div className="pt-1 text-[10px] text-gray-400">间隔</div>
-        </div>
-        <div className="flex-1 text-center opacity-40">
-          <div className="mx-auto w-4/5 border-b border-gray-300 pb-1.5 text-sm font-bold text-gray-500 dark:border-gray-500 dark:text-gray-400">
-            03:20
-          </div>
-          <div className="pt-1 text-[10px] text-gray-400">计时</div>
-        </div>
-        <div className="flex-[1.2] text-center">
-          <div className="mx-auto flex w-4/5 items-end justify-center gap-1 border-b border-indigo-400 pb-1.5 dark:border-indigo-400">
-            <span className="text-sm font-bold text-gray-600 dark:text-gray-300">72%</span>
-            <span className="mb-0.5 inline-flex rounded bg-indigo-500 p-0.5 text-white shadow-sm ring-2 ring-indigo-200 dark:ring-indigo-700">
-              <IconChartLine className="h-3.5 w-3.5" />
-            </span>
-          </div>
-          <div className="pt-1 text-[10px] font-medium text-indigo-600 dark:text-indigo-300">正确率</div>
-        </div>
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-indigo-100 bg-white shadow-sm dark:border-gray-600 dark:bg-gray-800 sm:h-16 sm:w-16">
+        {children}
       </div>
-      <p className="mt-2 text-center text-[11px] font-medium text-indigo-600 dark:text-indigo-300">↑ 点折线图标查看正确率趋势</p>
-      <svg viewBox="0 0 280 56" className="mt-2 h-14 w-full text-indigo-500" aria-hidden>
-        <polyline
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          points="16,42 70,36 124,28 178,22 234,14"
-        />
-        {[
-          [16, 42],
-          [70, 36],
-          [124, 28],
-          [178, 22],
-          [234, 14],
-        ].map(([x, y]) => (
-          <circle key={`${x}-${y}`} cx={x} cy={y} r="3.5" fill="currentColor" />
-        ))}
-        <text x="16" y="54" fontSize="9" fill="#94a3b8">
-          第1遍
-        </text>
-        <text x="220" y="54" fontSize="9" fill="#94a3b8">
-          第5遍
-        </text>
-      </svg>
+      <span className="text-[11px] font-medium leading-tight text-gray-600 dark:text-gray-300">{label}</span>
+    </div>
+  )
+}
+
+/** 只展示入口：左上角 Logo + slogan；「点这里」标在饼干上 */
+function CollectEntryFigure() {
+  return (
+    <div className="mt-3 rounded-xl border border-gray-200 bg-white px-4 py-4 dark:border-gray-600 dark:bg-gray-800/80">
+      <div className="inline-flex items-center">
+        <div className="relative shrink-0">
+          <BiscuitIcon className="h-11 w-11 md:h-12 md:w-12" title="" />
+          <span className="absolute -right-3 -top-2 whitespace-nowrap rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm">
+            点这里
+          </span>
+        </div>
+        <h1 className="ml-2 truncate text-xl font-bold text-indigo-500 md:text-2xl">Empress Biscuit</h1>
+      </div>
+      <p className="mt-2 text-xs text-gray-400">练习页左上角</p>
+    </div>
+  )
+}
+
+function GeminiSetupFigure() {
+  return (
+    <div className="mt-3 rounded-xl border border-gray-200 bg-white px-2 py-3 dark:border-gray-600 dark:bg-gray-800/80 sm:px-4">
+      <div className="flex items-center justify-between gap-0.5 sm:gap-1">
+        <StepBubble label="设置">
+          <IconCog6Tooth className="h-7 w-7 text-indigo-500" />
+        </StepBubble>
+        <StepArrow />
+        <StepBubble label="找华仔要 key">
+          <IconKey className="h-7 w-7 text-amber-500" />
+        </StepBubble>
+        <StepArrow />
+        <StepBubble label="测试连通">
+          <IconPlugConnected className="h-7 w-7 text-sky-500" />
+        </StepBubble>
+        <StepArrow />
+        <StepBubble label="保存">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+            <IconCheck className="h-5 w-5" />
+          </span>
+        </StepBubble>
+      </div>
     </div>
   )
 }
@@ -81,18 +80,23 @@ type UpdateItem = {
   title: string
   summary: ReactNode
   figure?: ReactNode
-  details: string[]
-  icon: typeof IconChartLine
+  icon: IconComp
 }
 
 const UPDATE_ITEMS: UpdateItem[] = [
   {
-    tag: '连播',
-    title: '听写历史记录',
-    summary: '连播底栏「正确率」旁的折线图标，可查看正确率趋势，并进入多遍答卷对比。',
-    figure: <AccuracyEntryFigure />,
-    details: ['整章播完并对答案后，才会写入完整历史', '趋势页可继续打开 Excel 式多遍对比表', '历史从本次更新后开始积累'],
-    icon: IconChartLine,
+    tag: '词库',
+    title: '收集小饼干',
+    summary: '点左上角饼干就能收词。',
+    figure: <CollectEntryFigure />,
+    icon: IconCookie,
+  },
+  {
+    tag: '设置',
+    title: '配置 Gemini API Key',
+    summary: '用之前先配一次 Key（只存在你这台浏览器）。',
+    figure: <GeminiSetupFigure />,
+    icon: IconKey,
   },
 ]
 
@@ -102,6 +106,7 @@ const TAG_COLORS: Record<string, string> = {
   听写: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
   连播: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
   词库: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200',
+  设置: 'bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-200',
   体验: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200',
   界面: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200',
 }
@@ -114,7 +119,6 @@ export default function UpdateAnnouncement() {
   const isHome = location.pathname === '/'
   const hasAutoOpenedRef = useRef(false)
 
-  // 仅在练习首页、且本会话未自动弹过时弹出；离开首页立刻收起，避免盖在错题本上
   useEffect(() => {
     if (dismissed || !isHome) {
       setIsOpen(false)
@@ -185,17 +189,17 @@ export default function UpdateAnnouncement() {
                         致 小圆饼干
                       </Dialog.Title>
                       <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
-                        小圆饼干，你好！连播模式新增了
-                        <strong className="font-medium text-gray-800 dark:text-gray-100">听写历史</strong>
-                        ：点正确率旁的折线，就能看趋势和多遍记录。
+                        新功能
+                        <strong className="font-medium text-gray-800 dark:text-gray-100">收集小饼干</strong>
+                        来啦～看图就会用。
                       </p>
                     </div>
-                    <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-21</p>
+                    <p className="shrink-0 text-sm text-gray-500 dark:text-gray-400 md:text-right">2026-07-22</p>
                   </div>
                 </div>
 
                 <div className="customized-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-6 md:px-10 md:py-7">
-                  <div className={`grid grid-cols-1 gap-5 lg:gap-x-6 lg:gap-y-5 ${UPDATE_ITEMS.length > 1 ? 'lg:grid-cols-2' : ''}`}>
+                  <div className="grid grid-cols-1 gap-5">
                     {UPDATE_ITEMS.map((item) => {
                       const Icon = item.icon
                       return (
@@ -217,14 +221,6 @@ export default function UpdateAnnouncement() {
                             </div>
                             <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{item.summary}</p>
                             {item.figure}
-                            <ul className="mt-3 space-y-1.5">
-                              {item.details.map((detail) => (
-                                <li key={detail} className="flex gap-2 text-sm leading-snug text-gray-500 dark:text-gray-400">
-                                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-indigo-400" />
-                                  <span>{detail}</span>
-                                </li>
-                              ))}
-                            </ul>
                           </div>
                         </article>
                       )
@@ -232,7 +228,7 @@ export default function UpdateAnnouncement() {
                   </div>
 
                   <p className="mt-6 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/50 px-5 py-4 text-left text-sm leading-relaxed text-indigo-900/80 dark:border-indigo-800 dark:bg-indigo-950/20 dark:text-indigo-100/80">
-                    小圆饼干，你的练习记录保存在浏览器本地，同域名更新后不会丢失。用着不顺手的地方，随时告诉我～
+                    练习记录和小饼干罐都在本机；用着不顺手随时告诉我～
                   </p>
                 </div>
 

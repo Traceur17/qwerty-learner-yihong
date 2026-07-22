@@ -1,3 +1,4 @@
+import type { ICollectedWord } from './collectedWords'
 import type {
   IChapterRecord,
   IReviewRecord,
@@ -24,6 +25,7 @@ class RecordDB extends Dexie {
   wrongAnswerHistories!: Table<IWrongAnswerHistory, number>
   sheetPassDrafts!: Table<ISheetPassDraft, number>
   sheetPasses!: Table<ISheetPass, number>
+  collectedWords!: Table<ICollectedWord, number>
 
   revisionDictRecords!: Table<IRevisionDictRecord, number>
   revisionWordRecords!: Table<IWordRecord, number>
@@ -56,6 +58,15 @@ class RecordDB extends Dexie {
       wrongAnswerHistories: '++id,dict,word,[dict+word]',
       sheetPassDrafts: '++id,dict,chapter,[dict+chapter],updatedAt',
       sheetPasses: '++id,dict,chapter,timeStamp,[dict+chapter]',
+    })
+    this.version(6).stores({
+      wordRecords: '++id,word,timeStamp,dict,chapter,wrongCount,[dict+chapter]',
+      chapterRecords: '++id,timeStamp,dict,chapter,time,[dict+chapter]',
+      reviewRecords: '++id,dict,createTime,isFinished',
+      wrongAnswerHistories: '++id,dict,word,[dict+word]',
+      sheetPassDrafts: '++id,dict,chapter,[dict+chapter],updatedAt',
+      sheetPasses: '++id,dict,chapter,timeStamp,[dict+chapter]',
+      collectedWords: '++id,nameKey,createdAt,name',
     })
   }
 }

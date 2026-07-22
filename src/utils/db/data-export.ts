@@ -1,5 +1,6 @@
 import { db } from '.'
 import { getCurrentDate, recordDataAction } from '..'
+import { syncCollectBiscuitDictMeta } from './collectedWordsRepo'
 
 export type ExportProgress = {
   totalRows?: number
@@ -58,6 +59,9 @@ export async function importDatabase(onStart: () => void, callback: (importProgr
         return callback({ totalRows, completedRows, done })
       },
     })
+
+    // Keep Gallery dict length in sync after restoring collectedWords
+    await syncCollectBiscuitDictMeta()
 
     const [wordCount, chapterCount] = await Promise.all([db.wordRecords.count(), db.chapterRecords.count()])
     recordDataAction({ type: 'import', size: file.size, wordCount, chapterCount })

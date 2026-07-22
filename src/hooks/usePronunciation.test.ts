@@ -19,7 +19,7 @@ describe('generateWordSoundSrc', () => {
 
   it('falls back to Youdao when custom audio missing for active accent', () => {
     expect(generateWordSoundSrc(wordWithUkAudio, 'us')).toContain('dict.youdao.com')
-    expect(generateWordSoundSrc(wordWithUkAudio, 'us')).toContain('a couple of')
+    expect(generateWordSoundSrc(wordWithUkAudio, 'us')).toContain(encodeURIComponent('a couple of'))
   })
 
   it('uses custom US audio when pronunciation is us', () => {
@@ -29,6 +29,11 @@ describe('generateWordSoundSrc', () => {
   it('keeps legacy string-only Youdao behavior', () => {
     const src = generateWordSoundSrc('ability', 'uk')
     expect(src).toBe('https://dict.youdao.com/dictvoice?audio=ability&type=1')
+  })
+
+  it('URL-encodes phrases with spaces for Youdao', () => {
+    const src = generateWordSoundSrc('Empress Biscuit', 'us')
+    expect(src).toBe('https://dict.youdao.com/dictvoice?audio=Empress%20Biscuit&type=2')
   })
 })
 

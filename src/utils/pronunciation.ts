@@ -18,24 +18,25 @@ function resolveCustomAudioUrl(ref: WordAudioRef | undefined): string | null {
 }
 
 function generateYoudaoSoundSrc(wordName: string, pronunciation: Exclude<PronunciationType, false>): string {
+  const audio = encodeURIComponent(wordName.trim())
   switch (pronunciation) {
     case 'uk':
-      return `${pronunciationApi}${wordName}&type=1`
+      return `${pronunciationApi}${audio}&type=1`
     case 'us':
-      return `${pronunciationApi}${wordName}&type=2`
+      return `${pronunciationApi}${audio}&type=2`
     case 'romaji':
-      return `${pronunciationApi}${romajiToHiragana(wordName)}&le=jap`
+      return `${pronunciationApi}${encodeURIComponent(romajiToHiragana(wordName))}&le=jap`
     case 'zh':
-      return `${pronunciationApi}${wordName}&le=zh`
+      return `${pronunciationApi}${audio}&le=zh`
     case 'ja':
-      return `${pronunciationApi}${wordName}&le=jap`
+      return `${pronunciationApi}${audio}&le=jap`
     case 'de':
-      return `${pronunciationApi}${wordName}&le=de`
+      return `${pronunciationApi}${audio}&le=de`
     case 'hapin':
     case 'kk':
-      return `${pronunciationApi}${wordName}&le=ru`
+      return `${pronunciationApi}${audio}&le=ru`
     case 'id':
-      return `${pronunciationApi}${wordName}&le=id`
+      return `${pronunciationApi}${audio}&le=id`
     default:
       return ''
   }

@@ -19,17 +19,29 @@ import type {
   WordDictationOpenBy,
   WordDictationType,
 } from '@/typings'
+import { calcChapterCount } from '@/utils'
+import { COLLECT_BISCUIT_DICT_ID } from '@/utils/db/collectedWords'
 import type { ReviewRecord } from '@/utils/db/record'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
 export const currentDictIdAtom = atomWithStorage('currentDict', 'wang-c3-biscuit')
+
+/** Live count of words in「小饼干罐」(synced from Dexie). */
+export const collectedWordCountAtom = atom(0)
+
+export const geminiApiKeyAtom = atomWithStorage('geminiApiKey', '')
+
 export const currentDictInfoAtom = atom<Dictionary>((get) => {
   const id = get(currentDictIdAtom)
   let dict = idDictionaryMap[id]
   // 如果 dict 不存在，则回退到饼干 C3；Typing 中会检查并重置
   if (!dict) {
     dict = idDictionaryMap['wang-c3-biscuit']
+  }
+  if (dict.id === COLLECT_BISCUIT_DICT_ID) {
+    const length = get(collectedWordCountAtom)
+    return { ...dict, length, chapterCount: Math.max(1, calcChapterCount(length)) }
   }
   return dict
 })

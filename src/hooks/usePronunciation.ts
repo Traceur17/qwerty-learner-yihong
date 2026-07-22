@@ -2,7 +2,7 @@ import { pronunciationConfigAtom } from '@/store'
 import { addHowlListener } from '@/utils'
 import noop from '@/utils/noop'
 import type { PronunciationWordInput } from '@/utils/pronunciation'
-import { generateWordSoundSrc } from '@/utils/pronunciation'
+import { generateWordSoundSrc, resolvePronunciationWordName } from '@/utils/pronunciation'
 import { playSegment, prefetchSegment, stopSegmentPlayback } from '@/utils/segmentAudioPlayer'
 import { resolveWordAudioSegment } from '@/utils/wordAudio'
 import { playUrl, stopWordAudio } from '@/utils/wordAudioPlayer'
@@ -19,13 +19,65 @@ function isYoudaoUrl(url: string): boolean {
   return url.includes('dict.youdao.com')
 }
 
+function pickBrowserVoice(accent: 'us' | 'uk'): SpeechSynthesisVoice | null {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return null
+  const voices = window.speechSynthesis.getVoices()
+  if (!voices.length) return null
+  const wantLang = accent === 'uk' ? 'en-GB' : 'en-US'
+  const wantRegion = accent === 'uk' ? /en-GB|en_GB|British|UK/i : /en-US|en_US|American|US/i
+  return (
+    voices.find((v) => v.lang === wantLang) ||
+    voices.find((v) => wantRegion.test(`${v.lang} ${v.name}`)) ||
+    voices.find((v) => v.lang.toLowerCase().startsWith('en')) ||
+    null
+  )
+}
+
+function speakWithBrowser(
+  text: string,
+  accent: 'us' | 'uk',
+  rate: number,
+  handlers: { onPlay: () => void; onEnd: () => void; onError: () => void },
+) {
+  if (typeof window === 'undefined' || !window.speechSynthesis) {
+    handlers.onError()
+    return
+  }
+  window.speechSynthesis.cancel()
+
+  const speakNow = () => {
+    const utter = new SpeechSynthesisUtterance(text)
+    utter.lang = accent === 'uk' ? 'en-GB' : 'en-US'
+    const voice = pickBrowserVoice(accent)
+    if (voice) utter.voice = voice
+    utter.rate = Math.min(Math.max(rate, 0.7), 1.4)
+    utter.onstart = () => handlers.onPlay()
+    utter.onend = () => handlers.onEnd()
+    utter.onerror = () => handlers.onError()
+    window.speechSynthesis.speak(utter)
+  }
+
+  // Chrome often loads voices asynchronously
+  if (window.speechSynthesis.getVoices().length === 0) {
+    const onVoices = () => {
+      window.speechSynthesis.removeEventListener('voiceschanged', onVoices)
+      speakNow()
+    }
+    window.speechSynthesis.addEventListener('voiceschanged', onVoices)
+    window.setTimeout(speakNow, 250)
+    return
+  }
+  speakNow()
+}
+
 export default function usePronunciationSound(word: PronunciationWordInput, isLoop?: boolean) {
   const pronunciationConfig = useAtomValue(pronunciationConfigAtom)
   const loop = useMemo(() => (typeof isLoop === 'boolean' ? isLoop : pronunciationConfig.isLoop), [isLoop, pronunciationConfig.isLoop])
   const pronunciationType = pronunciationConfig.type === 'us' ? 'us' : 'uk'
 
+  // Segment audio only on Word objects (custom biscuit clips), not bare name strings.
   const segment = useMemo(() => {
-    if (typeof word !== 'string') return null
+    if (typeof word === 'string') return null
     return resolveWordAudioSegment(word, pronunciationType)
   }, [pronunciationType, word])
 
@@ -36,6 +88,8 @@ export default function usePronunciationSound(word: PronunciationWordInput, isLo
 
   const useSharedPlayer = Boolean(urlSrc) && !segment && !isYoudaoUrl(urlSrc)
   const howlSrc = useSharedPlayer || segment ? '' : urlSrc
+  const spokenName = useMemo(() => resolvePronunciationWordName(word), [word])
+  const isYoudao = Boolean(howlSrc) && isYoudaoUrl(howlSrc)
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [playError, setPlayError] = useState(false)
@@ -56,26 +110,6 @@ export default function usePronunciationSound(word: PronunciationWordInput, isLo
     return noop
   }, [howlSrc, loop, sound])
 
-  useEffect(() => {
-    if (!sound || !howlSrc) return
-    const unListens: Array<() => void> = []
-    unListens.push(addHowlListener(sound, 'play', () => setIsPlaying(true)))
-    unListens.push(addHowlListener(sound, 'end', () => setIsPlaying(false)))
-    unListens.push(addHowlListener(sound, 'pause', () => setIsPlaying(false)))
-    unListens.push(addHowlListener(sound, 'playerror', () => setIsPlaying(false)))
-    return () => {
-      setIsPlaying(false)
-      unListens.forEach((unListen) => unListen())
-      ;(sound as Howl).unload()
-    }
-  }, [howlSrc, sound])
-
-  useEffect(() => {
-    return () => {
-      if (playErrorTimer.current) window.clearTimeout(playErrorTimer.current)
-    }
-  }, [])
-
   const reportPlayError = useCallback(() => {
     setPlayError(true)
     setIsPlaying(false)
@@ -83,7 +117,52 @@ export default function usePronunciationSound(word: PronunciationWordInput, isLo
     playErrorTimer.current = window.setTimeout(() => setPlayError(false), 2000)
   }, [])
 
+  const speakFallback = useCallback(() => {
+    speakWithBrowser(spokenName, pronunciationType, pronunciationConfig.rate, {
+      onPlay: () => setIsPlaying(true),
+      onEnd: () => setIsPlaying(false),
+      onError: () => reportPlayError(),
+    })
+  }, [pronunciationConfig.rate, pronunciationType, reportPlayError, spokenName])
+
+  useEffect(() => {
+    if (!sound || !howlSrc) return
+    const unListens: Array<() => void> = []
+    unListens.push(addHowlListener(sound, 'play', () => setIsPlaying(true)))
+    unListens.push(addHowlListener(sound, 'end', () => setIsPlaying(false)))
+    unListens.push(addHowlListener(sound, 'pause', () => setIsPlaying(false)))
+    unListens.push(
+      addHowlListener(sound, 'playerror', () => {
+        setIsPlaying(false)
+        // Youdao often 500s on made-up / proper-noun phrases → browser TTS fallback
+        if (isYoudaoUrl(howlSrc)) speakFallback()
+        else reportPlayError()
+      }),
+    )
+    unListens.push(
+      addHowlListener(sound, 'loaderror', () => {
+        setIsPlaying(false)
+        if (isYoudaoUrl(howlSrc)) speakFallback()
+        else reportPlayError()
+      }),
+    )
+    return () => {
+      setIsPlaying(false)
+      unListens.forEach((unListen) => unListen())
+      ;(sound as Howl).unload()
+    }
+  }, [howlSrc, reportPlayError, sound, speakFallback])
+
+  useEffect(() => {
+    return () => {
+      if (playErrorTimer.current) window.clearTimeout(playErrorTimer.current)
+    }
+  }, [])
+
   const stop = useCallback(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel()
+    }
     stopSegmentPlayback()
     stopWordAudio()
     stopHowl()
@@ -117,15 +196,29 @@ export default function usePronunciationSound(word: PronunciationWordInput, isLo
       return
     }
 
-    if (howlSrc) playHowl()
+    if (howlSrc) {
+      // Proactively use browser TTS for multi-word Youdao (proper nouns often 500).
+      if (isYoudao && /\s/.test(spokenName.trim())) {
+        speakFallback()
+        return
+      }
+      playHowl()
+      return
+    }
+
+    // No URL at all → still try browser TTS
+    speakFallback()
   }, [
     howlSrc,
+    isYoudao,
     loop,
     playHowl,
     pronunciationConfig.rate,
     pronunciationConfig.volume,
     reportPlayError,
     segment,
+    speakFallback,
+    spokenName,
     stop,
     urlSrc,
     useSharedPlayer,

@@ -5,6 +5,7 @@ import { ErrorBook } from './pages/ErrorBook'
 import { FriendLinks } from './pages/FriendLinks'
 import MobilePage from './pages/Mobile'
 import TypingPage from './pages/Typing'
+import { useSyncCollectBiscuitMeta } from '@/hooks/useSyncCollectBiscuitMeta'
 import { isOpenDarkModeAtom } from '@/store'
 import { getAppBuildId } from '@/utils/cacheBust'
 import { checkForAppUpdate } from '@/utils/deployServiceWorker'
@@ -28,6 +29,11 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   // for dev
   mixpanel.init('5474177127e4767124c123b2d7846e2a', { debug: true })
+}
+
+function CollectBiscuitMetaSync() {
+  useSyncCollectBiscuitMeta()
+  return null
 }
 
 function Root() {
@@ -74,6 +80,7 @@ function Root() {
   return (
     <React.StrictMode>
       <BrowserRouter basename={REACT_APP_DEPLOY_ENV === 'pages' ? '/qwerty-learner-yihong' : ''}>
+        <CollectBiscuitMetaSync />
         <Suspense fallback={<Loading />}>
           <Routes>
             {isMobile ? (
