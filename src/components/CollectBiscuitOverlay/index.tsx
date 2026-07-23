@@ -1,15 +1,31 @@
-import { WordPronunciationIcon } from '@/components/WordPronunciationIcon'
+import { WordPronunciationIcon, type WordPronunciationIconRef } from '@/components/WordPronunciationIcon'
 import { currentDictInfoAtom } from '@/store'
 import { attachDuplicateHints } from '@/utils/collectWordDuplicates'
 import type { CollectCardDraft } from '@/utils/collectWordEnrichment'
-import { draftToWord, recognizeAndEnrich } from '@/utils/collectWordEnrichment'
-import { COLLECT_BISCUIT_DICT_URL } from '@/utils/db/collectedWords'
+import { draftToCollectedInput, draftToWord, recognizeAndEnrich } from '@/utils/collectWordEnrichment'
+import {
+  COLLECT_BISCUIT_DICT_URL,
+  COLLECT_SECTION_LISTENING,
+  COLLECT_SECTION_READING,
+  type CollectSection,
+} from '@/utils/db/collectedWords'
 import { addCollectedWords } from '@/utils/db/collectedWordsRepo'
 import { GeminiKeyMissingError } from '@/utils/gemini'
 import { wordListFetcher } from '@/utils/wordListFetcher'
 import { Dialog, Transition } from '@headlessui/react'
 import { useAtomValue } from 'jotai'
-import { type ChangeEvent, type ClipboardEvent, Fragment, type KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  type ChangeEvent,
+  type ClipboardEvent,
+  Fragment,
+  type KeyboardEvent,
+  type MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import IconX from '~icons/tabler/x'
 
@@ -19,6 +35,119 @@ type CollectBiscuitOverlayProps = {
   /** Called after successful save (triggers center jar animation). */
   onSaved?: (addedCount: number) => void
   title?: string
+}
+
+function stopCardPlay(e: MouseEvent) {
+  e.stopPropagation()
+}
+
+function CollectWordCard({
+  card,
+  index,
+  onUpdate,
+}: {
+  card: CollectCardDraft
+  index: number
+  onUpdate: (index: number, patch: Partial<CollectCardDraft>) => void
+}) {
+  const soundRef = useRef<WordPronunciationIconRef>(null)
+
+  const playCard = useCallback(() => {
+    if (!card.name.trim()) return
+    soundRef.current?.play()
+  }, [card.name])
+
+  const selectedTone =
+    'bg-amber-100/80 text-amber-800 active:bg-amber-200/80 dark:bg-amber-900/35 dark:text-amber-200 dark:active:bg-amber-900/50'
+  const idleTone =
+    'bg-white text-gray-500 hover:bg-gray-50 active:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:active:bg-gray-600'
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={playCard}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          const tag = (e.target as HTMLElement).tagName
+          if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') return
+          e.preventDefault()
+          playCard()
+        }
+      }}
+      className="relative flex cursor-pointer gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3 pb-7 dark:border-gray-700 dark:bg-gray-900"
+    >
+      <input
+        type="checkbox"
+        checked={card.selected}
+        onChange={(e) => onUpdate(index, { selected: e.target.checked })}
+        onClick={stopCardPlay}
+        className="mt-1.5 shrink-0"
+      />
+      <div className="min-w-0 flex-1">
+        <input
+          value={card.name}
+          onChange={(e) => onUpdate(index, { name: e.target.value })}
+          onClick={stopCardPlay}
+          className="w-full rounded border border-transparent bg-white px-2 py-0.5 font-semibold text-gray-800 outline-none focus:border-amber-300 dark:bg-gray-800 dark:text-gray-100"
+          placeholder="单词（可编辑）"
+        />
+        <p className="text-xs text-gray-500">
+          US /{card.usphone || '—'}/ · UK /{card.ukphone || '—'}/
+        </p>
+        <input
+          value={card.trans.join('；')}
+          onChange={(e) =>
+            onUpdate(index, {
+              trans: e.target.value
+                .split(new RegExp('[；;]'))
+                .map((s) => s.trim())
+                .filter(Boolean),
+            })
+          }
+          onClick={stopCardPlay}
+          className="mt-1 w-full rounded border border-transparent bg-white px-2 py-1 text-sm text-gray-700 outline-none focus:border-amber-300 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500"
+          placeholder="释义（可编辑）"
+        />
+      </div>
+      <div className="flex w-[6.5rem] shrink-0 flex-col items-end justify-between self-stretch" onClick={stopCardPlay}>
+        <WordPronunciationIcon ref={soundRef} word={draftToWord(card)} lang="en" className="h-4 w-4" iconClassName="h-4 w-4" />
+        <div
+          role="radiogroup"
+          aria-label={`${card.name || '单词'} 分类`}
+          className="flex w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-600"
+        >
+          <button
+            type="button"
+            role="radio"
+            aria-checked={card.section === COLLECT_SECTION_LISTENING}
+            onClick={() => onUpdate(index, { section: COLLECT_SECTION_LISTENING })}
+            className={`flex-1 px-1.5 py-1.5 text-center text-xs font-medium transition active:scale-95 ${
+              card.section === COLLECT_SECTION_LISTENING ? selectedTone : idleTone
+            }`}
+          >
+            听力
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={card.section === COLLECT_SECTION_READING}
+            onClick={() => onUpdate(index, { section: COLLECT_SECTION_READING })}
+            className={`flex-1 border-l border-gray-200 px-1.5 py-1.5 text-center text-xs font-medium transition active:scale-95 dark:border-gray-600 ${
+              card.section === COLLECT_SECTION_READING ? selectedTone : idleTone
+            }`}
+          >
+            阅读
+          </button>
+        </div>
+      </div>
+      {card.duplicateIn && card.duplicateIn.length > 0 && (
+        <p className="pointer-events-none absolute bottom-1.5 right-3 max-w-[85%] truncate text-right text-[11px] text-red-500">
+          已在：{card.duplicateIn.join('、')}
+        </p>
+      )}
+    </div>
+  )
 }
 
 function readFileAsDataUrl(file: File): Promise<string> {
@@ -87,7 +216,7 @@ export default function CollectBiscuitOverlay({ open, onClose, onSaved, title = 
         setError('没有识别到英文单词，请换一张图或补充文本')
         return
       }
-      const withDup = await attachDuplicateHints(drafts, currentWords, currentDictInfo.name)
+      const withDup = await attachDuplicateHints(drafts, currentWords, currentDictInfo)
       setCards(withDup)
     } catch (e) {
       if (e instanceof GeminiKeyMissingError) {
@@ -98,7 +227,7 @@ export default function CollectBiscuitOverlay({ open, onClose, onSaved, title = 
     } finally {
       setLoading(false)
     }
-  }, [text, images, currentWords, currentDictInfo.name])
+  }, [text, images, currentWords, currentDictInfo])
 
   const onPaste = useCallback(
     async (e: ClipboardEvent) => {
@@ -149,16 +278,27 @@ export default function CollectBiscuitOverlay({ open, onClose, onSaved, title = 
     setCards((prev) => prev.map((c, i) => (i === index ? { ...c, ...patch } : c)))
   }, [])
 
+  const setAllSections = useCallback((section: CollectSection) => {
+    setCards((prev) => prev.map((c) => ({ ...c, section })))
+  }, [])
+
+  const bulkSection = useMemo((): CollectSection | null => {
+    if (cards.length === 0) return null
+    if (cards.every((c) => c.section === COLLECT_SECTION_LISTENING)) return COLLECT_SECTION_LISTENING
+    if (cards.every((c) => c.section === COLLECT_SECTION_READING)) return COLLECT_SECTION_READING
+    return null
+  }, [cards])
+
   const onSave = useCallback(async () => {
-    const selected = cards.filter((c) => c.selected)
+    const selected = cards.filter((c) => c.selected && c.name.trim())
     if (selected.length === 0) {
-      setError('请至少勾选一个单词')
+      setError('请至少勾选一个有效单词')
       return
     }
     setSaving(true)
     setError(null)
     try {
-      const added = await addCollectedWords(selected.map(draftToWord))
+      const added = await addCollectedWords(selected.map(draftToCollectedInput))
       await mutate(COLLECT_BISCUIT_DICT_URL)
       resetForm()
       setSaving(false)
@@ -267,44 +407,46 @@ export default function CollectBiscuitOverlay({ open, onClose, onSaved, title = 
                 {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
 
                 {cards.length > 0 && (
-                  <div className="mt-4 max-h-80 space-y-2 overflow-y-auto pr-1">
-                    {cards.map((card, index) => (
-                      <div
-                        key={`${card.name}-${index}`}
-                        className="flex gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900"
+                  <div className="mt-3 flex justify-end">
+                    <div
+                      role="radiogroup"
+                      aria-label="批量分类"
+                      className="flex overflow-hidden rounded-lg border border-gray-200 shadow-sm dark:border-gray-600"
+                    >
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={bulkSection === COLLECT_SECTION_LISTENING}
+                        onClick={() => setAllSections(COLLECT_SECTION_LISTENING)}
+                        className={`px-3 py-1.5 text-xs font-medium transition active:scale-[0.97] ${
+                          bulkSection === COLLECT_SECTION_LISTENING
+                            ? 'dark:bg-amber-900/35 bg-amber-100/80 text-amber-800 active:bg-amber-200/80 dark:text-amber-200'
+                            : 'bg-white text-gray-500 hover:bg-gray-50 active:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                        }`}
                       >
-                        <input
-                          type="checkbox"
-                          checked={card.selected}
-                          onChange={(e) => updateCard(index, { selected: e.target.checked })}
-                          className="mt-1"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-800 dark:text-gray-100">{card.name}</span>
-                            <WordPronunciationIcon word={draftToWord(card)} lang="en" className="h-6 w-6" />
-                          </div>
-                          <p className="text-xs text-gray-500">
-                            US /{card.usphone || '—'}/ · UK /{card.ukphone || '—'}/
-                          </p>
-                          {card.duplicateIn && card.duplicateIn.length > 0 && (
-                            <p className="text-xs text-amber-600">已在：{card.duplicateIn.join('、')}（可取消勾选跳过）</p>
-                          )}
-                          <input
-                            value={card.trans.join('；')}
-                            onChange={(e) =>
-                              updateCard(index, {
-                                trans: e.target.value
-                                  .split(new RegExp('[；;]'))
-                                  .map((s) => s.trim())
-                                  .filter(Boolean),
-                              })
-                            }
-                            className="mt-1 w-full rounded border border-transparent bg-white px-2 py-1 text-sm text-gray-700 outline-none focus:border-amber-300 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500"
-                            placeholder="释义（可编辑）"
-                          />
-                        </div>
-                      </div>
+                        全部听力
+                      </button>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={bulkSection === COLLECT_SECTION_READING}
+                        onClick={() => setAllSections(COLLECT_SECTION_READING)}
+                        className={`border-l border-gray-200 px-3 py-1.5 text-xs font-medium transition active:scale-[0.97] dark:border-gray-600 ${
+                          bulkSection === COLLECT_SECTION_READING
+                            ? 'dark:bg-amber-900/35 bg-amber-100/80 text-amber-800 active:bg-amber-200/80 dark:text-amber-200'
+                            : 'bg-white text-gray-500 hover:bg-gray-50 active:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        全部阅读
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {cards.length > 0 && (
+                  <div className="mt-3 max-h-80 space-y-2 overflow-y-auto pr-1">
+                    {cards.map((card, index) => (
+                      <CollectWordCard key={index} card={card} index={index} onUpdate={updateCard} />
                     ))}
                   </div>
                 )}

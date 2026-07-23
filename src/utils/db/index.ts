@@ -68,6 +68,26 @@ class RecordDB extends Dexie {
       sheetPasses: '++id,dict,chapter,timeStamp,[dict+chapter]',
       collectedWords: '++id,nameKey,createdAt,name',
     })
+    this.version(7)
+      .stores({
+        wordRecords: '++id,word,timeStamp,dict,chapter,wrongCount,[dict+chapter]',
+        chapterRecords: '++id,timeStamp,dict,chapter,time,[dict+chapter]',
+        reviewRecords: '++id,dict,createTime,isFinished',
+        wrongAnswerHistories: '++id,dict,word,[dict+word]',
+        sheetPassDrafts: '++id,dict,chapter,[dict+chapter],updatedAt',
+        sheetPasses: '++id,dict,chapter,timeStamp,[dict+chapter]',
+        collectedWords: '++id,nameKey,createdAt,name,section',
+      })
+      .upgrade(async (tx) => {
+        await tx
+          .table('collectedWords')
+          .toCollection()
+          .modify((row: { section?: string }) => {
+            if (row.section !== 'reading' && row.section !== 'listening') {
+              row.section = 'listening'
+            }
+          })
+      })
   }
 }
 

@@ -19,8 +19,7 @@ import type {
   WordDictationOpenBy,
   WordDictationType,
 } from '@/typings'
-import { calcChapterCount } from '@/utils'
-import { COLLECT_BISCUIT_DICT_ID } from '@/utils/db/collectedWords'
+import { COLLECT_BISCUIT_CHAPTER_COUNT, COLLECT_BISCUIT_DICT_ID } from '@/utils/db/collectedWords'
 import type { ReviewRecord } from '@/utils/db/record'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
@@ -29,6 +28,9 @@ export const currentDictIdAtom = atomWithStorage('currentDict', 'wang-c3-biscuit
 
 /** Live count of words in「小饼干罐」(synced from Dexie). */
 export const collectedWordCountAtom = atom(0)
+
+/** Live [听力, 阅读] chapter lengths for「小饼干罐」. */
+export const collectedChapterLengthsAtom = atom<[number, number]>([0, 0])
 
 export const geminiApiKeyAtom = atomWithStorage('geminiApiKey', '')
 
@@ -41,7 +43,13 @@ export const currentDictInfoAtom = atom<Dictionary>((get) => {
   }
   if (dict.id === COLLECT_BISCUIT_DICT_ID) {
     const length = get(collectedWordCountAtom)
-    return { ...dict, length, chapterCount: Math.max(1, calcChapterCount(length)) }
+    const chapterLengths = get(collectedChapterLengthsAtom)
+    return {
+      ...dict,
+      length,
+      chapterCount: COLLECT_BISCUIT_CHAPTER_COUNT,
+      chapterLengths: [...chapterLengths],
+    }
   }
   return dict
 })

@@ -2,7 +2,7 @@ import { pronunciationConfigAtom } from '@/store'
 import { addHowlListener } from '@/utils'
 import noop from '@/utils/noop'
 import type { PronunciationWordInput } from '@/utils/pronunciation'
-import { generateWordSoundSrc, resolvePronunciationWordName } from '@/utils/pronunciation'
+import { generateWordSoundSrc, resolvePronunciationWordName, shouldPreferBrowserTts, toBrowserSpeechText } from '@/utils/pronunciation'
 import { playSegment, prefetchSegment, stopSegmentPlayback } from '@/utils/segmentAudioPlayer'
 import { resolveWordAudioSegment } from '@/utils/wordAudio'
 import { playUrl, stopWordAudio } from '@/utils/wordAudioPlayer'
@@ -13,7 +13,7 @@ import useSound from 'use-sound'
 import type { HookOptions } from 'use-sound/dist/types'
 
 export type { PronunciationWordInput } from '@/utils/pronunciation'
-export { generateWordSoundSrc, resolvePronunciationWordName } from '@/utils/pronunciation'
+export { generateWordSoundSrc, resolvePronunciationWordName, shouldPreferBrowserTts, toBrowserSpeechText } from '@/utils/pronunciation'
 
 function isYoudaoUrl(url: string): boolean {
   return url.includes('dict.youdao.com')
@@ -118,7 +118,7 @@ export default function usePronunciationSound(word: PronunciationWordInput, isLo
   }, [])
 
   const speakFallback = useCallback(() => {
-    speakWithBrowser(spokenName, pronunciationType, pronunciationConfig.rate, {
+    speakWithBrowser(toBrowserSpeechText(spokenName), pronunciationType, pronunciationConfig.rate, {
       onPlay: () => setIsPlaying(true),
       onEnd: () => setIsPlaying(false),
       onError: () => reportPlayError(),
@@ -197,8 +197,8 @@ export default function usePronunciationSound(word: PronunciationWordInput, isLo
     }
 
     if (howlSrc) {
-      // Proactively use browser TTS for multi-word Youdao (proper nouns often 500).
-      if (isYoudao && /\s/.test(spokenName.trim())) {
+      // Spaced / hyphenated tokens often 500 on Youdao — browser TTS without changing stored name.
+      if (isYoudao && shouldPreferBrowserTts(spokenName)) {
         speakFallback()
         return
       }

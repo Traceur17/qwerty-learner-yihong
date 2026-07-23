@@ -591,6 +591,8 @@ const internationalExam: DictionaryResource[] = [
     tags: ['IELTS', '收集'],
     url: 'dexie://collect-biscuit',
     length: 0,
+    /** Fixed chapters: 听力 / 阅读（词数由 Dexie sync 覆盖） */
+    chapterLengths: [0, 0],
     language: 'en',
     languageCategory: 'en',
     icon: '🍪',

@@ -1,4 +1,5 @@
 import type { Word } from '@/typings'
+import { COLLECT_SECTION_LISTENING, type CollectSection } from '@/utils/db/collectedWords'
 import { type EnrichedWordFields, type GeminiProgress, extractAndEnrichFromTextOrImage } from '@/utils/gemini'
 
 type FreeDictPhonetic = { text?: string; audio?: string }
@@ -39,6 +40,8 @@ async function lookupFreeDictionary(word: string): Promise<{ usphone: string; uk
 
 export type CollectCardDraft = EnrichedWordFields & {
   selected: boolean
+  /** 听力 / 阅读；识别结果默认听力 */
+  section: CollectSection
   duplicateIn?: string[]
 }
 
@@ -86,6 +89,7 @@ export async function recognizeAndEnrich(input: {
       ukphone: row.ukphone || ph?.ukphone || '',
       trans: row.trans,
       selected: true,
+      section: COLLECT_SECTION_LISTENING,
     }
   })
 }
@@ -96,5 +100,12 @@ export function draftToWord(d: CollectCardDraft): Word {
     trans: d.trans,
     usphone: d.usphone,
     ukphone: d.ukphone,
+  }
+}
+
+export function draftToCollectedInput(d: CollectCardDraft) {
+  return {
+    ...draftToWord(d),
+    section: d.section,
   }
 }

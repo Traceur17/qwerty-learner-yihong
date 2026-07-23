@@ -4,10 +4,10 @@ import bookCover from '@/assets/book-cover.png'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
-import { collectedWordCountAtom, currentDictIdAtom } from '@/store'
+import { collectedChapterLengthsAtom, collectedWordCountAtom, currentDictIdAtom } from '@/store'
 import type { Dictionary } from '@/typings'
-import { calcChapterCount, resolveChapterCount } from '@/utils'
-import { COLLECT_BISCUIT_DICT_ID } from '@/utils/db/collectedWords'
+import { resolveChapterCount } from '@/utils'
+import { COLLECT_BISCUIT_CHAPTER_COUNT, COLLECT_BISCUIT_DICT_ID } from '@/utils/db/collectedWords'
 import * as Progress from '@radix-ui/react-progress'
 import { useAtomValue } from 'jotai'
 import { useMemo, useRef } from 'react'
@@ -19,15 +19,17 @@ interface Props {
 export default function DictionaryComponent({ dictionary }: Props) {
   const currentDictID = useAtomValue(currentDictIdAtom)
   const collectedCount = useAtomValue(collectedWordCountAtom)
+  const collectedChapterLengths = useAtomValue(collectedChapterLengthsAtom)
 
   const displayDict = useMemo(() => {
     if (dictionary.id !== COLLECT_BISCUIT_DICT_ID) return dictionary
     return {
       ...dictionary,
       length: collectedCount,
-      chapterCount: Math.max(1, calcChapterCount(collectedCount)),
+      chapterCount: COLLECT_BISCUIT_CHAPTER_COUNT,
+      chapterLengths: [...collectedChapterLengths],
     }
-  }, [dictionary, collectedCount])
+  }, [dictionary, collectedCount, collectedChapterLengths])
 
   const divRef = useRef<HTMLDivElement>(null)
   const entry = useIntersectionObserver(divRef, {})

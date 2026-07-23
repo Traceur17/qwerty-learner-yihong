@@ -7,11 +7,10 @@ import CollectBiscuitOverlay from '@/components/CollectBiscuitOverlay'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { collectedWordCountAtom, currentChapterAtom, currentDictIdAtom, reviewModeInfoAtom } from '@/store'
+import { collectedChapterLengthsAtom, collectedWordCountAtom, currentChapterAtom, currentDictIdAtom, reviewModeInfoAtom } from '@/store'
 import type { Dictionary } from '@/typings'
-import { calcChapterCount } from '@/utils'
 import { useDeleteWordRecord } from '@/utils/db'
-import { COLLECT_BISCUIT_DICT_ID } from '@/utils/db/collectedWords'
+import { COLLECT_BISCUIT_CHAPTER_COUNT, COLLECT_BISCUIT_DICT_ID } from '@/utils/db/collectedWords'
 import range from '@/utils/range'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useMemo, useState } from 'react'
@@ -36,11 +35,17 @@ export default function DictDetail({ dictionary: dict }: { dictionary: Dictionar
   const [reload, setReload] = useState(false)
   const [batchOpen, setBatchOpen] = useState(false)
   const collectedCount = useAtomValue(collectedWordCountAtom)
+  const collectedChapterLengths = useAtomValue(collectedChapterLengthsAtom)
 
   const displayDict = useMemo(() => {
     if (dict.id !== COLLECT_BISCUIT_DICT_ID) return dict
-    return { ...dict, length: collectedCount, chapterCount: Math.max(1, calcChapterCount(collectedCount)) }
-  }, [dict, collectedCount])
+    return {
+      ...dict,
+      length: collectedCount,
+      chapterCount: COLLECT_BISCUIT_CHAPTER_COUNT,
+      chapterLengths: [...collectedChapterLengths],
+    }
+  }, [dict, collectedCount, collectedChapterLengths])
 
   const chapter = useMemo(() => (dict.id === currentDictId ? currentChapter : 0), [currentChapter, currentDictId, dict.id])
   const { errorWordData, isLoading, error } = useErrorWordData(dict, reload)

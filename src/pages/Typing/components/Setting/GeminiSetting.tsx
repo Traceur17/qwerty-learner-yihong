@@ -6,7 +6,11 @@ import { useAtom } from 'jotai'
 import { useCallback, useState } from 'react'
 import IconAlertCircle from '~icons/tabler/alert-circle'
 
-const API_KEY_HELP = `Key 仅保存在本机浏览器，请从 Google AI Studio 申请。\n\n${GEMINI_QUOTA_TIP}`
+const API_KEY_HELP = `Key 仅保存在本机浏览器，请从 Google AI Studio 申请。
+
+若提示「地区不支持」，是 Google 按访问 IP 限制，与 Key 无关；识别时需使用可访问 Gemini 的网络。
+
+${GEMINI_QUOTA_TIP}`
 
 export default function GeminiSetting() {
   const [storedKey, setStoredKey] = useAtom(geminiApiKeyAtom)

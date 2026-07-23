@@ -1,5 +1,6 @@
 import { db } from '.'
 import { getCurrentDate, recordDataAction } from '..'
+import { normalizeCollectSection } from './collectedWords'
 import { syncCollectBiscuitDictMeta } from './collectedWordsRepo'
 
 export type ExportProgress = {
@@ -60,7 +61,10 @@ export async function importDatabase(onStart: () => void, callback: (importProgr
       },
     })
 
-    // Keep Gallery dict length in sync after restoring collectedWords
+    // Old backups may lack section — normalize before meta sync
+    await db.collectedWords.toCollection().modify((row: { section?: string }) => {
+      row.section = normalizeCollectSection(row.section)
+    })
     await syncCollectBiscuitDictMeta()
 
     const [wordCount, chapterCount] = await Promise.all([db.wordRecords.count(), db.chapterRecords.count()])

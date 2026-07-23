@@ -11,6 +11,7 @@ import {
   isReviewModeAtom,
   listenDictationConfigAtom,
 } from '@/store'
+import { getDictChapterTitle } from '@/utils/db/collectedWords'
 import range from '@/utils/range'
 import { stopSegmentPlayback } from '@/utils/segmentAudioPlayer'
 import { stopWordAudio } from '@/utils/wordAudioPlayer'
@@ -128,7 +129,7 @@ export default function WordList() {
                 <Listbox value={currentChapter} onChange={handleChapterChange}>
                   <div className="relative shrink-0">
                     <Listbox.Button className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-lg font-medium hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none dark:hover:bg-indigo-900/40 dark:hover:text-indigo-300">
-                      第 {currentChapter + 1} 章
+                      {getDictChapterTitle(currentDictInfo.id, currentChapter)}
                       <IconChevronDown className="h-4 w-4 opacity-60" />
                     </Listbox.Button>
                     <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -147,7 +148,7 @@ export default function WordList() {
                           >
                             {({ selected }) => (
                               <div className="flex items-center justify-between gap-2">
-                                <span>第 {index + 1} 章</span>
+                                <span>{getDictChapterTitle(currentDictInfo.id, index)}</span>
                                 {selected ? <IconCheck className="h-4 w-4 text-indigo-500" /> : null}
                               </div>
                             )}

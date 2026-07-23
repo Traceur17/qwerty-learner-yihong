@@ -1,5 +1,5 @@
 import type { Word } from '@/typings'
-import { generateWordSoundSrc, resolvePronunciationWordName } from '@/utils/pronunciation'
+import { generateWordSoundSrc, resolvePronunciationWordName, shouldPreferBrowserTts, toBrowserSpeechText } from '@/utils/pronunciation'
 import { describe, expect, it } from 'vitest'
 
 const wordWithUkAudio: Pick<Word, 'name' | 'usAudio' | 'ukAudio'> = {
@@ -44,5 +44,22 @@ describe('resolvePronunciationWordName', () => {
 
   it('returns word name from object input', () => {
     expect(resolvePronunciationWordName(wordWithUkAudio)).toBe('a couple of')
+  })
+})
+
+describe('browser TTS helpers (hyphen / phrase)', () => {
+  it('prefers browser TTS for hyphenated compounds without rewriting stored spelling', () => {
+    expect(shouldPreferBrowserTts('pages-build-deployment')).toBe(true)
+    expect(toBrowserSpeechText('pages-build-deployment')).toBe('pages build deployment')
+  })
+
+  it('prefers browser TTS for spaced phrases', () => {
+    expect(shouldPreferBrowserTts('Empress Biscuit')).toBe(true)
+    expect(toBrowserSpeechText('Empress Biscuit')).toBe('Empress Biscuit')
+  })
+
+  it('keeps plain words on Youdao path', () => {
+    expect(shouldPreferBrowserTts('deployment')).toBe(false)
+    expect(toBrowserSpeechText('deployment')).toBe('deployment')
   })
 })

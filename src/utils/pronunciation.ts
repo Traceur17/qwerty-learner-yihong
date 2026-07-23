@@ -12,6 +12,19 @@ export function resolvePronunciationWordName(word: PronunciationWordInput): stri
   return typeof word === 'string' ? word : word.name
 }
 
+/**
+ * Text for browser TTS only. Does not change stored word spelling —
+ * hyphens become spaces so engines can pronounce compound tokens.
+ */
+export function toBrowserSpeechText(wordName: string): string {
+  return wordName.replace(/-/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+/** Youdao often 500s on spaced phrases and hyphenated compounds → prefer browser TTS. */
+export function shouldPreferBrowserTts(wordName: string): boolean {
+  return /[\s-]/.test(wordName.trim())
+}
+
 function resolveCustomAudioUrl(ref: WordAudioRef | undefined): string | null {
   if (!ref || isWordAudioSegment(ref)) return null
   return withCacheBust(publicUrl(ref))

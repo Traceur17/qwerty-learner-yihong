@@ -15,6 +15,7 @@ import {
   wordDictationConfigAtom,
 } from '@/store'
 import { fetchChapterErrorWordData, startChapterErrorReview } from '@/utils/chapterErrorReview'
+import { getDictChapterTitle } from '@/utils/db/collectedWords'
 import { getAccuracyLevel } from '@/utils/talentCelebration'
 import { Transition } from '@headlessui/react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -274,7 +275,7 @@ const ResultScreen = () => {
         <div className="flex h-screen items-center justify-center">
           <div className="my-card fixed flex w-[92vw] max-w-6xl flex-col overflow-hidden rounded-3xl bg-white pb-14 pl-6 pr-5 pt-10 shadow-lg dark:bg-gray-800 md:w-[88vw] md:pl-10 xl:max-w-5xl">
             <div className="text-center font-sans text-xl font-normal text-gray-900 dark:text-gray-400 md:text-2xl">
-              {`${currentDictInfo.name} ${isReviewMode ? '错题复习' : '第' + (currentChapter + 1) + '章'}`}
+              {`${currentDictInfo.name} ${isReviewMode ? '错题复习' : getDictChapterTitle(currentDictInfo.id, currentChapter)}`}
             </div>
             <button className="absolute right-7 top-5" onClick={exitButtonHandler}>
               <IconX className="text-gray-400" />

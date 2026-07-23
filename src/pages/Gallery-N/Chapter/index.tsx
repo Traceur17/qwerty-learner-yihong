@@ -1,5 +1,6 @@
 import { useChapterStats } from '../hooks/useChapterStats'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
+import { getDictChapterTitle } from '@/utils/db/collectedWords'
 import { useEffect, useRef } from 'react'
 import IconCheckCircle from '~icons/heroicons/check-circle-solid'
 
@@ -39,7 +40,7 @@ export default function Chapter({
       className="relative flex h-16 w-40 cursor-pointer  flex-col items-start justify-center overflow-hidden rounded-xl bg-slate-100 px-3 py-2 dark:bg-slate-800"
       onClick={() => onChange(index)}
     >
-      <h1>第 {index + 1} 章</h1>
+      <h1>{getDictChapterTitle(dictID, index)}</h1>
       <p className="pt-[2px] text-xs text-slate-600">
         {wordCount ? `${wordCount} 词 · ` : ''}
         {chapterStatus ? (chapterStatus.exerciseCount > 0 ? `练习 ${chapterStatus.exerciseCount} 次` : '未练习') : '加载中...'}

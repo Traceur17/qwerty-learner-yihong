@@ -31,6 +31,13 @@ function formatGeminiHttpError(status: number, body: string): string {
       '建议：多张截图一次贴齐再识别，少连点。详情：https://ai.google.dev/gemini-api/docs/rate-limits'
     )
   }
+  if (status === 400 && /location is not supported|FAILED_PRECONDITION/i.test(body)) {
+    return (
+      '当前网络所在地区不支持直接调用 Gemini API（400）。' +
+      '这与 Key 是否正确无关，是 Google 按访问 IP 做的地区限制（内地网络常见）。' +
+      '处理：识别时用可访问 Gemini 的网络（如支持地区的代理/VPN）再试；或让华仔配一台支持地区的中转后再用。'
+    )
+  }
   const short = body.slice(0, 180).replace(/\s+/g, ' ')
   return `Gemini 请求失败 (${status}): ${short || '未知错误'}`
 }

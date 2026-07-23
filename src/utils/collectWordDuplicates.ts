@@ -1,53 +1,94 @@
 import { idDictionaryMap } from '@/resources/dictionary'
-import type { Word } from '@/typings'
+import type { Dictionary, Word } from '@/typings'
+import { getChapterRange, resolveChapterCount } from '@/utils'
 import { BISCUIT_DICT_IDS } from '@/utils/chapterAudioPreload'
-import { COLLECT_BISCUIT_DICT_NAME } from '@/utils/db/collectedWords'
+import { COLLECT_BISCUIT_DICT_ID, COLLECT_BISCUIT_DICT_NAME, getDictChapterTitle, normalizeCollectSection } from '@/utils/db/collectedWords'
 import { findCollectedByNameKey } from '@/utils/db/collectedWordsRepo'
 import { wordListFetcher } from '@/utils/wordListFetcher'
 
-const biscuitNameIndexCache = new Map<string, Map<string, string>>()
+export type DuplicateDictContext = Pick<Dictionary, 'id' | 'name' | 'length' | 'chapterLengths'>
 
-async function loadDictNameIndex(dictId: string): Promise<Map<string, string>> {
-  const cached = biscuitNameIndexCache.get(dictId)
+/** nameKey → word index in dict word list */
+const biscuitWordIndexCache = new Map<string, Map<string, number>>()
+
+async function loadDictWordIndex(dictId: string): Promise<Map<string, number>> {
+  const cached = biscuitWordIndexCache.get(dictId)
   if (cached) return cached
 
   const dict = idDictionaryMap[dictId]
-  const index = new Map<string, string>()
+  const index = new Map<string, number>()
   if (!dict) {
-    biscuitNameIndexCache.set(dictId, index)
+    biscuitWordIndexCache.set(dictId, index)
     return index
   }
   try {
     const words = await wordListFetcher(dict.url)
-    for (const w of words) {
-      index.set(w.name.toLowerCase(), dict.name)
-    }
+    words.forEach((w, i) => {
+      const key = w.name.toLowerCase()
+      if (!index.has(key)) index.set(key, i)
+    })
   } catch {
     // ignore load failures
   }
-  biscuitNameIndexCache.set(dictId, index)
+  biscuitWordIndexCache.set(dictId, index)
   return index
 }
 
+function formatDictChapterLabel(dict: DuplicateDictContext, wordIndex: number): string {
+  const chapterCount = resolveChapterCount(dict)
+  for (let c = 0; c < chapterCount; c++) {
+    const { start, end } = getChapterRange(dict, c)
+    if (wordIndex >= start && wordIndex < end) {
+      return `${dict.name}·${getDictChapterTitle(dict.id, c)}`
+    }
+  }
+  return dict.name
+}
+
+function findWordChapterLabel(dict: DuplicateDictContext, words: Word[], wordKey: string): string | null {
+  const idx = words.findIndex((w) => w.name.toLowerCase() === wordKey)
+  if (idx < 0) return null
+  return formatDictChapterLabel(dict, idx)
+}
+
 /**
- * Find which dictionaries already contain the word (collect + current + wang biscuit series).
+ * Find which dictionaries already contain the word (collect + current + wang biscuit series),
+ * with chapter when resolvable.
  */
-export async function findDuplicateSources(wordName: string, currentDictWords?: Word[], currentDictName?: string): Promise<string[]> {
+export async function findDuplicateSources(
+  wordName: string,
+  currentDictWords?: Word[],
+  currentDict?: DuplicateDictContext,
+): Promise<string[]> {
   const key = wordName.trim().toLowerCase()
   if (!key) return []
   const sources: string[] = []
+  const seenDictIds = new Set<string>()
 
   const inCollect = await findCollectedByNameKey(key)
-  if (inCollect) sources.push(COLLECT_BISCUIT_DICT_NAME)
+  if (inCollect) {
+    const chapter = getDictChapterTitle(COLLECT_BISCUIT_DICT_ID, normalizeCollectSection(inCollect.section) === 'reading' ? 1 : 0)
+    sources.push(`${COLLECT_BISCUIT_DICT_NAME}·${chapter}`)
+    seenDictIds.add(COLLECT_BISCUIT_DICT_ID)
+  }
 
-  if (currentDictWords?.some((w) => w.name.toLowerCase() === key) && currentDictName) {
-    if (!sources.includes(currentDictName)) sources.push(currentDictName)
+  if (currentDict && currentDictWords && !seenDictIds.has(currentDict.id)) {
+    const label = findWordChapterLabel(currentDict, currentDictWords, key)
+    if (label) {
+      sources.push(label)
+      seenDictIds.add(currentDict.id)
+    }
   }
 
   for (const id of BISCUIT_DICT_IDS) {
-    const index = await loadDictNameIndex(id)
-    const dictName = index.get(key)
-    if (dictName && !sources.includes(dictName)) sources.push(dictName)
+    if (seenDictIds.has(id)) continue
+    const dict = idDictionaryMap[id]
+    if (!dict) continue
+    const index = await loadDictWordIndex(id)
+    const wordIndex = index.get(key)
+    if (wordIndex === undefined) continue
+    sources.push(formatDictChapterLabel(dict, wordIndex))
+    seenDictIds.add(id)
   }
 
   return sources
@@ -56,11 +97,11 @@ export async function findDuplicateSources(wordName: string, currentDictWords?: 
 export async function attachDuplicateHints<T extends { name: string }>(
   cards: T[],
   currentDictWords?: Word[],
-  currentDictName?: string,
+  currentDict?: DuplicateDictContext,
 ): Promise<Array<T & { duplicateIn?: string[] }>> {
   return Promise.all(
     cards.map(async (card) => {
-      const duplicateIn = await findDuplicateSources(card.name, currentDictWords, currentDictName)
+      const duplicateIn = await findDuplicateSources(card.name, currentDictWords, currentDict)
       return duplicateIn.length > 0 ? { ...card, duplicateIn } : { ...card }
     }),
   )

@@ -1,6 +1,7 @@
 import Tooltip from '@/components/Tooltip'
 import { currentChapterAtom, currentDictInfoAtom, isReviewModeAtom, reviewModeInfoAtom, typingResumeAtom } from '@/store'
 import { exitChapterErrorReview } from '@/utils/chapterErrorReview'
+import { getDictChapterTitle } from '@/utils/db/collectedWords'
 import range from '@/utils/range'
 import { Listbox, Transition } from '@headlessui/react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -60,7 +61,7 @@ export const DictChapterButton = () => {
               onKeyDown={handleKeyDown}
               className="rounded-lg px-3 py-1 text-lg transition-colors duration-300 ease-in-out hover:bg-indigo-400 hover:text-white focus:outline-none dark:text-white dark:text-opacity-60 dark:hover:text-opacity-100"
             >
-              第 {currentChapter + 1} 章
+              {getDictChapterTitle(currentDictInfo.id, currentChapter)}
             </Listbox.Button>
             <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
               <Listbox.Options className="listbox-options z-10 w-32">
@@ -73,7 +74,7 @@ export const DictChapterButton = () => {
                             <IconCheck className="focus:outline-none" />
                           </span>
                         ) : null}
-                        <span>第 {index + 1} 章</span>
+                        <span>{getDictChapterTitle(currentDictInfo.id, index)}</span>
                       </div>
                     )}
                   </Listbox.Option>
